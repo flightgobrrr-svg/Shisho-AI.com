@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EB_Garamond, IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -89,6 +90,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <SpeedInsights />
       </body>
     </html>
   );
