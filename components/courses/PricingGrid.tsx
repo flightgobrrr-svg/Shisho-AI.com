@@ -13,7 +13,9 @@ import { cn } from "@/lib/cn";
  *   - the price is `whitespace-nowrap` with the "per month" suffix on its own
  *     line, rather than trailing the figure where it would be the first thing
  *     to wrap awkwardly.
- * ₹2,499 is the widest value; verified at 320px.
+ * ₹1,899 is the widest value; verified at 320px. Same glyph count as the
+ * ₹2,499 it replaced, and the figure is tabular-nums, so the measured width
+ * is unchanged.
  *
  * Seal budget on this page: the "Most popular" badge, the Core CTA, and the
  * Emphasis underlines. Nothing else. Feature checks are ink-soft on purpose.

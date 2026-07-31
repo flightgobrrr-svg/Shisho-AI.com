@@ -455,6 +455,20 @@
        for 2.4 seconds before the notes appeared. */
     animation-delay: 0s !important;
     transition-delay: 0s !important;
+
+    /* Scroll-driven animations ignore every rule above. `.reveal`,
+       `.reveal-stagger` and `.rule-draw` run on a
+       ViewTimeline, where progress comes from the element's position in the
+       viewport and `animation-duration` is `auto` — so collapsing the
+       duration does nothing at all, and those elements stay at opacity 0
+       until they are scrolled into range. Measured: six elements still
+       hidden at first paint with reduce on.
+
+       Putting the timeline back to `auto` returns them to the document
+       timeline, where the 0.01ms duration above finally applies and the
+       `both` fill lands them on the final keyframe — visible, immediately. */
+    animation-timeline: auto !important;
+    animation-range: normal !important;
   }
 
   /* Motion is removed, but the *signal* must survive: the underline still

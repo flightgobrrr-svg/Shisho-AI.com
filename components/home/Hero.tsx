@@ -1,5 +1,6 @@
 import { AmbientDrift } from "@/components/home/AmbientDrift";
 import { DocumentMockup } from "@/components/home/DocumentMockup";
+import { PhotoBackdrop } from "@/components/ui/PhotoBackdrop";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Section";
 import { HERO_TIMING } from "@/lib/motion";
@@ -153,6 +154,15 @@ function TypedLine({
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
+      {/* The gurukul, low and right: the mask's dense centre lands below the
+          writ mockup rather than behind it, so what shows through is the
+          teacher and the seated students rather than the canopy above them. */}
+      <PhotoBackdrop
+        src="/gurukul-teaching.jpg"
+        focus="50% 58%"
+        mask="radial-gradient(120% 110% at 92% 62%, #000 22%, transparent 74%)"
+        frameClassName="inset-y-0 right-0 w-full lg:w-[68%]"
+      />
       <AmbientDrift />
 
       <Container className="pt-16 pb-28 md:pt-24 md:pb-40">

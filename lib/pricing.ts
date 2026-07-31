@@ -17,7 +17,7 @@ export type Tier = {
   popular?: boolean;
 };
 
-/** ₹ with Indian digit grouping — 2,499 not 2499. */
+/** ₹ with Indian digit grouping — 1,899 not 1899. */
 export function formatINR(amount: number) {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
@@ -52,7 +52,7 @@ export const TIERS: Tier[] = [
   {
     id: "proficient",
     name: "Proficient",
-    price: 2499,
+    price: 1899,
     tagline: "For advocates and final-year students in practice.",
     features: [
       "Everything in Core",
