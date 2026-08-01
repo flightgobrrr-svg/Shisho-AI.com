@@ -457,6 +457,34 @@
 }
 
 /* ============================================================================
+   CUSTOM CURSOR
+   ----------------------------------------------------------------------------
+   `components/motion/CustomCursor.tsx` sets `data-custom-cursor` on <html>,
+   and only after it has confirmed a fine pointer and no reduced-motion
+   preference. Everything here hangs off that attribute, so a touch or
+   reduced-motion visitor keeps the ordinary cursor — the ring is never drawn
+   for them, and hiding the native one would leave them with nothing.
+
+   `cursor` inherits. Hiding it on `body` alone would therefore take the
+   I-beam away from the Draft Bot's textarea and every other field on the
+   site, so text entry and the resize corner are handed back explicitly.
+   Interactive elements keep `pointer`: the ring reinforces affordance, it
+   does not replace it.
+   ========================================================================== */
+
+[data-custom-cursor] body {
+  cursor: none;
+}
+
+[data-custom-cursor] :is(textarea, input, select, [contenteditable]) {
+  cursor: auto;
+}
+
+[data-custom-cursor] :is(a, button, summary, [role="button"]):not(:disabled) {
+  cursor: pointer;
+}
+
+/* ============================================================================
    REDUCED MOTION
    Global backstop. Anything that slipped through above is neutralised here.
    ========================================================================== */

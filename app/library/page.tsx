@@ -24,9 +24,8 @@ export default function LibraryPage() {
           </h1>
           <p className="mt-5 max-w-[52ch] text-[17px] leading-relaxed text-ink-soft">
             Supreme Court and High Court judgments, bare acts, and commentary —
-            searchable, cited in SCC form, and explained in plain language.
-            Search and full text are on the way; below is what the library will
-            hold.
+            searchable, correctly cited, and explained in plain language. Search
+            and full text are on the way; below is what the library will hold.
           </p>
         </Container>
       </Section>
@@ -70,8 +69,8 @@ export default function LibraryPage() {
               </h2>
             </div>
             <p className="max-w-[36ch] text-[14px] leading-relaxed text-ink-soft">
-              Headnotes and plain-language notes — not a substitute for reading
-              the full report.
+              Subject and subsequent history, flagged where a judgment is no
+              longer good law — not a substitute for reading the full report.
             </p>
           </div>
 
