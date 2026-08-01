@@ -40,7 +40,11 @@ export function PricingPreview() {
               style={{ "--i": i } as React.CSSProperties}
               className={cn(
                 "flex min-w-0 flex-col rounded-seal border bg-paper p-7",
-                tier.popular ? "border-seal/40" : "border-ink/10",
+                "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                "hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
+                tier.popular
+                  ? "border-seal/40 hover:border-seal/50"
+                  : "border-ink/10 hover:border-ink/20",
               )}
             >
               <div className="flex items-baseline justify-between gap-3">

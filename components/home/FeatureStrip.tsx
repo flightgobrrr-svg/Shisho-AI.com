@@ -23,9 +23,19 @@ export function FeatureStrip() {
   return (
     <Section tone="raised" className="border-y border-ink/10">
       <Container>
-        <ul className="grid gap-10 md:grid-cols-3 md:gap-8">
-          {FEATURES.map((feature) => (
-            <li key={feature.name} className="min-w-0">
+        {/* Same staggered entrance as the other three-up grids on this page
+            (PersonaRouter, Pricing), so the scroll rhythm going down the
+            page is continuous rather than this strip being the one section
+            that simply appears. No hover-lift here on purpose — these are
+            text blurbs with no card boundary, and a lift with nothing to
+            lift off of reads as a glitch, not a gesture. */}
+        <ul className="reveal-stagger grid gap-10 md:grid-cols-3 md:gap-8">
+          {FEATURES.map((feature, i) => (
+            <li
+              key={feature.name}
+              style={{ "--i": i } as React.CSSProperties}
+              className="min-w-0"
+            >
               <h2 className="font-display text-[22px] font-semibold text-ink">
                 {feature.name}
               </h2>

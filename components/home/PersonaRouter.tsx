@@ -45,7 +45,7 @@ export function PersonaRouter() {
             >
               <Link
                 href={persona.href}
-                className="group flex h-full flex-col p-7 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper-raised md:p-8"
+                className="group flex h-full flex-col p-7 transition-[transform,background-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:-translate-y-0.5 hover:bg-paper-raised md:p-8"
               >
                 <span className="label-mono text-ink-soft/70">
                   {persona.label}

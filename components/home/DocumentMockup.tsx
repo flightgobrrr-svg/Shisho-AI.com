@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ScrubReveal } from "@/components/motion/ScrubReveal";
 import { HERO_TIMING } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 
@@ -23,8 +24,11 @@ import { cn } from "@/lib/cn";
  * real buttons with real text — they are the meaningful content here, so they
  * are exposed to assistive tech and reachable by keyboard.
  *
- * The reveal is still pure CSS `animation-delay`; the reduced-motion backstop
- * in globals.css collapses it to the resting state.
+ * Notes resolve on scroll — each appears as the mockup travels through the
+ * viewport, staggered so scrolling reads as a mentor marking up the page.
+ * Chromium: `animation-timeline: view()` via `.scrub-reveal`. Safari /
+ * Firefox: scroll listener in ScrubReveal.tsx. Reduced motion: visible at
+ * rest via the global backstop.
  */
 
 const NOTES = [
@@ -159,16 +163,7 @@ export function DocumentMockup({ className }: { className?: string }) {
 
             <ul className="mt-3 space-y-2 sm:space-y-4">
               {NOTES.map((note, i) => (
-                <li
-                  key={note.marker}
-                  className="rise"
-                  style={{
-                    animationDelay: `${
-                      HERO_TIMING.annotations.start +
-                      i * HERO_TIMING.annotations.stagger
-                    }ms`,
-                  }}
-                >
+                <ScrubReveal key={note.marker} index={i} total={NOTES.length}>
                   <button
                     type="button"
                     onMouseEnter={() => setActive(note.marker)}
@@ -188,7 +183,7 @@ export function DocumentMockup({ className }: { className?: string }) {
                       {note.text}
                     </span>
                   </button>
-                </li>
+                </ScrubReveal>
               ))}
             </ul>
           </div>

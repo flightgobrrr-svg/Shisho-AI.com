@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { cn } from "@/lib/cn";
 import {
   DOC_TYPES,
@@ -172,13 +173,15 @@ export function DraftWorkspace({
                 {remaining} of {entitlement.quota} free reviews left
               </p>
             ) : null}
-            <Button
-              onClick={review}
-              disabled={tooShort || status === "pending"}
-              aria-disabled={tooShort || status === "pending"}
-            >
-              {status === "pending" ? "Reading…" : "Ask Shisho"}
-            </Button>
+            <Magnetic>
+              <Button
+                onClick={review}
+                disabled={tooShort || status === "pending"}
+                aria-disabled={tooShort || status === "pending"}
+              >
+                {status === "pending" ? "Reading…" : "Ask Shisho"}
+              </Button>
+            </Magnetic>
           </div>
         </div>
 

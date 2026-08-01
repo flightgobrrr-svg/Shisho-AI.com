@@ -312,6 +312,27 @@
   }
 }
 
+/* --- Scroll-scrub reveal ---------------------------------------------------
+   For elements that resolve in sequence as their container scrolls through
+   the viewport — e.g. margin notes on the hero mockup. Resting state is
+   visible; the keyframe animates from hidden, same contract as `.reveal`.
+   ------------------------------------------------------------------------ */
+@utility scrub-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@supports (animation-timeline: view()) {
+  .scrub-reveal {
+    animation-name: shisho-rise;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry var(--scrub-start, 8%) cover var(--scrub-end, 28%);
+  }
+}
+
 /* --- Rule-draw ------------------------------------------------------------
    A section's hairline draws in from the left as it enters — a document
    being ruled. Degrades to a plain static rule where unsupported, which is

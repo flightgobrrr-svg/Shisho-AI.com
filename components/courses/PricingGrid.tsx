@@ -13,7 +13,7 @@ import { cn } from "@/lib/cn";
  *   - the price is `whitespace-nowrap` with the "per month" suffix on its own
  *     line, rather than trailing the figure where it would be the first thing
  *     to wrap awkwardly.
- * ₹2,499 is the widest value; verified at 320px.
+ * ₹999 is the widest value; verified at 320px.
  *
  * Seal budget on this page: the "Most popular" badge, the Core CTA, and the
  * Emphasis underlines. Nothing else. Feature checks are ink-soft on purpose.
@@ -46,7 +46,11 @@ export function PricingGrid() {
             <div
               className={cn(
                 "relative flex h-full flex-col rounded-seal border bg-paper-raised p-7",
-                tier.popular ? "border-seal/40" : "border-ink/10",
+                "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                "hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
+                tier.popular
+                  ? "border-seal/40"
+                  : "border-ink/10 hover:border-ink/20",
               )}
             >
               {tier.popular ? (

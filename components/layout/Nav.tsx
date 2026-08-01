@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
+import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { cn } from "@/lib/cn";
 import { PRIMARY_NAV } from "@/lib/nav";
 
@@ -165,6 +166,8 @@ export function Nav() {
           </span>
         </button>
       </div>
+
+      <ScrollProgress />
 
       {/* Mobile panel */}
       <div

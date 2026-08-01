@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { PricingGrid } from "@/components/courses/PricingGrid";
 import { Button } from "@/components/ui/Button";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { COURSES } from "@/lib/courses";
@@ -96,9 +97,11 @@ export default function CoursesPage() {
           </div>
 
           <Container className="mt-16 px-0 text-center md:px-0">
-            <Button href="/draft-bot" size="lg">
-              Try the Draft Bot free
-            </Button>
+            <Magnetic>
+              <Button href="/draft-bot" size="lg">
+                Try the Draft Bot free
+              </Button>
+            </Magnetic>
           </Container>
         </Container>
       </Section>

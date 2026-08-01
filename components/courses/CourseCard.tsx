@@ -3,7 +3,13 @@ import type { Course } from "@/lib/courses";
 
 export function CourseCard({ course }: { course: Course }) {
   return (
-    <article className="flex min-w-0 flex-col rounded-seal border border-ink/10 bg-paper-raised p-7 md:p-8">
+    <article
+      className={
+        "flex min-w-0 flex-col rounded-seal border border-ink/10 bg-paper-raised p-7 md:p-8 " +
+        "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] " +
+        "hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]"
+      }
+    >
       <p className="label-mono text-ink-soft/70">{course.level}</p>
 
       <h3 className="mt-4 font-display text-[26px] leading-tight font-semibold text-ink">
