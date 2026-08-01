@@ -4,18 +4,17 @@ import { ADD_ON, formatINR, TIERS } from "@/lib/pricing";
 import { cn } from "@/lib/cn";
 
 /**
- * The full three-tier comparison, plus the add-on band.
+ * The full four-tier comparison, plus the add-on band.
  *
  * Mobile overflow is an explicit requirement, so it is guarded three ways:
- *   - the grid collapses to one full-width column below `md`;
+ *   - the grid collapses to one full-width column below `md`, two from `md`,
+ *     and all four only from `lg`, where there is room for them;
  *   - every grid child carries `min-w-0`, so no long string can force the
  *     track wider than the viewport;
  *   - the price is `whitespace-nowrap` with the "per month" suffix on its own
  *     line, rather than trailing the figure where it would be the first thing
  *     to wrap awkwardly.
- * ₹1,899 is the widest value; verified at 320px. Same glyph count as the
- * ₹2,499 it replaced, and the figure is tabular-nums, so the measured width
- * is unchanged.
+ * ₹999 is the widest value; verified at 320px.
  *
  * Seal budget on this page: the "Most popular" badge, the Core CTA, and the
  * Emphasis underlines. Nothing else. Feature checks are ink-soft on purpose.
@@ -38,7 +37,7 @@ function Price({ amount }: { amount: number }) {
 export function PricingGrid() {
   return (
     <>
-      <ul className="reveal-stagger grid grid-cols-1 items-stretch gap-6 md:grid-cols-3">
+      <ul className="reveal-stagger grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((tier, i) => (
           <li
             key={tier.id}
@@ -48,7 +47,11 @@ export function PricingGrid() {
             <div
               className={cn(
                 "relative flex h-full flex-col rounded-seal border bg-paper-raised p-7",
-                tier.popular ? "border-seal/40" : "border-ink/10",
+                "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                "hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
+                tier.popular
+                  ? "border-seal/40"
+                  : "border-ink/10 hover:border-ink/20",
               )}
             >
               {tier.popular ? (
@@ -93,7 +96,7 @@ export function PricingGrid() {
         ))}
       </ul>
 
-      {/* The add-on is not a fourth tier — it is a different kind of thing,
+      {/* The add-on is not a fifth tier — it is a different kind of thing,
           so it sits outside the comparison rather than inside it. */}
       <div className="mt-8 rounded-seal border border-ink/10 bg-paper-raised p-7">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">

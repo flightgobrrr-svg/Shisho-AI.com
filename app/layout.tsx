@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EB_Garamond, IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { CustomCursor } from "@/components/motion/CustomCursor";
 import { Analytics } from "@vercel/analytics/next";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -85,6 +86,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <CustomCursor />
         <Nav />
         <main id="main" className="flex-1">
           {children}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ParallaxLayer } from "@/components/motion/ParallaxLayer";
 import { cn } from "@/lib/cn";
 
 /**
@@ -10,8 +11,11 @@ import { cn } from "@/lib/cn";
  *      before it reaches the type column, so headings sit on essentially
  *      undiluted paper. A single gradient does the work — no `mask-composite`,
  *      which is the part with ragged engine support.
- *   2. It does not move. It is ground, not an event. The brief allows one
- *      perpetual animation and the ambient drift has it.
+ *   2. It never moves on its own. It is ground, not an event. `parallax` is
+ *      the one exception and it is scroll-driven, so it spends none of the
+ *      one-perpetual-animation budget the ambient drift holds: nothing moves
+ *      unless the reader is already moving the page. Keep the value small
+ *      enough that it reads as depth rather than as an effect.
  *   3. It is `aria-hidden` and carries an empty alt. It is atmosphere; the
  *      section's own copy already says what the page is about, and a screen
  *      reader being told about a decorative photograph mid-form is noise.
@@ -29,6 +33,7 @@ export function PhotoBackdrop({
   opacity = 0.2,
   frameClassName,
   priority = true,
+  parallax,
 }: {
   src: string;
   /** CSS `object-position` — which part of the photo to keep in frame. */
@@ -45,23 +50,43 @@ export function PhotoBackdrop({
    */
   frameClassName?: string;
   priority?: boolean;
+  /**
+   * Scroll-drift, signed and small — see rule 2. Omit for a fixed ground; the
+   * frame then renders with no scroll listener attached at all.
+   *
+   * A parallaxed frame must be oversized (e.g. `-inset-y-16` rather than
+   * `inset-y-0`) or the drift will pull an edge of the photograph into view.
+   */
+  parallax?: number;
 }) {
+  const frame = (
+    <div className={cn("absolute", frameClassName ?? "inset-y-0 right-0 w-full")}>
+      <Image
+        src={src}
+        alt=""
+        fill
+        sizes="100vw"
+        priority={priority}
+        className="object-cover"
+        style={{ objectPosition: focus, maskImage: mask, opacity }}
+      />
+    </div>
+  );
+
   return (
     <div
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 -z-20 overflow-hidden"
     >
-      <div className={cn("absolute", frameClassName ?? "inset-y-0 right-0 w-full")}>
-        <Image
-          src={src}
-          alt=""
-          fill
-          sizes="100vw"
-          priority={priority}
-          className="object-cover"
-          style={{ objectPosition: focus, maskImage: mask, opacity }}
-        />
-      </div>
+      {parallax ? (
+        /* The layer is the drifting element, so the frame keeps its own
+           absolute positioning against the section untouched. */
+        <ParallaxLayer speed={parallax} className="absolute inset-0">
+          {frame}
+        </ParallaxLayer>
+      ) : (
+        frame
+      )}
     </div>
   );
 }

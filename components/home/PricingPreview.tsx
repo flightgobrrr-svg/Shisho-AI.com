@@ -6,17 +6,25 @@ import { TIERS } from "@/lib/pricing";
 import { cn } from "@/lib/cn";
 
 /**
- * Pricing preview. This is the target of the nav's `/#pricing` link.
+ * Pricing preview. The nav's "Pricing" link goes straight to /pricing now —
+ * this section is a homepage teaser, not a navigation target, so it carries
+ * no id of its own.
  *
- * Deliberately shows only the three comparable tiers — the ₹699 Draft Bot
- * add-on lives on /courses, because it is a different kind of thing and would
- * make a three-way comparison a four-way muddle.
+ * Deliberately curated to the three headline tiers (Free, Core, Proficient)
+ * rather than all four — Basic's ₹9 read-only pitch needs the context the
+ * comparison table gives it, so it is left for /pricing rather than
+ * competing for attention in a homepage skim. The ₹699 Draft Bot add-on lives
+ * there too, for the same reason.
  *
  * Every figure comes from lib/pricing.ts. No price is written here.
  */
+const PREVIEW_TIER_IDS = new Set(["free", "core", "proficient"]);
+
 export function PricingPreview() {
+  const preview = TIERS.filter((tier) => PREVIEW_TIER_IDS.has(tier.id));
+
   return (
-    <Section id="pricing" tone="raised" className="border-y border-ink/10">
+    <Section tone="raised" className="border-y border-ink/10">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -26,7 +34,7 @@ export function PricingPreview() {
             </h2>
           </div>
           <Link
-            href="/courses"
+            href="/pricing"
             className="underline-draw text-[14px] text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]"
           >
             See the full comparison
@@ -34,13 +42,17 @@ export function PricingPreview() {
         </div>
 
         <ul className="reveal-stagger mt-12 grid gap-6 md:grid-cols-3">
-          {TIERS.map((tier, i) => (
+          {preview.map((tier, i) => (
             <li
               key={tier.id}
               style={{ "--i": i } as React.CSSProperties}
               className={cn(
                 "flex min-w-0 flex-col rounded-seal border bg-paper p-7",
-                tier.popular ? "border-seal/40" : "border-ink/10",
+                "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                "hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
+                tier.popular
+                  ? "border-seal/40 hover:border-seal/50"
+                  : "border-ink/10 hover:border-ink/20",
               )}
             >
               <div className="flex items-baseline justify-between gap-3">

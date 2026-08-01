@@ -23,7 +23,7 @@ export function FinalCta() {
             </Button>
           </Magnetic>
           <Button
-            href="/courses"
+            href="/pricing"
             variant="ghost"
             size="lg"
             className="border-paper/25 text-paper hover:border-paper/45 hover:bg-paper/5"

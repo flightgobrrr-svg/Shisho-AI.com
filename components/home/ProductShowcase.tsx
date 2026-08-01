@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { Button } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
@@ -117,10 +118,12 @@ export function ProductShowcase() {
           </p>
 
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Button href="/draft-bot" size="lg">
-              Open the Draft Bot
-            </Button>
-            <Button href="/courses" variant="ghost" size="lg">
+            <Magnetic>
+              <Button href="/draft-bot" size="lg">
+                Open the Draft Bot
+              </Button>
+            </Magnetic>
+            <Button href="/pricing" variant="ghost" size="lg">
               See pricing
             </Button>
           </div>

@@ -37,13 +37,23 @@ export default async function DraftBotPage() {
           height. The workspace below is a 12.5px monospace textarea and a
           column of review notes; a photograph drifting behind either is a
           readability problem, not atmosphere. By the time the notes column
-          starts, this has faded out completely. */}
+          starts, this has faded out completely.
+
+          No `parallax` — see rule 2 in PhotoBackdrop. A fixed band at the top
+          of a working page has nothing to gain from drift, and omitting it
+          means no scroll listener is attached here at all.
+
+          `lg` and up only. The mask fades leftward to about 26% of the frame,
+          which clears the type column while the frame is the right-hand 56%.
+          Full-bleed below `lg` it does not — it lands under the h1 — and there
+          is no side column to move it into at that width, so it is dropped
+          rather than allowed to sit behind text. Rule 1 is not negotiable. */}
       <PhotoBackdrop
         src="/gurukul-question.jpg"
         focus="52% 30%"
-        mask="radial-gradient(88% 92% at 86% 26%, #000 16%, transparent 68%)"
-        opacity={0.22}
-        frameClassName="top-0 right-0 h-[30rem] w-full lg:w-[56%]"
+        mask="radial-gradient(54% 50% at 50% 32%, #000 20%, transparent 92%)"
+        opacity={0.38}
+        frameClassName="hidden lg:block top-0 right-0 h-[30rem] lg:w-[46%]"
       />
 
       <Container>

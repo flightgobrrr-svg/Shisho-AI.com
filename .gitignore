@@ -38,6 +38,8 @@ yarn-error.log*
 
 # local editor/agent settings — machine-specific, not project config
 .claude/settings.local.json
+# locally-installed agent skill packs, not part of this project
+.claude/skills/
 
 # vercel
 .vercel

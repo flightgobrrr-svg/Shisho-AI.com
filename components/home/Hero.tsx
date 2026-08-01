@@ -1,8 +1,7 @@
 import { AmbientDrift } from "@/components/home/AmbientDrift";
-import { DocumentMockup } from "@/components/home/DocumentMockup";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { PhotoBackdrop } from "@/components/ui/PhotoBackdrop";
 import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Section";
 import { HERO_TIMING } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 
@@ -153,20 +152,62 @@ function TypedLine({
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      {/* The gurukul, low and right: the mask's dense centre lands below the
-          writ mockup rather than behind it, so what shows through is the
-          teacher and the seated students rather than the canopy above them. */}
+    /* Full viewport minus the 4rem sticky nav, so the hero is the whole
+       first screen and the fold lands exactly at its foot. `svh` rather
+       than `vh` so mobile browser chrome collapsing doesn't overshoot. */
+    <section className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden">
+      {/* The gurukul, as a right-hand panel rather than full-bleed.
+          The source is portrait (519×690). Stretched across a wide hero,
+          `object-cover` had to zoom it ~3x to fill, which cropped it down
+          to an unreadable band — the photograph stopped looking like
+          anything. At ~52% width the frame's aspect is close to the
+          source's, so the crop is slight and the guru stays legible.
+
+          At this width the whole source already sits inside the frame, so
+          the mask is the only thing deciding what is seen. It is a wide,
+          low-centred ellipse: wide enough to take in the row of seated
+          students as well as the guru, dropped to 55% so the foreground row
+          is inside it rather than clipped off the bottom.
+
+          The old hard border came from the mask still being opaque where
+          the frame ran out. This one reaches transparent before all four
+          frame edges — including under the parallax's ±45px of travel — so
+          the image dissolves into the paper on every side instead of
+          butting against a line.
+
+          `-inset-y-16` oversizes the frame by 4rem top and bottom so that
+          drift never pulls the photograph's own edge into view. */}
       <PhotoBackdrop
         src="/gurukul-teaching.jpg"
-        focus="50% 58%"
-        mask="radial-gradient(120% 110% at 92% 62%, #000 22%, transparent 74%)"
-        frameClassName="inset-y-0 right-0 w-full lg:w-[68%]"
+        focus="50% 50%"
+        mask="radial-gradient(62% 48% at 52% 51%, #000 16%, transparent 72%)"
+        opacity={0.5}
+        parallax={0.06}
+        frameClassName="-inset-y-16 right-0 w-full lg:w-[52%]"
       />
+
+      {/* Mobile-only legibility wash. Below `lg` the frame is full width, so
+          the photograph sits directly behind the copy and needs knocking
+          back. From `lg` up the panel is clear of the text column entirely
+          and this would only grey the image out — hence `lg:hidden`. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-paper/60 lg:hidden"
+      />
+
       <AmbientDrift />
 
-      <Container className="pt-16 pb-28 md:pt-24 md:pb-40">
-        <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)] lg:gap-16">
+      {/* Deliberately NOT <Container>. Every other section centres its
+          content in a 72rem track, which on a wide monitor leaves the hero
+          copy stranded in the middle-left of a full-bleed photograph. Here
+          the copy hugs the page gutter instead — same `px-6 md:px-8` as the
+          rest of the site, just without the centring — so it reads as
+          anchored to the edge rather than floating.
+
+          The consequence is intentional: on wide screens this text starts
+          further left than the sections below it. */}
+      <div className="w-full px-6 py-20 md:px-8 md:py-24">
+        <div className="max-w-[38rem]">
           {/* ---- Copy ------------------------------------------------- */}
           <div>
             <p
@@ -203,9 +244,11 @@ export function Hero() {
               style={{ animationDelay: `${HERO_TIMING.rise.ctas}ms` }}
             >
               <div className="flex flex-wrap items-center gap-3">
-                <Button href="/draft-bot" size="lg">
-                  Try the Draft Bot
-                </Button>
+                <Magnetic>
+                  <Button href="/draft-bot" size="lg">
+                    Try the Draft Bot
+                  </Button>
+                </Magnetic>
                 <Button href="/courses" variant="ghost" size="lg">
                   Browse courses
                 </Button>
@@ -215,16 +258,8 @@ export function Hero() {
               </p>
             </div>
           </div>
-
-          {/* ---- The annotated draft ---------------------------------- */}
-          <div
-            className="rise"
-            style={{ animationDelay: `${HERO_TIMING.rise.document}ms` }}
-          >
-            <DocumentMockup />
-          </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
