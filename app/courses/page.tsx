@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { CourseCard } from "@/components/courses/CourseCard";
-import { PricingGrid } from "@/components/courses/PricingGrid";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Emphasis } from "@/components/ui/Emphasis";
@@ -8,9 +7,9 @@ import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { COURSES } from "@/lib/courses";
 
 export const metadata: Metadata = {
-  title: "Courses & Pricing",
+  title: "Courses",
   description:
-    "Two courses for Indian law — Starter for foundations, Proficient for interim relief, commercial drafting, and litigation strategy. Plans from ₹0.",
+    "Two courses for Indian law — Starter for foundations, Proficient for interim relief, commercial drafting, and litigation strategy. Plans from ₹9 at /pricing.",
 };
 
 const FAQS = [
@@ -22,10 +21,6 @@ const FAQS = [
     q: "Is this a substitute for legal advice?",
     a: "No. Shisho AI is an educational and drafting tool. It does not provide legal advice and is not a substitute for an advocate enrolled with a State Bar Council.",
   },
-  {
-    q: "Can I cancel?",
-    a: "Yes — plans are monthly and can be cancelled at any time. Access continues to the end of the billing month.",
-  },
 ];
 
 export default function CoursesPage() {
@@ -33,7 +28,7 @@ export default function CoursesPage() {
     <>
       <Section>
         <Container>
-          <Eyebrow>Courses &amp; pricing</Eyebrow>
+          <Eyebrow>Courses</Eyebrow>
           <h1 className="mt-4 max-w-3xl font-display text-[2.05rem] leading-[1.08] font-semibold tracking-[-0.02em] sm:text-[2.6rem] lg:text-display">
             Two courses, one <Emphasis>mentor</Emphasis>.
           </h1>
@@ -55,19 +50,23 @@ export default function CoursesPage() {
         </Container>
       </Section>
 
-      <Section id="pricing">
+      <Section>
         <Container>
-          <Eyebrow>Plans</Eyebrow>
-          <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">
-            Start free. Upgrade when the bot becomes part of your{" "}
-            <Emphasis>routine</Emphasis>.
-          </h2>
-          <p className="mt-5 max-w-[48ch] text-[15.5px] leading-relaxed text-ink-soft">
-            All prices in Indian rupees, billed monthly. Cancel any time.
-          </p>
-
-          <div className="mt-12">
-            <PricingGrid />
+          <div className="flex flex-col items-start gap-6 rounded-seal border border-ink/10 bg-paper-raised p-8 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <Eyebrow>Plans</Eyebrow>
+              <h2 className="mt-4 max-w-lg font-display text-[22px] font-semibold text-ink">
+                Start free. Upgrade when the bot becomes part of your{" "}
+                <Emphasis>routine</Emphasis>.
+              </h2>
+              <p className="mt-3 max-w-[44ch] text-[14.5px] leading-relaxed text-ink-soft">
+                Four plans from ₹9 a month, and a standalone Draft Bot add-on —
+                full breakdown on the pricing page.
+              </p>
+            </div>
+            <Button href="/pricing" size="lg" className="shrink-0">
+              See plans &amp; pricing
+            </Button>
           </div>
         </Container>
       </Section>

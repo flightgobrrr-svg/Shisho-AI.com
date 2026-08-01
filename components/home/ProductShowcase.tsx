@@ -123,7 +123,7 @@ export function ProductShowcase() {
                 Open the Draft Bot
               </Button>
             </Magnetic>
-            <Button href="/courses" variant="ghost" size="lg">
+            <Button href="/pricing" variant="ghost" size="lg">
               See pricing
             </Button>
           </div>

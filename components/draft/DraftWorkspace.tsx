@@ -321,7 +321,7 @@ function LockedNotes({ quota }: { quota: number }) {
             You have used all {quota} free reviews this month. Core includes the
             Draft Bot with no limit.
           </p>
-          <Button href="/courses#pricing" className="mt-5 w-full" size="sm">
+          <Button href="/pricing" className="mt-5 w-full" size="sm">
             See plans
           </Button>
         </div>

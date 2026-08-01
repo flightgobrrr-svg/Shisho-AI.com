@@ -4,10 +4,11 @@ import { ADD_ON, formatINR, TIERS } from "@/lib/pricing";
 import { cn } from "@/lib/cn";
 
 /**
- * The full three-tier comparison, plus the add-on band.
+ * The full four-tier comparison, plus the add-on band.
  *
  * Mobile overflow is an explicit requirement, so it is guarded three ways:
- *   - the grid collapses to one full-width column below `md`;
+ *   - the grid collapses to one full-width column below `md`, two from `md`,
+ *     and all four only from `lg`, where there is room for them;
  *   - every grid child carries `min-w-0`, so no long string can force the
  *     track wider than the viewport;
  *   - the price is `whitespace-nowrap` with the "per month" suffix on its own
@@ -36,7 +37,7 @@ function Price({ amount }: { amount: number }) {
 export function PricingGrid() {
   return (
     <>
-      <ul className="reveal-stagger grid grid-cols-1 items-stretch gap-6 md:grid-cols-3">
+      <ul className="reveal-stagger grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((tier, i) => (
           <li
             key={tier.id}
@@ -95,7 +96,7 @@ export function PricingGrid() {
         ))}
       </ul>
 
-      {/* The add-on is not a fourth tier — it is a different kind of thing,
+      {/* The add-on is not a fifth tier — it is a different kind of thing,
           so it sits outside the comparison rather than inside it. */}
       <div className="mt-8 rounded-seal border border-ink/10 bg-paper-raised p-7">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">

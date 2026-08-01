@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${SITE_URL}/`, lastModified: updated, priority: 1 },
     { url: `${SITE_URL}/courses`, lastModified: updated, priority: 0.8 },
+    { url: `${SITE_URL}/pricing`, lastModified: updated, priority: 0.8 },
     { url: `${SITE_URL}/draft-bot`, lastModified: updated, priority: 0.8 },
     { url: `${SITE_URL}/library`, lastModified: updated, priority: 0.5 },
   ];
