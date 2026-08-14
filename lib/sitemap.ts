@@ -99,8 +99,8 @@ export const MAP_STAGES: MapStage[] = [
     title: "Draft",
     summary: "The first document goes on paper, checked against the bare act.",
     serves: ["draft-bot", "library"],
-    /* 4B is Acts and 4C is Thesis, both confirmed — "Thesis" is the word this
-       transcription had misread as "Thorp". Petition moves to 4D. */
+    /* 4B is Bare Acts and 4C is Thesis, both confirmed — "Thesis" is the word
+       this transcription had misread as "Thorp". Petition moves to 4D. */
     boxes: [
       { label: "Draft", ref: "4A", href: "/draft-bot" },
       { label: "Bare Acts", ref: "4B", href: "/library" },
