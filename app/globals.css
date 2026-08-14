@@ -528,3 +528,300 @@
     transition: none;
   }
 }
+
+/* ============================================================================
+   THE AMENDMENT — a scroll-film section (components/film/AmendmentFilm.tsx)
+   ----------------------------------------------------------------------------
+   One clause, fixed centre. Scroll moves the DRAFT, not a camera: red strikes
+   the vague words, the corrected phrasing resolves in their place, the
+   authority writes itself into the margin, and the red drains to ink.
+
+   Same contract as the rest of this file: the RESTING rule is the FINISHED
+   state — corrected clause, black, margin note present — and the keyframes
+   animate *from* the draft. An engine without scroll-driven animation shows
+   the corrected clause and nothing is trapped invisible.
+   ========================================================================== */
+
+.film {
+  position: relative;
+  /* The runway the beats are spread across. Four screens: enough to land five
+     beats without hurrying, short enough not to hold the page hostage. */
+  height: 400vh;
+}
+
+.film__stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.film__sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .film__sheet {
+    padding-inline: 2rem;
+  }
+}
+
+.film__eyebrow {
+  color: var(--color-indigo);
+}
+
+.film__clause {
+  margin-top: 1.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.1rem + 1.9vw, 2.5rem);
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
+  text-wrap: pretty;
+}
+
+/* Both readings occupy ONE inline slot, so the corrected text resolves in the
+   gap the struck words leave instead of reflowing the paragraph under the
+   reader. The slot takes the width of the longer child and never moves. */
+.film__swap {
+  display: inline-grid;
+}
+
+.film__swap > * {
+  grid-area: 1 / 1;
+  /* Without this a grid item stretches to the cell — the cell being as tall as
+     the LONGER reading — and the tiled strike keeps repeating into the empty
+     space below the draft, printing rules through blank paper. */
+  align-self: start;
+}
+
+.film__before {
+  opacity: 0; /* resting: the draft is gone, the correction stands */
+
+  /* text-decoration, not a drawn bar or a tiled gradient. Three attempts
+     failed on real wrapped text: a positioned pseudo-element crosses one line
+     only; an inline background does not fragment here because the swap's
+     children are grid items; and a tiled gradient strikes every line but runs
+     the full box width, so a short last line gets a rule trailing off into
+     blank paper.
+
+     line-through is laid out by the text engine, so it fits each line exactly
+     at every width. It cannot be drawn left-to-right, so the beat animates the
+     decoration's COLOUR instead — the strike arrives as the pen passes rather
+     than sweeping. The margin rule below still draws, which keeps the gesture
+     in the section. */
+  text-decoration-line: line-through;
+  text-decoration-color: var(--color-seal);
+  text-decoration-thickness: 0.055em;
+  text-decoration-skip-ink: none;
+}
+
+.film__after {
+  opacity: 1; /* resting: final */
+  color: var(--color-ink);
+}
+
+.film__note {
+  margin-top: 2.25rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  opacity: 1; /* resting: final */
+}
+
+.film__note-rule {
+  display: block;
+  width: 2.25rem;
+  height: 1px;
+  flex: none;
+  background-color: var(--color-seal);
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* The photograph sits in the right column and only where there IS a right
+   column. It never goes behind the type. */
+.film__plate {
+  display: none;
+}
+
+/* Gated at 1280, and anchored off the TEXT COLUMN rather than the viewport.
+   Sized as a viewport percentage it overlapped the clause by 59px at 1280 and
+   36px at 1440 — measured, not guessed — and a backdrop must never sit behind
+   the type. `50% + 24rem` clears the sheet's own 46rem cap at every width. */
+@media (min-width: 1280px) {
+  .film__plate {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 24rem);
+    right: -6%;
+    display: block;
+    height: 62%;
+    translate: 0 -50%;
+    opacity: 0.32; /* resting: final */
+    -webkit-mask-image: radial-gradient(
+      56% 56% at 50% 50%,
+      #000 0%,
+      #000 40%,
+      transparent 76%
+    );
+    mask-image: radial-gradient(
+      56% 56% at 50% 50%,
+      #000 0%,
+      #000 40%,
+      transparent 76%
+    );
+  }
+}
+
+/* --- The beats -------------------------------------------------------------
+   Each element carries its own slice of the section's ViewTimeline, so the
+   five beats resolve in order as the stage sits pinned.
+   ------------------------------------------------------------------------ */
+@supports (animation-timeline: view()) {
+  .film {
+    view-timeline-name: --film;
+    view-timeline-axis: block;
+  }
+
+  .film__before {
+    animation:
+      film-strike-draw linear both,
+      film-draft-out linear both;
+    animation-timeline: --film, --film;
+    animation-range: cover 24% cover 38%, cover 40% cover 52%;
+  }
+
+  .film__after {
+    animation:
+      film-correction-in linear both,
+      film-red-drains linear both;
+    animation-timeline: --film, --film;
+    animation-range: cover 42% cover 56%, cover 70% cover 84%;
+  }
+
+  .film__note {
+    animation: film-note-in linear both;
+    animation-timeline: --film;
+    animation-range: cover 58% cover 70%;
+  }
+
+  .film__note-rule {
+    animation: film-strike linear both;
+    animation-timeline: --film;
+    animation-range: cover 58% cover 68%;
+  }
+
+  .film__plate {
+    animation: film-plate-in linear both;
+    animation-timeline: --film;
+    animation-range: cover 62% cover 86%;
+  }
+}
+
+@keyframes film-strike-draw {
+  from {
+    text-decoration-color: transparent;
+  }
+  to {
+    text-decoration-color: var(--color-seal);
+  }
+}
+
+@keyframes film-strike {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes film-draft-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes film-correction-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The red drains out of the correction and it becomes the text. */
+@keyframes film-red-drains {
+  from {
+    color: var(--color-seal);
+  }
+  to {
+    color: var(--color-ink);
+  }
+}
+
+@keyframes film-note-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes film-plate-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.32;
+  }
+}
+
+/* Reduced motion: show the before AND the after, stacked, with the draft
+   struck. The point of the section is the difference between two readings —
+   collapsing to the corrected text alone would leave nothing to compare, so
+   the single slot becomes two rows and both stay on screen. */
+@media (prefers-reduced-motion: reduce) {
+  .film {
+    height: auto;
+  }
+
+  .film__stage {
+    position: static;
+    height: auto;
+    padding-block: 6rem;
+  }
+
+  .film__swap {
+    display: block;
+  }
+
+  .film__before {
+    display: block;
+    margin-bottom: 0.9rem;
+    opacity: 0.55 !important;
+    animation: none !important;
+  }
+
+  .film__before {
+    text-decoration-color: var(--color-seal) !important;
+  }
+}
