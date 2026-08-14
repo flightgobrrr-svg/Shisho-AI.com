@@ -138,8 +138,8 @@ export default function StrataPage() {
       <Section>
         <Container>
           <p className="max-w-[52ch] text-[15px] leading-relaxed text-ink-soft">
-            Keep scrolling and back to the top — the planes separate on the way
-            down and close again on the way up.
+            The same restraint the rest of the site runs on: motion that
+            answers the reader, and stops when they do.
           </p>
         </Container>
       </Section>
