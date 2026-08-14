@@ -114,6 +114,10 @@ export const COMPARISON_ROWS: {
     values: { free: "Daily digest", basic: "Full access", core: "Full access", proficient: "Full access" },
   },
   {
+    label: "Practitioner commentary",
+    values: { free: false, basic: "Read", core: "Read", proficient: "Read + ask Shisho" },
+  },
+  {
     label: "Downloadable case briefs",
     values: { free: false, basic: false, core: true, proficient: true },
   },

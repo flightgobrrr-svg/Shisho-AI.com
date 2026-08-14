@@ -5,7 +5,7 @@ const FEATURES = [
   {
     href: "/draft-bot",
     name: "Draft Bot",
-    body: "Paste a plaint, notice, application, or contract. Get clause-level notes in the margin — the same way a senior would hand it back.",
+    body: "Paste a plaint, notice, application, or contract. Get clause-level notes in the margin, procedure checked before the registry does it for you — the same way a senior would hand it back.",
   },
   {
     href: "/library",
@@ -15,7 +15,7 @@ const FEATURES = [
   {
     href: "/courses",
     name: "Courses",
-    body: "Two tracks — Starter for foundations, Proficient for interim relief, commercial drafting, and litigation strategy.",
+    body: "Two tracks — Starter for foundations, Proficient for interim relief, commercial drafting, and litigation strategy. Every module ends in a filing, not a quiz.",
   },
 ];
 

@@ -15,6 +15,9 @@ export function Footer() {
             <p className="mt-4 text-[14px] leading-relaxed text-ink-soft">
               Your AI legal mentor — courses and drafting for Indian law.
             </p>
+            <p className="label-mono mt-3 text-ink-soft/60">
+              Wisdom, guidance, intelligence.
+            </p>
           </div>
 
           {FOOTER_COLUMNS.map((column) => (
@@ -41,8 +44,9 @@ export function Footer() {
         <div className="mt-14 border-t border-ink/10 pt-8">
           <p className="max-w-3xl text-[13px] leading-relaxed text-ink-soft">
             Shisho AI is an educational and drafting tool. It does not provide
-            legal advice and is not a substitute for an advocate enrolled with a
-            State Bar Council.
+            legal advice, and no advocate–client relationship arises from its
+            use. Draft Bot assists a lawyer; it does not replace one, and is not
+            a substitute for an advocate enrolled with a State Bar Council.
           </p>
           <p className="label-mono mt-6 text-ink-soft/70">
             © {year} Shisho AI · Made in India

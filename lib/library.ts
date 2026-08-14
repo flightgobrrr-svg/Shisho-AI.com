@@ -226,4 +226,34 @@ export const PREVIEW_CASES: PreviewCase[] = [
     court: "Supreme Court",
     topic: "Right to livelihood as part of Article 21",
   },
+
+  // --- Commercial law and civil procedure ------------------------------------
+  {
+    title: "Vidya Drolia v. Durga Trading Corporation",
+    citation: "(2021) 2 SCC 1",
+    court: "Supreme Court",
+    topic:
+      "Arbitrability — the fourfold test for when a dispute is incapable of resolution by arbitration",
+  },
+  {
+    title: "Rangappa v. Sri Mohan",
+    citation: "(2010) 11 SCC 441",
+    court: "Supreme Court",
+    topic:
+      "Section 139, Negotiable Instruments Act — the presumption of a legally enforceable debt is rebuttable, not a dispensation from proof",
+  },
+  {
+    title: "Shilpa Sailesh v. Varun Sreenivasan",
+    citation: "2023 SCC OnLine SC 544",
+    court: "Supreme Court",
+    topic:
+      "Article 142 — Supreme Court's power to grant divorce on irretrievable breakdown of marriage without both parties' consent",
+  },
+  {
+    title: "Chandra Kishore Chaurasia v. R.A. Perfumery Works Pvt. Ltd.",
+    citation: "2022 SCC OnLine Del 3529",
+    court: "Delhi High Court",
+    topic:
+      "Section 12A, Commercial Courts Act, 2015 — a plaint that genuinely contemplates urgent interim relief need not go through pre-institution mediation first",
+  },
 ];

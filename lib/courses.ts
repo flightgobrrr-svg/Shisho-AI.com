@@ -24,33 +24,43 @@ export const COURSES: Course[] = [
     name: "Starter",
     level: "Foundations",
     duration: "6 weeks · self-paced",
-    modules: 8,
+    modules: 6,
     summary:
       "How to read law, how to reason from it, and how to put the first document on paper.",
     syllabus: [
+      {
+        title: "Reading a brief",
+        detail:
+          "What the client said, and what the file actually proves — separating instructions from evidence before you draft anything.",
+      },
       {
         title: "Legal reasoning",
         detail:
           "Ratio decidendi and obiter dicta; how precedent binds under Article 141 of the Constitution.",
       },
       {
-        title: "Reading a judgment",
+        title: "Pleadings",
         detail:
-          "Working through a Supreme Court decision — facts, issues, holding, and what actually binds you.",
+          "The plaint, the written statement, and the rejoinder — structure, prayer, and verification under Order VI and VII CPC.",
       },
       {
-        title: "Case briefing",
+        title: "Procedure before merits",
         detail:
-          "Briefing an authority so it can be used in argument, and citing it correctly in SCC form.",
+          "Limitation, court fee, territorial jurisdiction, and Section 12A pre-institution mediation under the Commercial Courts Act, 2015.",
       },
       {
-        title: "Introductory drafting",
+        title: "Affidavits & verification",
         detail:
-          "A first legal notice and a simple plaint under Order VII CPC — structure, prayer, and verification.",
+          "Vakalatnama, the verification clause, and the objections a registry raises before a matter is even listed.",
+      },
+      {
+        title: "Assessment",
+        detail:
+          "File a complete suit under Order VII CPC, marked line by line in the Shisho margin style.",
       },
     ],
     included: [
-      "8 modules with worked examples",
+      "6 modules with worked examples",
       "Draft Bot review on every drafting exercise",
       "Model answers marked in the Shisho margin style",
     ],
@@ -60,14 +70,24 @@ export const COURSES: Course[] = [
     name: "Proficient",
     level: "Advanced",
     duration: "10 weeks · self-paced",
-    modules: 12,
+    modules: 6,
     summary:
       "Interim relief, commercial drafting, and how a matter is actually run from filing to hearing.",
     syllabus: [
       {
-        title: "Interlocutory applications & interim relief",
+        title: "The triple test",
         detail:
-          "Temporary injunctions under Order XXXIX Rules 1–2 CPC, stay applications, and the inherent power under Section 151 CPC.",
+          "Prima facie case, balance of convenience, and irreparable loss — pleaded and argued as three distinct limbs under Order XXXIX Rules 1–2 CPC.",
+      },
+      {
+        title: "Ex parte ad-interim relief",
+        detail:
+          "When a court will grant an order before hearing the other side, and the uncompromising duty of full and fair disclosure that comes with it.",
+      },
+      {
+        title: "Arbitration",
+        detail:
+          "Sections 9 and 11 of the Arbitration and Conciliation Act, 1996, and the arbitrability test after Vidya Drolia v. Durga Trading Corporation, (2021) 2 SCC 1.",
       },
       {
         title: "Contract drafting",
@@ -75,18 +95,18 @@ export const COURSES: Course[] = [
           "Drafting and reviewing under the Indian Contract Act 1872, with remedies under the Specific Relief Act 1963.",
       },
       {
-        title: "Litigation strategy",
-        detail:
-          "Choosing the forum, pleading jurisdiction, limitation, and when an alternate remedy will sink a writ.",
-      },
-      {
         title: "Advanced pleadings",
         detail:
           "Written statements, counter-claims, rejoinders, and amendment of pleadings under Order VI Rule 17 CPC.",
       },
+      {
+        title: "Assessment",
+        detail:
+          "Argue a full interim application, marked line by line, before a retired district judge.",
+      },
     ],
     included: [
-      "12 modules with real pleading sets",
+      "6 modules with real pleading sets",
       "Priority Draft Bot with citation checks",
       "Drafting templates for pleadings and contracts",
     ],

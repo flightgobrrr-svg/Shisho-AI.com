@@ -11,19 +11,19 @@ const PERSONAS = [
     href: "/courses",
     label: "Student",
     title: "You are learning the law",
-    body: "Structured tracks from reading your first judgment to drafting your first plaint.",
+    body: "You know the sections cold. You have never seen a plaint that was actually filed, settled, and numbered by the registry.",
   },
   {
     href: "/draft-bot",
     label: "Practising lawyer",
     title: "You are drafting today",
-    body: "Clause-level review of pleadings and contracts, with Indian authorities cited.",
+    body: "Three matters listed tomorrow. The senior wants the rejoinder tonight — clause-level review, with Indian authorities cited.",
   },
   {
     href: "/library",
     label: "Exploring law",
     title: "You are deciding if this is for you",
-    body: "Read landmark Supreme Court judgments explained in plain language, free.",
+    body: "Read a landmark Supreme Court judgment explained in plain language before you pay for anything.",
   },
 ];
 
