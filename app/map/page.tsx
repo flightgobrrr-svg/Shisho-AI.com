@@ -36,7 +36,12 @@ export default function MapPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-y border-ink/10 !pt-0">
+      {/* Ground stays `paper` and the boxes are `paper-raised`, per the token
+          comment: paper-raised is for lifted surfaces — cards. This section
+          previously put the GROUND on raised and left the boxes unfilled,
+          which inverted that and flattened the whole page into one wash. The
+          hairline rules still band this section off from the header above. */}
+      <Section className="border-y border-ink/10 !pt-0">
         <Container>
           <ol className="reveal-stagger">
             {MAP_STAGES.map((stage, i) => (
@@ -55,8 +60,11 @@ export default function MapPage() {
                 )}
 
                 <div className="flex items-center gap-3.5">
-                  <StepMark n={stage.n} className="relative bg-paper-raised" />
-                  <h2 className="label-mono text-ink-soft">{stage.title}</h2>
+                  <StepMark n={stage.n} className="relative bg-paper" />
+                  {/* Indigo, like every other mono label on the site — the
+                      palette assigns the cool counter-tone to mono labels and
+                      citations, and these were the one set reading as grey. */}
+                  <h2 className="label-mono text-indigo">{stage.title}</h2>
                 </div>
 
                 {/* One column width for the whole page, so boxes line up in
@@ -87,7 +95,7 @@ export default function MapPage() {
 
                     const shell = cn(
                       "flex h-full min-h-13 items-center gap-2 border px-4 py-3",
-                      "text-[14.5px] leading-snug text-balance",
+                      "bg-paper-raised text-[14.5px] leading-snug text-balance",
                       box.unread
                         ? "border-dashed border-ink/40 text-ink-soft"
                         : "border-ink/45 text-ink",
@@ -100,8 +108,12 @@ export default function MapPage() {
                             href={box.href}
                             className={cn(
                               shell,
-                              "transition-[transform,background-color,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
-                              "hover:-translate-y-0.5 hover:border-ink/75 hover:bg-paper",
+                              "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                              /* Lift and darken the rule — never change the
+                                 fill. Hovering used to swap to `paper`, which
+                                 is DARKER than `paper-raised`, so the box sank
+                                 instead of rising. */
+                              "hover:-translate-y-0.5 hover:border-ink/75 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
                             )}
                           >
                             {content}
