@@ -12,12 +12,26 @@ import {
   readUsage,
   USAGE_COOKIE,
 } from "@/lib/entitlements";
+import {
+  assistantEntitlementFor,
+  ASSISTANT_USAGE_COOKIE,
+  readAssistantUsage,
+} from "@/lib/assistantEntitlements";
 
 export const metadata: Metadata = {
   title: "Draft Bot",
   description:
-    "Paste a plaint, notice, application, or contract and get clause-level notes under Indian law.",
+    "Describe your facts and Shisho drafts a plaint, notice, application, or contract — then marks it up under Indian law.",
 };
+
+const DRAFT_TYPES = [
+  "Plaints, written statements & rejoinders",
+  "Interim applications & stay drafts",
+  "Bail applications under the BNSS",
+  "Legal notices & replies",
+  "Writ petitions under Articles 226 & 32",
+  "Synopsis, list of dates & grounds of appeal",
+];
 
 export default async function DraftBotPage() {
   const cookieStore = await cookies();
@@ -26,9 +40,15 @@ export default async function DraftBotPage() {
   const used = readUsage(cookieStore.get(USAGE_COOKIE)?.value);
   const entitlement = entitlementFor(plan, used);
 
+  const assistantUsed = readAssistantUsage(
+    cookieStore.get(ASSISTANT_USAGE_COOKIE)?.value,
+  );
+  const assistantEntitlement = assistantEntitlementFor(plan, assistantUsed);
+
   const isDev = process.env.NODE_ENV !== "production";
 
   return (
+    <>
     <Section className="relative overflow-hidden !pt-12 md:!pt-16">
       {/* A student on his feet, mid-question, with his teacher listening —
           which is precisely the transaction on this page.
@@ -59,19 +79,36 @@ export default async function DraftBotPage() {
       <Container>
         <Eyebrow>Draft Bot</Eyebrow>
         <h1 className="mt-4 max-w-3xl font-display text-[2rem] leading-[1.1] font-semibold tracking-[-0.02em] sm:text-[2.4rem]">
-          Draft it, then have it <Emphasis>marked</Emphasis>.
+          Describe the facts, then have the draft <Emphasis>marked</Emphasis>.
         </h1>
         <p className="mt-5 max-w-[52ch] text-[16px] leading-relaxed text-ink-soft">
-          Paste a draft and Shisho returns clause-level notes in the margin —
-          the same way a senior hands back your work, with Indian authorities
-          named where they apply.
+          Tell Shisho the facts and attach a file if you have one — it drafts
+          the document, then marks it up in the margin the same way a senior
+          hands back your work, with Indian authorities named where they
+          apply.
         </p>
 
         <div className="mt-12">
           {isDev ? <PlanSwitcher plan={plan} /> : null}
-          <DraftWorkspace entitlement={entitlement} />
+          <DraftWorkspace
+            entitlement={entitlement}
+            assistantEntitlement={assistantEntitlement}
+          />
         </div>
       </Container>
     </Section>
+    <Section tone="raised" className="border-t border-ink/10">
+      <Container>
+        <Eyebrow>What it drafts</Eyebrow>
+        <ul className="mt-6 grid grid-cols-1 gap-x-10 gap-y-3 font-display text-[17px] text-ink sm:grid-cols-2">
+          {DRAFT_TYPES.map((item) => (
+            <li key={item} className="border-b border-dotted border-ink/15 pb-3">
+              {item}
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </Section>
+    </>
   );
 }

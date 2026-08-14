@@ -3,10 +3,12 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { DraftingAgent } from "@/components/draft/DraftingAgent";
 import { cn } from "@/lib/cn";
 import {
   DOC_TYPES,
   DOC_TYPE_LABELS,
+  isDocType,
   MAX_DRAFT_CHARS,
   SEVERITY_LABELS,
   type Annotation,
@@ -14,6 +16,7 @@ import {
   type DraftResponse,
 } from "@/lib/draft";
 import type { Entitlement } from "@/lib/entitlements";
+import type { AssistantEntitlement } from "@/lib/assistantEntitlements";
 
 const SAMPLE = `IN THE HIGH COURT OF DELHI AT NEW DELHI
 CIVIL WRIT JURISDICTION
@@ -46,8 +49,10 @@ const SEVERITY_STYLES: Record<Annotation["severity"], string> = {
 
 export function DraftWorkspace({
   entitlement,
+  assistantEntitlement,
 }: {
   entitlement: Entitlement;
+  assistantEntitlement: AssistantEntitlement;
 }) {
   const [draft, setDraft] = useState("");
   const [docType, setDocType] = useState<DocType>("plaint");
@@ -112,7 +117,20 @@ export function DraftWorkspace({
   const tooShort = draft.trim().length < 40;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
+    <div>
+      {/* The agent is the page's opening move now — describe the facts,
+          attach a file, and a draft lands in the workspace below via
+          `onDraft`. The workspace's own mechanics (review, highlighting,
+          the 402 lock) are untouched; this is the only new wire into them. */}
+      <DraftingAgent
+        entitlement={assistantEntitlement}
+        onDraft={(text, dt) => {
+          setDraft(text);
+          if (dt && isDocType(dt)) setDocType(dt);
+        }}
+      />
+
+      <div className="mt-12 grid gap-8 border-t border-ink/10 pt-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
       {/* ================= Draft ================= */}
       <div className="min-w-0">
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -285,6 +303,7 @@ export function DraftWorkspace({
           </div>
         )}
       </aside>
+      </div>
     </div>
   );
 }
