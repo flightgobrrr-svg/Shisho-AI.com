@@ -19,7 +19,7 @@ export function FinalCta() {
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Magnetic>
             <Button href="/draft-bot" size="lg">
-              Try the Draft Bot
+              Try Shisho
             </Button>
           </Magnetic>
           <Button

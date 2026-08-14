@@ -19,7 +19,7 @@ import {
 } from "@/lib/assistantEntitlements";
 
 export const metadata: Metadata = {
-  title: "Draft Bot",
+  title: "Shisho",
   description:
     "Describe your facts and Shisho drafts a plaint, notice, application, or contract — then marks it up under Indian law.",
 };
@@ -77,7 +77,7 @@ export default async function DraftBotPage() {
       />
 
       <Container>
-        <Eyebrow>Draft Bot</Eyebrow>
+        <Eyebrow>Shisho</Eyebrow>
         <h1 className="mt-4 max-w-3xl font-display text-[2rem] leading-[1.1] font-semibold tracking-[-0.02em] sm:text-[2.4rem]">
           Describe the facts, then have the draft <Emphasis>marked</Emphasis>.
         </h1>

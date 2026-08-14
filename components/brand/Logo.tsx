@@ -1,34 +1,58 @@
+import Image from "next/image";
 import { cn } from "@/lib/cn";
 
 /**
- * The Shisho mark: 志 inside a seal-outlined circle — a registrar's stamp on a
- * court filing. This is the one place outside CTAs and annotations where seal
- * appears, and it appears as a hairline outline only.
+ * The Shisho logo.
  *
- * The glyph is rendered as text (not a path) so it inherits the CJK font the
- * OS already ships; the stack below covers Windows, macOS, Android and Linux.
+ * `public/shisho-logo.png` is a 500×500 lockup: emblem on top, "SHISHO ai"
+ * wordmark beneath it, and the WISDOM · GUIDANCE · INTELLIGENCE tagline under
+ * that. It is a genuine transparent PNG — 81% of its pixels are fully
+ * transparent and the edges are anti-aliased — so it sits on `paper` without
+ * a white box behind it.
+ *
+ * That square lockup cannot go in the nav as-is: at the 32px the 4rem bar
+ * allows, the tagline would be an illegible smudge. So <Logo> shows only the
+ * EMBLEM, framed out of the square by <LogoMark>, and pairs it with the
+ * wordmark set in the site's own type. <LogoLockup> uses the whole artwork,
+ * and belongs only where there is room to read it — the footer.
  */
 
-const CJK_STACK =
-  '"Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", "Microsoft YaHei", "Noto Sans CJK JP", sans-serif';
-
+/**
+ * The emblem alone, framed out of the square artwork.
+ *
+ * The emblem occupies roughly x 90–390, y 28–328 of the 500×300 source. Rather
+ * than cut a second file, the frame clips to that window: the image is scaled
+ * to 500/300 of the frame and offset by the box's origin. Every value is a
+ * percentage, so this holds at any size the frame is given.
+ */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        "inline-grid size-8 shrink-0 place-items-center rounded-full",
-        "border border-seal/70 text-ink",
-        "text-[15px] leading-none",
+        "relative block size-8 shrink-0 overflow-hidden",
         className,
       )}
-      style={{ fontFamily: CJK_STACK }}
     >
-      志
+      <Image
+        src="/shisho-logo.png"
+        alt=""
+        width={500}
+        height={500}
+        priority
+        className="absolute top-[-9.33%] left-[-30%] w-[166.67%] max-w-none"
+      />
     </span>
   );
 }
 
+/**
+ * Emblem plus wordmark. The nav's brand, and the compact form generally.
+ *
+ * The wordmark is set in the site's display face rather than taken from the
+ * artwork: the artwork's own wordmark only reads at size, and the nav needs
+ * this to hold at 19px against everything else in the bar.
+ */
 export function Logo({
   className,
   wordmarkClassName,
@@ -51,5 +75,22 @@ export function Logo({
         </span>
       </span>
     </span>
+  );
+}
+
+/**
+ * The full artwork — emblem, wordmark and tagline. Needs room: below about
+ * 160px wide the tagline stops being legible, which is the whole reason to
+ * reach for this form rather than <Logo>.
+ */
+export function LogoLockup({ className }: { className?: string }) {
+  return (
+    <Image
+      src="/shisho-logo.png"
+      alt="Shisho AI — wisdom, guidance, intelligence"
+      width={500}
+      height={500}
+      className={cn("h-auto w-44", className)}
+    />
   );
 }

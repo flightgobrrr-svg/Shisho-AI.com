@@ -4,7 +4,7 @@ import { Container, Section } from "@/components/ui/Section";
 const FEATURES = [
   {
     href: "/draft-bot",
-    name: "Draft Bot",
+    name: "Shisho",
     body: "Paste a plaint, notice, application, or contract. Get clause-level notes in the margin, procedure checked before the registry does it for you — the same way a senior would hand it back.",
   },
   {

@@ -81,7 +81,7 @@ export default function OpenGraphImage() {
             paddingTop: 24,
           }}
         >
-          <div>Courses · Legal Library · AI Draft Bot</div>
+          <div>Courses · Legal Library · Shisho</div>
           <div style={{ fontFamily: "monospace" }}>SC &amp; HIGH COURTS</div>
         </div>
       </div>

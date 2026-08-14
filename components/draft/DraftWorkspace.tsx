@@ -340,7 +340,7 @@ function LockedNotes({ quota }: { quota: number }) {
           <p className="label-mono text-seal">Limit reached</p>
           <p className="mt-3 text-[14px] leading-relaxed text-ink">
             You have used all {quota} free reviews this month. Core includes the
-            Draft Bot with no limit.
+            Shisho with no limit.
           </p>
           <Button href="/pricing" className="mt-5 w-full" size="sm">
             See plans

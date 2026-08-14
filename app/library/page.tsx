@@ -105,13 +105,13 @@ export default function LibraryPage() {
             Read while the library is being <Emphasis>built</Emphasis>.
           </h2>
           <p className="mx-auto mt-5 max-w-[44ch] text-[15.5px] leading-relaxed text-ink-soft">
-            Try the Draft Bot on a sample writ petition, or start a course track
+            Try Shisho on a sample writ petition, or start a course track
             — both cite the same authorities the library will index.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <Magnetic>
               <Button href="/draft-bot" size="lg">
-                Try the Draft Bot
+                Try Shisho
               </Button>
             </Magnetic>
             <Button href="/courses" variant="ghost" size="lg">

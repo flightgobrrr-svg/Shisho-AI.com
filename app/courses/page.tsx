@@ -60,7 +60,7 @@ export default function CoursesPage() {
                 <Emphasis>routine</Emphasis>.
               </h2>
               <p className="mt-3 max-w-[44ch] text-[14.5px] leading-relaxed text-ink-soft">
-                Four plans from ₹9 a month, and a standalone Draft Bot add-on —
+                Four plans from ₹9 a month, and a standalone Shisho add-on —
                 full breakdown on the pricing page.
               </p>
             </div>
@@ -98,7 +98,7 @@ export default function CoursesPage() {
           <Container className="mt-16 px-0 text-center md:px-0">
             <Magnetic>
               <Button href="/draft-bot" size="lg">
-                Try the Draft Bot free
+                Try Shisho free
               </Button>
             </Magnetic>
           </Container>

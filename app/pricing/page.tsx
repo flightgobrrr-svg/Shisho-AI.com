@@ -9,21 +9,21 @@ import { Container, Eyebrow, Section } from "@/components/ui/Section";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Plans from ₹9 a month — Free, Basic, Core, and Proficient, plus a standalone Draft Bot add-on. Full feature breakdown.",
+    "Plans from ₹9 a month — Free, Basic, Core, and Proficient, plus a standalone Shisho add-on. Full feature breakdown.",
 };
 
 const FAQS = [
   {
     q: "What do I actually get for ₹9?",
-    a: "Basic unlocks the full Starter course and the full Legal Library — everything Free only previews. The Draft Bot itself stays at the same 5 reviews a month as Free; unlimited reviews start at Core.",
+    a: "Basic unlocks the full Starter course and the full Legal Library — everything Free only previews. Shisho itself stays at the same 5 reviews a month as Free; unlimited reviews start at Core.",
   },
   {
     q: "Can I cancel?",
     a: "Yes — every plan is monthly and can be cancelled at any time. Access continues to the end of the billing month.",
   },
   {
-    q: "I only want the Draft Bot, not the courses. Do I have to buy Core?",
-    a: "No — the ₹699 add-on below buys the Draft Bot on its own, unlimited, without either course.",
+    q: "I only want Shisho, not the courses. Do I have to buy Core?",
+    a: "No — the ₹699 add-on below buys Shisho on its own, unlimited, without either course.",
   },
 ];
 
@@ -90,7 +90,7 @@ export default function PricingPage() {
           <Container className="mt-16 px-0 text-center md:px-0">
             <Magnetic>
               <Button href="/draft-bot" size="lg">
-                Try the Draft Bot free
+                Try Shisho free
               </Button>
             </Magnetic>
           </Container>

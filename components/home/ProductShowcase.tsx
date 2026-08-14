@@ -96,7 +96,7 @@ export function ProductShowcase() {
             className="group mx-auto inline-flex w-fit items-center gap-3 rounded-seal border border-ink/45 bg-paper-raised py-1 pr-3 pl-4 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75"
           >
             <span className="label-mono text-ink-soft">
-              Draft Bot · demo mode
+              Shisho · demo mode
             </span>
             <span aria-hidden="true" className="h-3.5 w-px bg-ink/15" />
             <span
@@ -120,7 +120,7 @@ export function ProductShowcase() {
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Magnetic>
               <Button href="/draft-bot" size="lg">
-                Open the Draft Bot
+                Open Shisho
               </Button>
             </Magnetic>
             <Button href="/pricing" variant="ghost" size="lg">
@@ -145,7 +145,7 @@ export function ProductShowcase() {
           />
 
           <figcaption className="sr-only">
-            A preview of the Draft Bot workspace: the draft on the left, and
+            A preview of the Shisho workspace: the draft on the left, and
             three Shisho notes in the right margin covering territorial
             jurisdiction under Article 226, the three limbs required for interim
             relief, and a missing verification clause under Order VI Rule 15 of

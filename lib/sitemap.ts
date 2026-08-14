@@ -26,7 +26,7 @@
 export type Product = "draft-bot" | "library" | "courses";
 
 export const PRODUCT_META: Record<Product, { label: string; href: string }> = {
-  "draft-bot": { label: "Draft Bot", href: "/draft-bot" },
+  "draft-bot": { label: "Shisho", href: "/draft-bot" },
   library: { label: "Legal Library", href: "/library" },
   courses: { label: "Courses", href: "/courses" },
 };

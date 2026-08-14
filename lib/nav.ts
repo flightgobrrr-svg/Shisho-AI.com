@@ -22,7 +22,7 @@ export type NavLink = {
 export const PRIMARY_NAV: NavLink[] = [
   {
     href: "/draft-bot",
-    label: "Draft Bot",
+    label: "Shisho",
     blurb: "Plaints, notices and contracts, drafted under Indian law",
     children: [
       {
@@ -131,7 +131,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: "Platform",
     links: [
-      { href: "/draft-bot", label: "Draft Bot" },
+      { href: "/draft-bot", label: "Shisho" },
       { href: "/library", label: "Legal Library" },
       { href: "/courses", label: "Courses" },
       { href: "/map", label: "The Map" },

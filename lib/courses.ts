@@ -61,7 +61,7 @@ export const COURSES: Course[] = [
     ],
     included: [
       "6 modules with worked examples",
-      "Draft Bot review on every drafting exercise",
+      "Shisho review on every drafting exercise",
       "Model answers marked in the Shisho margin style",
     ],
   },
@@ -107,7 +107,7 @@ export const COURSES: Course[] = [
     ],
     included: [
       "6 modules with real pleading sets",
-      "Priority Draft Bot with citation checks",
+      "Priority Shisho with citation checks",
       "Drafting templates for pleadings and contracts",
     ],
   },

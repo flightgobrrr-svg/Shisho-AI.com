@@ -246,7 +246,7 @@ export function Hero() {
               <div className="flex flex-wrap items-center gap-3">
                 <Magnetic>
                   <Button href="/draft-bot" size="lg">
-                    Try the Draft Bot
+                    Try Shisho
                   </Button>
                 </Magnetic>
                 <Button href="/courses" variant="ghost" size="lg">

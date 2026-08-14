@@ -32,7 +32,7 @@ export const TIERS: Tier[] = [
     tagline: "See how a mentor marks your work.",
     features: [
       "Starter course preview",
-      "5 Draft Bot reviews per month",
+      "5 Shisho reviews per month",
       "Legal Library — daily judgment digest",
     ],
     cta: { label: "Start free", href: "/draft-bot" },
@@ -45,7 +45,7 @@ export const TIERS: Tier[] = [
     features: [
       "Full Starter course",
       "Full Legal Library access",
-      "5 Draft Bot reviews per month",
+      "5 Shisho reviews per month",
     ],
     cta: { label: "Get Basic", href: "/draft-bot" },
   },
@@ -57,7 +57,7 @@ export const TIERS: Tier[] = [
     popular: true,
     features: [
       "Everything in Basic",
-      "Draft Bot included — unlimited",
+      "Shisho included — unlimited",
       "Downloadable case briefs",
     ],
     cta: { label: "Get Core", href: "/draft-bot" },
@@ -70,7 +70,7 @@ export const TIERS: Tier[] = [
     features: [
       "Everything in Core",
       "Full Proficient course",
-      "Priority Draft Bot with citation checks",
+      "Priority Shisho with citation checks",
       "Drafting templates — pleadings and contracts",
     ],
     cta: { label: "Get Proficient", href: "/draft-bot" },
@@ -94,7 +94,7 @@ export const COMPARISON_ROWS: {
   values: Record<TierId, string | boolean>;
 }[] = [
   {
-    label: "Draft Bot reviews",
+    label: "Shisho reviews",
     values: { free: "5 / month", basic: "5 / month", core: "Unlimited", proficient: "Unlimited" },
   },
   {
@@ -132,9 +132,9 @@ export const COMPARISON_ROWS: {
  * comparison grid because it is not comparable to the four plans above.
  */
 export const ADD_ON = {
-  name: "Draft Bot only",
+  name: "Shisho only",
   price: 699,
   description:
     "Unlimited drafting and review, without the courses. For practitioners who want the assistant and nothing else.",
-  cta: { label: "Add Draft Bot", href: "/draft-bot" },
+  cta: { label: "Add Shisho", href: "/draft-bot" },
 } as const;
