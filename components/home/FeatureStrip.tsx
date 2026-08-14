@@ -23,13 +23,18 @@ export function FeatureStrip() {
   return (
     <Section tone="raised" className="border-y border-ink/10">
       <Container>
-        {/* Same staggered entrance as the other three-up grids on this page
-            (PersonaRouter, Pricing), so the scroll rhythm going down the
-            page is continuous rather than this strip being the one section
-            that simply appears. No hover-lift here on purpose — unlike the
-            persona boxes, the box itself is not a link; only the "Explore"
-            line is, so lifting the whole box would promise a hit target
-            that isn't there. */}
+        {/* Same staggered entrance as the other grids down this page (the
+            matter flow above, pricing below), so the scroll rhythm is
+            continuous rather than this strip being the one section that
+            simply appears.
+
+            These three are the products, introduced *after* the matter flow
+            has already named the stages they answer — the flow says what
+            happens, this says what does it.
+
+            No hover-lift here on purpose: the box itself is not a link, only
+            the "Explore" line is, so lifting the whole box would promise a
+            hit target that isn't there. */}
         <ul className="reveal-stagger grid gap-5 md:grid-cols-3">
           {FEATURES.map((feature, i) => (
             <li

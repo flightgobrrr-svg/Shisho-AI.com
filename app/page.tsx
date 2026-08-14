@@ -1,5 +1,5 @@
 import { Hero } from "@/components/home/Hero";
-import { PersonaRouter } from "@/components/home/PersonaRouter";
+import { MatterFlow } from "@/components/home/MatterFlow";
 import { FeatureStrip } from "@/components/home/FeatureStrip";
 import { ProductShowcase } from "@/components/home/ProductShowcase";
 import { PricingPreview } from "@/components/home/PricingPreview";
@@ -13,7 +13,9 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <PersonaRouter />
+      {/* The matter's own sequence is the way in; the three products are
+          introduced after it, as the things that answer those stages. */}
+      <MatterFlow />
       <FeatureStrip />
       {/* Features described, then shown. */}
       <ProductShowcase />
