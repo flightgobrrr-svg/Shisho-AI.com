@@ -18,31 +18,27 @@ import { cn } from "@/lib/cn";
  */
 
 /**
- * The emblem alone, framed out of the square artwork.
+ * The emblem alone.
  *
- * The emblem occupies roughly x 90–390, y 28–328 of the 500×300 source. Rather
- * than cut a second file, the frame clips to that window: the image is scaled
- * to 500/300 of the frame and offset by the box's origin. Every value is a
- * percentage, so this holds at any size the frame is given.
+ * `shisho-emblem.png` is the emblem cut out of the square lockup (x 90–390,
+ * y 28–328 of the 500×500 source). It used to be framed out of the full
+ * artwork with percentage offsets, which worked but meant every consumer had
+ * to reproduce the same magic numbers — and Satori, which renders the social
+ * card, ignores object-fit entirely, so that approach could not be shared with
+ * app/opengraph-image.tsx. One cropped file serves the nav, the favicon, and
+ * the social card alike.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <span
+    <Image
+      src="/shisho-emblem.png"
+      alt=""
       aria-hidden="true"
-      className={cn(
-        "relative block size-8 shrink-0 overflow-hidden",
-        className,
-      )}
-    >
-      <Image
-        src="/shisho-logo.png"
-        alt=""
-        width={500}
-        height={500}
-        priority
-        className="absolute top-[-9.33%] left-[-30%] w-[166.67%] max-w-none"
-      />
-    </span>
+      width={512}
+      height={512}
+      priority
+      className={cn("block size-8 shrink-0", className)}
+    />
   );
 }
 

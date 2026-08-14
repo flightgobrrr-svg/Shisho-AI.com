@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 /**
@@ -5,8 +7,17 @@ import { ImageResponse } from "next/og";
  * headline rather than a screenshot that goes stale.
  *
  * Deliberately typographic: the two-tone headline that opens the site, the
- * seal mark, and the disclaimer strip. No stock photography, consistent with
- * the rest of the design.
+ * brand emblem, and the disclaimer strip. No stock photography, consistent
+ * with the rest of the design.
+ *
+ * The emblem is read off disk and inlined as a data URI: ImageResponse renders
+ * on the server with no origin to resolve a relative src against, so a plain
+ * "/shisho-emblem.png" would silently render nothing.
+ *
+ * It uses the pre-cropped emblem rather than the full lockup. Satori, which
+ * renders this, does not honour object-fit/object-position, so cropping in CSS
+ * here silently does nothing and the whole lockup — wordmark and all — squeezes
+ * into the mark's slot.
  *
  * Fonts are not loaded here — ImageResponse would need the binaries fetched
  * at build. The system serif fallback is close enough at this size, and the
@@ -18,7 +29,10 @@ export const alt =
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export default async function OpenGraphImage() {
+  const logo = await readFile(join(process.cwd(), "public/shisho-emblem.png"));
+  const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -34,21 +48,14 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "50%",
-              border: "2px solid #A32E1F",
-              color: "#1E2127",
-              fontSize: 22,
-            }}
-          >
-            志
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={logoSrc}
+            alt=""
+            width={64}
+            height={64}
+            style={{ width: 64, height: 64 }}
+          />
           <div
             style={{
               fontSize: 22,
