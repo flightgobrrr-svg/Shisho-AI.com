@@ -26,20 +26,21 @@ export function FeatureStrip() {
         {/* Same staggered entrance as the other three-up grids on this page
             (PersonaRouter, Pricing), so the scroll rhythm going down the
             page is continuous rather than this strip being the one section
-            that simply appears. No hover-lift here on purpose — these are
-            text blurbs with no card boundary, and a lift with nothing to
-            lift off of reads as a glitch, not a gesture. */}
-        <ul className="reveal-stagger grid gap-10 md:grid-cols-3 md:gap-8">
+            that simply appears. No hover-lift here on purpose — unlike the
+            persona boxes, the box itself is not a link; only the "Explore"
+            line is, so lifting the whole box would promise a hit target
+            that isn't there. */}
+        <ul className="reveal-stagger grid gap-5 md:grid-cols-3">
           {FEATURES.map((feature, i) => (
             <li
               key={feature.name}
               style={{ "--i": i } as React.CSSProperties}
-              className="min-w-0"
+              className="flex min-w-0 flex-col border border-ink/45 p-7 md:p-8"
             >
               <h2 className="font-display text-[22px] font-semibold text-ink">
                 {feature.name}
               </h2>
-              <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+              <p className="mt-3 flex-1 text-[14.5px] leading-relaxed text-ink-soft">
                 {feature.body}
               </p>
               <Link

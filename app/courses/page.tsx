@@ -52,7 +52,7 @@ export default function CoursesPage() {
 
       <Section>
         <Container>
-          <div className="flex flex-col items-start gap-6 rounded-seal border border-ink/10 bg-paper-raised p-8 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col items-start gap-6 rounded-seal border border-ink/45 bg-paper-raised p-8 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
               <Eyebrow>Plans</Eyebrow>
               <h2 className="mt-4 max-w-lg font-display text-[22px] font-semibold text-ink">

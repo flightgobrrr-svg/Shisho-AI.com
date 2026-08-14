@@ -71,8 +71,10 @@
   --font-weight-semibold: 650;
 
   /* --- Form -------------------------------------------------------------- */
-  /* Court paper is cut, not rounded. Radii stay tight and deliberate. */
-  --radius-seal: 3px;
+  /* Court paper is cut, not rounded — so the corner is square, full stop.
+     Every box on the site is a ruled box on a page: a pleading's marginal
+     box, a cause-title block, a form field on a court-issued form. */
+  --radius-seal: 0px;
 
   /* --- Motion ------------------------------------------------------------ */
   /* Precise, not bouncy: decelerate hard, never overshoot. */

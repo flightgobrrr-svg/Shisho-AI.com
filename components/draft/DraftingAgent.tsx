@@ -145,7 +145,7 @@ export function DraftingAgent({
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="label-mono text-ink-soft/70">Ask Shisho</h2>
         {mode === "demo" ? (
-          <span className="label-mono rounded-seal border border-ink/20 px-1.5 py-0.5 text-ink-soft">
+          <span className="label-mono rounded-seal border border-ink/45 px-1.5 py-0.5 text-ink-soft">
             Demo
           </span>
         ) : null}
@@ -180,8 +180,8 @@ export function DraftingAgent({
                 className={cn(
                   "mt-1.5 whitespace-pre-wrap rounded-seal border p-3 text-[14px] leading-relaxed text-ink",
                   message.role === "user"
-                    ? "border-ink/10 bg-paper-raised"
-                    : "border-ink/10",
+                    ? "border-ink/45 bg-paper-raised"
+                    : "border-ink/45",
                 )}
               >
                 {message.content}
@@ -248,7 +248,7 @@ export function DraftingAgent({
               placeholder="Describe the facts, or answer Shisho's question…"
               rows={2}
               className={cn(
-                "block h-[4.5rem] w-full resize-y rounded-seal border border-ink/15 bg-paper-raised p-3",
+                "block h-[4.5rem] w-full resize-y rounded-seal border border-ink/45 bg-paper-raised p-3",
                 "font-sans text-[14px] leading-relaxed text-ink placeholder:text-ink-soft/50",
               )}
             />
@@ -256,7 +256,7 @@ export function DraftingAgent({
             <div className="flex shrink-0 flex-col items-stretch gap-2">
               <label
                 className={cn(
-                  "cursor-pointer rounded-seal border border-ink/20 px-3 py-1.5 text-center text-[13px] text-ink-soft",
+                  "cursor-pointer rounded-seal border border-ink/45 px-3 py-1.5 text-center text-[13px] text-ink-soft",
                   "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/40",
                 )}
               >

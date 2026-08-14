@@ -145,7 +145,7 @@ export function DraftWorkspace({
               id="doc-type"
               value={docType}
               onChange={(e) => setDocType(e.target.value as DocType)}
-              className="mt-2.5 rounded-seal border border-ink/20 bg-paper-raised px-3 py-2 font-sans text-[14px] text-ink"
+              className="mt-2.5 rounded-seal border border-ink/45 bg-paper-raised px-3 py-2 font-sans text-[14px] text-ink"
             >
               {DOC_TYPES.map((type) => (
                 <option key={type} value={type}>
@@ -175,7 +175,7 @@ export function DraftWorkspace({
           spellCheck={false}
           placeholder="Paste your plaint, notice, application, or contract here…"
           className={cn(
-            "mt-4 block h-[26rem] w-full resize-y rounded-seal border border-ink/15 bg-paper-raised p-5",
+            "mt-4 block h-[26rem] w-full resize-y rounded-seal border border-ink/45 bg-paper-raised p-5",
             "font-mono text-[12.5px] leading-[1.9] text-ink",
             "placeholder:text-ink-soft/50 lg:h-[34rem]",
           )}
@@ -215,7 +215,7 @@ export function DraftWorkspace({
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="label-mono text-ink-soft/70">Shisho notes</h2>
           {mode === "demo" ? (
-            <span className="label-mono rounded-seal border border-ink/20 px-1.5 py-0.5 text-ink-soft">
+            <span className="label-mono rounded-seal border border-ink/45 px-1.5 py-0.5 text-ink-soft">
               Demo
             </span>
           ) : null}
@@ -269,7 +269,7 @@ export function DraftWorkspace({
                     "rise block w-full rounded-seal border p-4 text-left transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
                     activeId === annotation.id
                       ? "border-seal/40 bg-paper-raised"
-                      : "border-ink/10 hover:bg-paper-raised",
+                      : "border-ink/45 hover:bg-paper-raised",
                   )}
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
@@ -324,7 +324,7 @@ function LockedNotes({ quota }: { quota: number }) {
     <div className="relative mt-5">
       <div aria-hidden="true" className="space-y-3 blur-[5px] select-none">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="rounded-seal border border-ink/10 p-4">
+          <div key={i} className="rounded-seal border border-ink/45 p-4">
             <div className="h-2 w-16 rounded-full bg-ink/20" />
             <div className="mt-3 h-2 w-full rounded-full bg-ink/10" />
             <div className="mt-2 h-2 w-4/5 rounded-full bg-ink/10" />

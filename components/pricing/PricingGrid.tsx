@@ -51,7 +51,7 @@ export function PricingGrid() {
                 "hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
                 tier.popular
                   ? "border-seal/40"
-                  : "border-ink/10 hover:border-ink/20",
+                  : "border-ink/45 hover:border-ink/75",
               )}
             >
               {tier.popular ? (
@@ -98,7 +98,7 @@ export function PricingGrid() {
 
       {/* The add-on is not a fifth tier — it is a different kind of thing,
           so it sits outside the comparison rather than inside it. */}
-      <div className="mt-8 rounded-seal border border-ink/10 bg-paper-raised p-7">
+      <div className="mt-8 rounded-seal border border-ink/45 bg-paper-raised p-7">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0 md:max-w-xl">
             <p className="label-mono text-ink-soft/70">Standalone add-on</p>

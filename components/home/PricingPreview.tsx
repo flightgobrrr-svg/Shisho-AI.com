@@ -52,7 +52,7 @@ export function PricingPreview() {
                 "hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
                 tier.popular
                   ? "border-seal/40 hover:border-seal/50"
-                  : "border-ink/10 hover:border-ink/20",
+                  : "border-ink/45 hover:border-ink/75",
               )}
             >
               <div className="flex items-baseline justify-between gap-3">

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
+import { StepMark } from "@/components/ui/StepMark";
 
 /**
- * Three doors into the product. Hairline borders, no fills — the calm layout
- * is the canvas, so nothing here competes with the hero's annotation.
+ * Three doors into the product, drawn as numbered boxes on a flow — ruled
+ * outlines, no fills, so nothing here competes with the hero's annotation.
  */
 const PERSONAS = [
   {
@@ -36,19 +37,31 @@ export function PersonaRouter() {
           Three ways in, depending on where you <Emphasis>are</Emphasis>.
         </h2>
 
-        <ul className="reveal-stagger mt-12 grid gap-px overflow-hidden rounded-seal border border-ink/10 bg-ink/10 md:grid-cols-3">
+        <ul className="reveal-stagger mt-12 grid gap-5 md:grid-cols-3">
           {PERSONAS.map((persona, i) => (
             <li
               key={persona.label}
               style={{ "--i": i } as React.CSSProperties}
-              className="min-w-0 bg-paper"
+              className="relative min-w-0"
             >
+              {/* The rule that carries the eye from one box to the next, as on
+                  a flowchart. Only between boxes, and only once they sit in a
+                  row — stacked on mobile there is nothing to connect. */}
+              {i > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-1/2 -left-5 hidden h-px w-5 bg-ink/30 md:block"
+                />
+              )}
               <Link
                 href={persona.href}
-                className="group flex h-full flex-col p-7 transition-[transform,background-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:-translate-y-0.5 hover:bg-paper-raised md:p-8"
+                className="group flex h-full flex-col border border-ink/45 bg-paper p-7 transition-[transform,background-color,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:-translate-y-0.5 hover:border-ink/75 hover:bg-paper-raised md:p-8"
               >
-                <span className="label-mono text-ink-soft/70">
-                  {persona.label}
+                <span className="flex items-center gap-3">
+                  <StepMark n={i + 1} />
+                  <span className="label-mono text-ink-soft/70">
+                    {persona.label}
+                  </span>
                 </span>
                 <span className="mt-5 font-display text-[21px] leading-snug font-semibold text-ink">
                   {persona.title}

@@ -41,9 +41,9 @@ export default function LibraryPage() {
                 key={collection.id}
                 style={{ "--i": i } as React.CSSProperties}
                 className={cn(
-                  "flex min-w-0 flex-col rounded-seal border border-ink/10 bg-paper-raised p-7",
+                  "flex min-w-0 flex-col rounded-seal border border-ink/45 bg-paper-raised p-7",
                   "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
-                  "hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
+                  "hover:-translate-y-0.5 hover:border-ink/75 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
                 )}
               >
                 <span className="label-mono text-ink-soft/70">Coming soon</span>

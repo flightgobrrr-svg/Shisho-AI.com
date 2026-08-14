@@ -93,7 +93,7 @@ export function ProductShowcase() {
               project's 3px / 180ms hover motion. */}
           <Link
             href="/draft-bot"
-            className="group mx-auto inline-flex w-fit items-center gap-3 rounded-full border border-ink/20 bg-paper-raised py-1 pr-3 pl-4 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/35"
+            className="group mx-auto inline-flex w-fit items-center gap-3 rounded-seal border border-ink/45 bg-paper-raised py-1 pr-3 pl-4 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75"
           >
             <span className="label-mono text-ink-soft">
               Draft Bot · demo mode
@@ -133,7 +133,7 @@ export function ProductShowcase() {
             makes the frame read as a window onto something larger rather than
             a cropped screenshot. */}
         <figure className="reveal relative mx-auto mt-14 max-w-4xl">
-          <div className="overflow-hidden rounded-seal border border-ink/12 bg-paper-raised p-1.5 shadow-[0_1px_2px_rgba(34,37,43,0.04),0_18px_44px_-16px_rgba(34,37,43,0.18)]">
+          <div className="overflow-hidden rounded-seal border border-ink/45 bg-paper-raised p-1.5 shadow-[0_1px_2px_rgba(34,37,43,0.04),0_18px_44px_-16px_rgba(34,37,43,0.18)]">
             <div className="overflow-hidden rounded-[2px] border border-ink/8 bg-paper-raised">
               <DraftBotMiniature />
             </div>
