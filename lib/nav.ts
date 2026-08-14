@@ -92,9 +92,14 @@ export const PRIMARY_NAV: NavLink[] = [
         blurb: "The first document, checked against the bare act",
       },
       {
+        href: "/map#stage-6",
+        label: "Pleadings & issues",
+        blurb: "The suit, the answer, and the issues framed",
+      },
+      {
         href: "/map#stage-7",
-        label: "Pleadings & trial",
-        blurb: "Reply, evidence, and argument",
+        label: "Trial",
+        blurb: "Evidence and argument",
       },
       {
         href: "/map#stage-8",

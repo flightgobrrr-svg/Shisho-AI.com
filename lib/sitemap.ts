@@ -117,21 +117,26 @@ export const MAP_STAGES: MapStage[] = [
   },
   {
     n: 6,
-    title: "Plaint",
-    summary: "The suit itself — cause of action, jurisdiction, prayer.",
+    title: "Pleadings / Issues",
+    summary:
+      "The suit and the answer to it, down to the issues the court frames.",
     serves: ["draft-bot", "courses"],
-    boxes: [{ label: "Plaint", href: "/draft-bot" }],
+    /* Pleadings close before the trial opens, so the plaint sits here with the
+       written statement and counter-claim rather than a stage of its own, and
+       the stage ends where the issues are settled. */
+    boxes: [
+      { label: "Plaint", href: "/draft-bot" },
+      { label: "Written statement", href: "/draft-bot" },
+      { label: "Counter-claim / Rejoinder", href: "/draft-bot" },
+      { label: "Issues" },
+    ],
   },
   {
     n: 7,
-    title: "Pleadings & trial",
-    summary: "Reply, evidence, and argument, once the other side is heard.",
+    title: "Trial",
+    summary: "Evidence and argument, once the issues are settled.",
     serves: ["draft-bot", "courses"],
-    /* Order confirmed: written statement, then counter-claim, then the
-       lettered boxes A, B, C. */
     boxes: [
-      { label: "Written statement", href: "/draft-bot" },
-      { label: "Counter-claim / Rejoinder", href: "/draft-bot" },
       { label: "Examination-in-chief", ref: "7A" },
       { label: "Cross-examination", ref: "7B" },
       { label: "Written arguments", ref: "7C", href: "/draft-bot" },
