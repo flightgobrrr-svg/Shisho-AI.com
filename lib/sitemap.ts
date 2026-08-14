@@ -103,7 +103,7 @@ export const MAP_STAGES: MapStage[] = [
        transcription had misread as "Thorp". Petition moves to 4D. */
     boxes: [
       { label: "Draft", ref: "4A", href: "/draft-bot" },
-      { label: "Acts", ref: "4B", href: "/library" },
+      { label: "Bare Acts", ref: "4B", href: "/library" },
       { label: "Thesis", ref: "4C" },
       { label: "Petition", ref: "4D", href: "/draft-bot" },
     ],
