@@ -116,10 +116,16 @@ export const MAP_STAGES: MapStage[] = [
   },
   {
     n: 5,
-    title: "Affidavit",
-    summary: "Sworn on oath, verified, and attested before it is filed.",
+    title: "Interlocutory Application",
+    summary:
+      "Relief sought while the suit is pending — the application, the affidavit it rests on, and the replies to it.",
     serves: ["draft-bot"],
-    boxes: [{ label: "Affidavit", href: "/draft-bot" }],
+    boxes: [
+      { label: "Affidavit", href: "/draft-bot" },
+      { label: "Petition", href: "/draft-bot" },
+      { label: "Counter-claim", href: "/draft-bot" },
+      { label: "Rejoinder", href: "/draft-bot" },
+    ],
   },
   {
     n: 6,
@@ -133,7 +139,8 @@ export const MAP_STAGES: MapStage[] = [
     boxes: [
       { label: "Plaint", href: "/draft-bot" },
       { label: "Written statement", href: "/draft-bot" },
-      { label: "Counter-claim / Rejoinder", href: "/draft-bot" },
+      { label: "Counter-claim", href: "/draft-bot" },
+      { label: "Rejoinder", href: "/draft-bot" },
       { label: "Issues" },
     ],
   },
