@@ -10,18 +10,22 @@ import { cn } from "@/lib/cn";
  * this section is a homepage teaser, not a navigation target, so it carries
  * no id of its own.
  *
- * Deliberately curated to the three headline tiers (Free, Core, Proficient)
- * rather than all four — Basic's ₹9 read-only pitch needs the context the
- * comparison table gives it, so it is left for /pricing rather than
- * competing for attention in a homepage skim. The ₹699 Draft Bot add-on lives
- * there too, for the same reason.
+ * Shows all four tiers. This section previously curated down to three (Free,
+ * Core, Proficient) on the theory that Basic's ₹9 pitch needed the comparison
+ * table's context to make sense — but that hid the cheapest entry point from
+ * anyone who only ever skims the homepage, which is the wrong trade. ₹9 is the
+ * most persuasive number on the page; it belongs where people actually look.
+ *
+ * The ₹699 Draft Bot add-on is still left to /pricing: it is a different
+ * purchase shape (an add-on, not a tier) and does not belong in a tier row.
+ *
+ * Layout matches PricingGrid on /pricing — one column, two from `md`, four
+ * from `lg` — so the two pricing surfaces stay recognisably the same table.
  *
  * Every figure comes from lib/pricing.ts. No price is written here.
  */
-const PREVIEW_TIER_IDS = new Set(["free", "core", "proficient"]);
-
 export function PricingPreview() {
-  const preview = TIERS.filter((tier) => PREVIEW_TIER_IDS.has(tier.id));
+  const preview = TIERS;
 
   return (
     <Section tone="raised" className="border-y border-ink/10">
@@ -41,7 +45,7 @@ export function PricingPreview() {
           </Link>
         </div>
 
-        <ul className="reveal-stagger mt-12 grid gap-6 md:grid-cols-3">
+        <ul className="reveal-stagger mt-12 grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-4">
           {preview.map((tier, i) => (
             <li
               key={tier.id}
