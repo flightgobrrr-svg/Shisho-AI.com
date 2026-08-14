@@ -4,6 +4,7 @@ import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
 import { StateSelect } from "@/components/map/StateSelect";
+import { BoxSelect } from "@/components/map/BoxSelect";
 import { MAP_STAGES } from "@/lib/sitemap";
 import { cn } from "@/lib/cn";
 
@@ -90,6 +91,12 @@ export default function MapPage() {
                           </span>
                         )}
                         <span className="min-w-0">{box.label}</span>
+                        {box.options && (
+                          <BoxSelect
+                            label={box.label}
+                            options={box.options}
+                          />
+                        )}
                         {box.unread && (
                           <span
                             className="label-mono ml-auto shrink-0 text-seal"

@@ -39,6 +39,12 @@ export type MapBox = {
   unread?: boolean;
   /** Where this box goes, when something on the site actually serves it. */
   href?: string;
+  /**
+   * Turns the box into a choice — the options render as a select inside it.
+   * Mutually exclusive with `href`: a box cannot be both a link and a control
+   * without nesting one interactive element inside another.
+   */
+  options?: readonly string[];
 };
 
 export type MapStage = {
@@ -139,7 +145,7 @@ export const MAP_STAGES: MapStage[] = [
     boxes: [
       { label: "Examination-in-chief", ref: "7A" },
       { label: "Cross-examination", ref: "7B" },
-      { label: "Written arguments", ref: "7C", href: "/draft-bot" },
+      { label: "Arguments", ref: "7C", options: ["Oral", "Written"] },
     ],
   },
   {
