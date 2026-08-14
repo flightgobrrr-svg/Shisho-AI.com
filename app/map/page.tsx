@@ -67,12 +67,14 @@ export default function MapPage() {
                   <h2 className="label-mono text-indigo">{stage.title}</h2>
                 </div>
 
-                {/* One column width for the whole page, so boxes line up in
-                    columns down every stage rather than each row ending
-                    ragged. Boxes within a stage are siblings, not a sequence —
-                    the spine carries the order, so there are deliberately no
-                    left-to-right connectors here implying one. */}
-                <ul className="mt-4 ml-9.5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Boxes take their natural width and pack along the row.
+                    A fixed grid was tried and read as partitioned: single-box
+                    stages like Affidavit stretched one cell across a quarter
+                    of the page and left three empty, and six-box stages wrapped
+                    into a ragged block of cells. Packing them keeps each stage
+                    one continuous strip. Uniform height still holds the rows
+                    level, so this stays tidy without turning into a table. */}
+                <ul className="mt-4 ml-9.5 flex flex-wrap items-stretch gap-2.5">
                   {stage.boxes.map((box) => {
                     const content = (
                       <>
