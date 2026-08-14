@@ -65,7 +65,7 @@ export const MAP_STAGES: MapStage[] = [
   },
   {
     n: 2,
-    title: "Public",
+    title: "Advocate",
     summary: "Who brings the matter, and which forum it belongs in.",
     serves: ["courses", "library"],
     /* Order confirmed against the sketch: lawyers, student, clerk, High Court,
