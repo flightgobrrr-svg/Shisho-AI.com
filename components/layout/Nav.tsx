@@ -112,11 +112,22 @@ export function Nav() {
           <Logo />
         </Link>
 
-        {/* Desktop */}
+        {/* Desktop.
+
+            The dropdowns are pure CSS — `group-hover` for the pointer and
+            `group-focus-within` for the keyboard, so there is no open-menu
+            state to manage and nothing to get stuck open on a route change.
+            The panel is a ruled box like every other box on the site, and it
+            fades and settles 4px with the standard nudge; the reduced-motion
+            backstop in globals.css collapses that to an instant swap.
+
+            The panel's wrapper carries `pt-2` rather than a margin so the gap
+            between trigger and panel is still inside the hover target — with
+            a margin the menu closes as the pointer crosses the gap. */}
         <nav aria-label="Primary" className="hidden lg:block">
           <ul className="flex items-center gap-9">
             {PRIMARY_NAV.map((link) => (
-              <li key={link.href}>
+              <li key={link.href} className="group relative">
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
@@ -129,6 +140,38 @@ export function Nav() {
                 >
                   {link.label}
                 </Link>
+
+                {link.children && link.children.length > 0 && (
+                  <div
+                    className={cn(
+                      "invisible absolute top-full left-1/2 z-10 -translate-x-1/2 pt-5 opacity-0",
+                      "transition-[opacity,transform] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                      "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
+                      "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
+                      "-translate-y-1",
+                    )}
+                  >
+                    <ul className="w-72 border border-ink/45 bg-paper-raised p-2 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]">
+                      {link.children.map((child) => (
+                        <li key={child.href}>
+                          <Link
+                            href={child.href}
+                            className="block px-3 py-2.5 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper"
+                          >
+                            <span className="block text-[14px] text-ink">
+                              {child.label}
+                            </span>
+                            {child.blurb && (
+                              <span className="mt-0.5 block text-[12.5px] leading-snug text-ink-soft">
+                                {child.blurb}
+                              </span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -195,6 +238,26 @@ export function Nav() {
                     </span>
                   ) : null}
                 </Link>
+
+                {/* Inline rather than a nested disclosure: there is no hover
+                    on touch, and a tap-to-expand would put a second tap
+                    between someone and the thing they came for. The rule and
+                    indent carry the nesting instead. */}
+                {link.children && link.children.length > 0 && (
+                  <ul className="mb-2 ml-1 border-l border-ink/15 pl-4">
+                    {link.children.map((child) => (
+                      <li key={child.href}>
+                        <Link
+                          href={child.href}
+                          onClick={() => setOpen(false)}
+                          className="block py-2 text-[14.5px] text-ink-soft"
+                        >
+                          {child.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>

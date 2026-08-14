@@ -30,7 +30,7 @@ export default function LibraryPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-y border-ink/10 !pt-0">
+      <Section id="collections" tone="raised" className="border-y border-ink/10 !pt-0">
         <Container>
           <h2 className="font-display text-[22px] font-semibold text-ink">
             Three collections
@@ -59,7 +59,7 @@ export default function LibraryPage() {
         </Container>
       </Section>
 
-      <Section>
+      <Section id="landmarks">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>

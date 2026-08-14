@@ -44,13 +44,13 @@ export default function PricingPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-y border-ink/10 !pt-0">
+      <Section id="plans" tone="raised" className="border-y border-ink/10 !pt-0">
         <Container>
           <PricingGrid />
         </Container>
       </Section>
 
-      <Section>
+      <Section id="compare">
         <Container>
           <Eyebrow>Compare</Eyebrow>
           <h2 className="mt-4 max-w-xl font-display text-title font-semibold">

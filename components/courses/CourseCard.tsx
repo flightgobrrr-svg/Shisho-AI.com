@@ -5,6 +5,7 @@ import type { Course } from "@/lib/courses";
 export function CourseCard({ course }: { course: Course }) {
   return (
     <article
+      id={course.id}
       className={
         "flex min-w-0 flex-col rounded-seal border border-ink/45 bg-paper-raised p-7 md:p-8 " +
         "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] " +

@@ -97,7 +97,7 @@ export default async function DraftBotPage() {
         </div>
       </Container>
     </Section>
-    <Section tone="raised" className="border-t border-ink/10">
+    <Section id="drafts" tone="raised" className="border-t border-ink/10">
       <Container>
         <Eyebrow>What it drafts</Eyebrow>
         <ul className="mt-6 grid grid-cols-1 gap-x-10 gap-y-3 font-display text-[17px] text-ink sm:grid-cols-2">

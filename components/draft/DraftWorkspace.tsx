@@ -122,15 +122,17 @@ export function DraftWorkspace({
           attach a file, and a draft lands in the workspace below via
           `onDraft`. The workspace's own mechanics (review, highlighting,
           the 402 lock) are untouched; this is the only new wire into them. */}
-      <DraftingAgent
-        entitlement={assistantEntitlement}
-        onDraft={(text, dt) => {
-          setDraft(text);
-          if (dt && isDocType(dt)) setDocType(dt);
-        }}
-      />
+      <div id="ask">
+        <DraftingAgent
+          entitlement={assistantEntitlement}
+          onDraft={(text, dt) => {
+            setDraft(text);
+            if (dt && isDocType(dt)) setDocType(dt);
+          }}
+        />
+      </div>
 
-      <div className="mt-12 grid gap-8 border-t border-ink/10 pt-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
+      <div id="review" className="mt-12 grid gap-8 border-t border-ink/10 pt-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
       {/* ================= Draft ================= */}
       <div className="min-w-0">
         <div className="flex flex-wrap items-end justify-between gap-4">

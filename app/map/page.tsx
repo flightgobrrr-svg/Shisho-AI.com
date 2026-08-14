@@ -51,6 +51,7 @@ export default function MapPage() {
             {MAP_STAGES.map((stage, i) => (
               <li
                 key={stage.n}
+                id={`stage-${stage.n}`}
                 style={{ "--i": i } as React.CSSProperties}
                 className="relative pb-10 last:pb-0"
               >
