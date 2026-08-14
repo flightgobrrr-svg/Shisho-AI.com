@@ -69,12 +69,12 @@ export const MAP_STAGES: MapStage[] = [
     summary:
       "Who is bringing the matter, and which forum it belongs in.",
     serves: ["courses", "library"],
-    /* Order confirmed against the sketch: lawyers, study, clerk, High Court,
+    /* Order confirmed against the sketch: lawyers, student, clerk, High Court,
        trial courts, drafts. Refs renumbered to follow that order rather than
        leaving 2A, 2C, 2B running down the row. */
     boxes: [
       { label: "Lawyers", ref: "2A" },
-      { label: "Study", ref: "2B", href: "/courses" },
+      { label: "Student", ref: "2B", href: "/courses" },
       { label: "Clerk", ref: "2C" },
       { label: "High Court", href: "/library" },
       { label: "Trial Courts", href: "/library" },
