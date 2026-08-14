@@ -31,7 +31,7 @@ export default function MapPage() {
           </h1>
           <p className="mt-5 max-w-[58ch] text-[16px] leading-relaxed text-ink-soft">
             From the first client meeting to written arguments and citation
-            checks. A dashed box is one still being confirmed.
+            checks.
           </p>
         </Container>
       </Section>

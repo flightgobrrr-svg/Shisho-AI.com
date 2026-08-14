@@ -3,15 +3,15 @@
  * THE PRODUCT MAP — transcribed from the hand-drawn flow sketch.
  * ============================================================================
  *
- * This is a transcription of a photographed pen-and-paper flowchart, so parts
- * of it are a READING of someone's handwriting rather than a fact. Anything
- * that could not be read with confidence carries `unread: true` and is drawn
- * with a dashed outline and a "?" marker, so the page never quietly presents a
- * guess as settled — the same rule lib/library.ts applies to citations.
+ * This began as a transcription of a photographed pen-and-paper flowchart, so
+ * parts of it were a READING of handwriting rather than a fact. Every label
+ * has since been confirmed or removed by the author, so nothing here is a
+ * guess today and no box currently sets `unread`.
  *
- * When a label is confirmed, drop the `unread` flag. Do not invent labels for
- * the unread boxes; leave the guess visible and marked until it is checked
- * against the original sketch.
+ * The `unread` flag is kept anyway, because the rule it enforces still holds:
+ * a label that cannot be read with confidence gets flagged, draws dashed with
+ * a "?", and is never quietly presented as settled — the same rule
+ * lib/library.ts applies to citations. Set it rather than inventing a label.
  *
  * `ref` is the sub-reference written on the sketch itself (2A, 4C, 7B …).
  */
@@ -69,13 +69,16 @@ export const MAP_STAGES: MapStage[] = [
     summary:
       "Who is bringing the matter, and which forum it belongs in.",
     serves: ["courses", "library"],
+    /* Order confirmed against the sketch: lawyers, study, clerk, High Court,
+       trial courts, drafts. Refs renumbered to follow that order rather than
+       leaving 2A, 2C, 2B running down the row. */
     boxes: [
       { label: "Lawyers", ref: "2A" },
-      { label: "Clerk", ref: "2B" },
-      { label: "Study", ref: "2C", href: "/courses" },
+      { label: "Study", ref: "2B", href: "/courses" },
+      { label: "Clerk", ref: "2C" },
+      { label: "High Court", href: "/library" },
       { label: "Trial Courts", href: "/library" },
       { label: "Drafts", href: "/draft-bot" },
-      { label: "High Court", href: "/library" },
     ],
   },
   {
@@ -83,21 +86,20 @@ export const MAP_STAGES: MapStage[] = [
     title: "State",
     summary: "The matter moves up: writ jurisdiction and the Supreme Court.",
     serves: ["library"],
-    boxes: [
-      { label: "Supreme Court", href: "/library" },
-      { label: "SO 1049", unread: true },
-    ],
+    boxes: [{ label: "Supreme Court", href: "/library" }],
   },
   {
     n: 4,
     title: "Draft",
     summary: "The first document goes on paper, checked against the bare act.",
     serves: ["draft-bot", "library"],
+    /* 4B is Acts and 4C is Thesis, both confirmed — "Thesis" is the word this
+       transcription had misread as "Thorp". Petition moves to 4D. */
     boxes: [
       { label: "Draft", ref: "4A", href: "/draft-bot" },
-      { label: "Thorp", ref: "4B", unread: true },
-      { label: "Petition", ref: "4C", href: "/draft-bot" },
-      { label: "Acts", ref: "4D", href: "/library" },
+      { label: "Acts", ref: "4B", href: "/library" },
+      { label: "Thesis", ref: "4C" },
+      { label: "Petition", ref: "4D", href: "/draft-bot" },
     ],
   },
   {
@@ -135,7 +137,6 @@ export const MAP_STAGES: MapStage[] = [
     boxes: [
       { label: "SC citations", href: "/library" },
       { label: "HC citations", href: "/library" },
-      { label: "Zone hearing query", unread: true },
     ],
   },
   {
@@ -143,10 +144,6 @@ export const MAP_STAGES: MapStage[] = [
     title: "Beyond the matter",
     summary: "What comes after the file closes.",
     serves: [],
-    boxes: [
-      { label: "Internship" },
-      { label: "Grand pay", unread: true },
-      { label: "Digital", unread: true },
-    ],
+    boxes: [{ label: "Internship" }],
   },
 ];
