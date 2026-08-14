@@ -65,9 +65,8 @@ export const MAP_STAGES: MapStage[] = [
   },
   {
     n: 2,
-    title: "Client",
-    summary:
-      "Who is bringing the matter, and which forum it belongs in.",
+    title: "Public",
+    summary: "Who brings the matter, and which forum it belongs in.",
     serves: ["courses", "library"],
     /* Order confirmed against the sketch: lawyers, student, clerk, High Court,
        trial courts, drafts. Refs renumbered to follow that order rather than

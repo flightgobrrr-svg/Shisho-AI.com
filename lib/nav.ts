@@ -83,7 +83,7 @@ export const PRIMARY_NAV: NavLink[] = [
     children: [
       {
         href: "/map#stage-2",
-        label: "Client & forum",
+        label: "Public & forum",
         blurb: "Who brings the matter, and where it belongs",
       },
       {
