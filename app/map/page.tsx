@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
+import { StateSelect } from "@/components/map/StateSelect";
 import { MAP_STAGES } from "@/lib/sitemap";
 import { cn } from "@/lib/cn";
 
@@ -132,6 +133,8 @@ export default function MapPage() {
                     );
                   })}
                 </ul>
+
+                {stage.statePicker && <StateSelect />}
               </li>
             ))}
           </ol>

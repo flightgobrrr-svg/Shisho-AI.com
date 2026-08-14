@@ -50,6 +50,12 @@ export type MapStage = {
   /** Parts of the product that answer this stage, most relevant first. */
   serves: Product[];
   boxes: MapBox[];
+  /**
+   * Renders the state / union-territory picker under this stage's boxes.
+   * A flag rather than the component itself, so this stays a data module the
+   * server can render and /map keeps deciding what to draw.
+   */
+  statePicker?: boolean;
 };
 
 export const MAP_STAGES: MapStage[] = [
@@ -86,6 +92,7 @@ export const MAP_STAGES: MapStage[] = [
     summary: "The matter moves up: writ jurisdiction and the Supreme Court.",
     serves: ["library"],
     boxes: [{ label: "Supreme Court", href: "/library" }],
+    statePicker: true,
   },
   {
     n: 4,
@@ -120,12 +127,14 @@ export const MAP_STAGES: MapStage[] = [
     title: "Pleadings & trial",
     summary: "Reply, evidence, and argument, once the other side is heard.",
     serves: ["draft-bot", "courses"],
+    /* Order confirmed: written statement, then counter-claim, then the
+       lettered boxes A, B, C. */
     boxes: [
+      { label: "Written statement", href: "/draft-bot" },
+      { label: "Counter-claim / Rejoinder", href: "/draft-bot" },
       { label: "Examination-in-chief", ref: "7A" },
       { label: "Cross-examination", ref: "7B" },
       { label: "Written arguments", ref: "7C", href: "/draft-bot" },
-      { label: "Written statement", href: "/draft-bot" },
-      { label: "Counter-claim / Rejoinder", href: "/draft-bot" },
     ],
   },
   {
