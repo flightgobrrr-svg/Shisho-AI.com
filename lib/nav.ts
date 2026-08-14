@@ -27,6 +27,11 @@ export const PRIMARY_NAV: NavLink[] = [
     blurb: "Structured tracks from first year to first brief",
   },
   {
+    href: "/map",
+    label: "The Map",
+    blurb: "Every stage of a matter, from first meeting to written arguments",
+  },
+  {
     href: "/pricing",
     label: "Pricing",
     blurb: "Plans in ₹, built for student budgets",
@@ -45,6 +50,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { href: "/draft-bot", label: "Draft Bot" },
       { href: "/library", label: "Legal Library" },
       { href: "/courses", label: "Courses" },
+      { href: "/map", label: "The Map" },
       { href: "/pricing", label: "Pricing" },
     ],
   },

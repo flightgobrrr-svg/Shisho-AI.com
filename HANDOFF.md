@@ -33,7 +33,32 @@ All tokens and rules live as comments in `app/globals.css`. Do not casually viol
 - Hero rebuild, reprice (Core ₹499, Proficient ₹999), Legal Library expanded to 27 verified cases, Draft Bot's second photo backdrop (`gurukul-question.jpg`, the rishi) restored with a mobile-contrast fix, the custom cursor recovered from an old stash and hardened (fixed a caret-visibility bug and a perpetual-animation-budget violation in the original), a dedicated `/pricing` page with a 4-tier grid + feature comparison table, and a new **Basic ₹9/mo** tier (full course + library access, Draft Bot capped at Free's 5 reviews/mo — deliberately NOT wired into `lib/entitlements.ts`, see constraints below).
 - This merge also had to reconcile with an independent earlier PR that had landed on `main` in the meantime (same features, an earlier/simpler iteration) — this branch's versions were kept throughout.
 
-### Uncommitted right now — needs a decision
+### Committed since (branch `hero-refresh-motion-and-pricing`, not yet pushed)
+
+Everything described as "uncommitted" below has since been **committed** — the
+section is kept only as a record of where that work came from.
+
+- `73e7d75` the chat-based drafting agent (item 2 below).
+- `cb210c7` the design-mockup content merge (item 1 below).
+- `34001ca` **the flowchart restyle.** `--radius-seal` went 3px → **0**, so every
+  box on the site is square. Box outlines firmed `ink/10` → `ink/45` (hover
+  `ink/75`); section hairlines, table rules and list dividers were deliberately
+  left faint — those are rules on a page, not boxes. New
+  `components/ui/StepMark.tsx` numbers a stage in a sequence (ink, never seal).
+- `74e2f4c` homepage pricing preview now shows **all four tiers**, reversing an
+  earlier decision to hide Basic ₹9 there. Grid matches `PricingGrid`.
+- `a71023a` + this commit — **`/map`**, the product flow transcribed from the
+  user's hand-drawn sketch. Data in `lib/sitemap.ts` (note: distinct from
+  `app/sitemap.ts`, which is the XML route). Linked in `lib/nav.ts`.
+
+**`lib/sitemap.ts` carries a rule worth keeping:** it is a transcription of
+handwriting from a photo, so any label that could not be read confidently is
+flagged `unread: true` and renders **dashed with a seal "?"**. Do not invent
+labels for those or quietly promote a guess — clear the flag only once the user
+confirms the word. Six boxes are currently flagged (3 · SO 1049, 4B · Thorp,
+8 · Zone hearing query, 9 · Grand pay, 9 · Digital).
+
+### Was uncommitted — the origin of the two commits above
 Two different bodies of uncommitted work are sitting in the working tree on branch `hero-refresh-motion-and-pricing` (which is *behind* `main` at HEAD, since PR #4 already merged):
 
 1. **A content merge from a second Claude Design mockup**, imported via the `DesignSync` MCP tool (`claude.ai/design` project "Shisho marketing site design plan"). Only content was pulled — 4 new verified Library citations (2 of which had to be corrected: the mockup's citations for *Shilpa Sailesh* and its Delhi HC case were wrong/unverifiable), both course syllabi expanded 4→6 items, sharper persona/feature-strip copy, a footer tagline + disclaimer, a new "What it drafts" section on `/draft-bot`, and one new pricing-comparison row. Touches: `lib/library.ts`, `lib/courses.ts`, `components/home/PersonaRouter.tsx`, `components/home/FeatureStrip.tsx`, `lib/pricing.ts`, `components/layout/Footer.tsx`, `app/draft-bot/page.tsx`. **Verified** (tsc, build, screenshots) but **not committed.**

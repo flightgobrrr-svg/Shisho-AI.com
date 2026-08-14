@@ -58,35 +58,32 @@ export default function MapPage() {
                   <h2 className="label-mono text-ink-soft">{stage.title}</h2>
                 </div>
 
-                <ul className="mt-4 ml-9.5 flex flex-wrap items-stretch gap-x-5 gap-y-3">
-                  {stage.boxes.map((box, j) => (
-                    <li key={box.label} className="relative">
-                      {/* Connector into this box, matching the rule between
-                          the persona boxes on the homepage. */}
-                      {j > 0 && (
-                        <span
-                          aria-hidden="true"
-                          className="absolute top-1/2 -left-5 hidden h-px w-5 bg-ink/30 sm:block"
-                        />
-                      )}
+                {/* One column width for the whole page, so boxes line up in
+                    columns down every stage rather than each row ending
+                    ragged. Boxes within a stage are siblings, not a sequence —
+                    the spine carries the order, so there are deliberately no
+                    left-to-right connectors here implying one. */}
+                <ul className="mt-4 ml-9.5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {stage.boxes.map((box) => (
+                    <li key={box.label} className="min-w-0">
                       <span
                         className={cn(
-                          "flex h-full items-center gap-2 border px-4 py-2.5",
-                          "text-[14.5px] leading-snug",
+                          "flex h-full min-h-13 items-center gap-2 border px-4 py-3",
+                          "text-[14.5px] leading-snug text-balance",
                           box.unread
                             ? "border-dashed border-ink/40 text-ink-soft"
                             : "border-ink/45 text-ink",
                         )}
                       >
                         {box.ref && (
-                          <span className="label-mono text-ink-soft/70">
+                          <span className="label-mono shrink-0 text-ink-soft/70">
                             {box.ref}
                           </span>
                         )}
-                        {box.label}
+                        <span className="min-w-0">{box.label}</span>
                         {box.unread && (
                           <span
-                            className="label-mono text-seal"
+                            className="label-mono ml-auto shrink-0 text-seal"
                             title="Handwriting not read with confidence — needs confirming"
                           >
                             ?
