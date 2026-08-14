@@ -41,7 +41,11 @@ export default function MapPage() {
           previously put the GROUND on raised and left the boxes unfilled,
           which inverted that and flattened the whole page into one wash. The
           hairline rules still band this section off from the header above. */}
-      <Section className="border-y border-ink/10 !pt-0">
+      {/* Keeps its top padding. `!pt-0` was copied in from /library and
+          /courses, where the section opens on a heading that brings its own
+          space — here it opens straight onto stage 1, so the number box
+          collided with the hairline above it. */}
+      <Section className="border-y border-ink/10">
         <Container>
           <ol className="reveal-stagger">
             {MAP_STAGES.map((stage, i) => (
