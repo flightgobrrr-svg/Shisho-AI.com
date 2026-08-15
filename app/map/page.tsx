@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
+import { Button } from "@/components/ui/Button";
 import { StateSelect } from "@/components/map/StateSelect";
 import { BoxMenu } from "@/components/map/BoxMenu";
 import { MAP_STAGES, PRODUCT_META } from "@/lib/sitemap";
@@ -37,6 +38,27 @@ export default function MapPage() {
             are the sub-references drawn on the original sketch this map was
             transcribed from.
           </p>
+
+          {/* An index, for the two things the spine could not give: knowing
+              how far this goes before committing to the scroll, and a way past
+              it. Nine stages over ~2,400px previously offered no jump and no
+              sense of extent — a reader had to scroll the whole thing to learn
+              what was in it. */}
+          <nav aria-label="Jump to a stage" className="mt-9">
+            <ul className="flex flex-wrap gap-2">
+              {MAP_STAGES.map((stage) => (
+                <li key={stage.n}>
+                  <a
+                    href={`#stage-${stage.n}`}
+                    className="group flex min-h-11 items-center gap-2 border border-ink/25 bg-paper-raised py-2 pr-3.5 pl-2 text-[13.5px] text-ink-soft transition-[transform,border-color,color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:-translate-y-0.5 hover:border-ink/60 hover:text-ink"
+                  >
+                    <StepMark n={stage.n} className="size-5 text-[10px]" />
+                    {stage.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </Container>
       </Section>
 
@@ -51,7 +73,7 @@ export default function MapPage() {
           collided with the hairline above it. */}
       <Section className="border-y border-ink/10">
         <Container>
-          <ol className="reveal-stagger">
+          <ol aria-label="Stages of a matter" className="reveal-stagger">
             {MAP_STAGES.map((stage, i) => (
               <li
                 key={stage.n}
@@ -99,8 +121,14 @@ export default function MapPage() {
                         const meta = PRODUCT_META[product];
                         return (
                           <li key={product}>
+                            {/* The visible label repeats across stages by
+                                design — six chips read "Legal Library" — which
+                                left a screen reader's links list with six
+                                identical entries. The stage disambiguates the
+                                accessible name without adding visible noise. */}
                             <Link
                               href={meta.href}
+                              aria-label={`${meta.label} — ${stage.title}`}
                               className="label-mono inline-flex min-h-11 items-center border border-ink/25 px-3 py-2 text-ink-soft transition-[color,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/60 hover:text-ink"
                             >
                               {meta.label}
@@ -173,6 +201,10 @@ export default function MapPage() {
                         ) : box.href ? (
                           <Link
                             href={box.href}
+                            /* Petition, Counter-claim and Rejoinder each appear
+                               at two stages, so the visible label alone is
+                               ambiguous in a links list. */
+                            aria-label={`${box.label} — ${stage.title}`}
                             className={cn(
                               shell,
                               "transition-[transform,box-shadow,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
@@ -197,6 +229,30 @@ export default function MapPage() {
               </li>
             ))}
           </ol>
+        </Container>
+      </Section>
+
+      {/* The map used to stop on a single box and hand straight to the footer:
+          a reader who had just understood the whole shape of a matter was
+          offered nothing to do with it, and the page spent no seal at all. */}
+      <Section>
+        <Container>
+          <div className="max-w-2xl">
+            <h2 className="font-display text-title font-semibold">
+              Start at the stage you are <Emphasis>on</Emphasis>.
+            </h2>
+            <p className="mt-5 text-[16px] leading-relaxed text-ink-soft">
+              Every document above has a page of its own — what it must contain,
+              and how it fails. Each provision on them was checked against its
+              source before it was written down.
+            </p>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Button href="/documents">Read the documents</Button>
+              <Button href="/draft-bot" variant="ghost">
+                Have a draft marked
+              </Button>
+            </div>
+          </div>
         </Container>
       </Section>
     </>

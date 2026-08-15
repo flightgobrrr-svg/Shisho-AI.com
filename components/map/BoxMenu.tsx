@@ -81,17 +81,27 @@ export function BoxMenu({
         )}
         <span className="min-w-0">{label}</span>
 
-        <svg
+        {/* A divided cell, not just a chevron. This box sits in a row of
+            link-boxes it otherwise matches pixel for pixel, and a 10×6px mark
+            was the only thing separating a control from a destination — a
+            difference nobody discovers before clicking. The rule gives the
+            chevron a compartment, which is how every other divided control on
+            a court form reads. */}
+        <span
           aria-hidden="true"
-          viewBox="0 0 10 6"
-          className={cn(
-            "ml-auto h-1.5 w-2.5 shrink-0 fill-none stroke-current stroke-[1.5] text-ink-soft",
-            "transition-transform duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
-            open && "rotate-180",
-          )}
+          className="ml-auto flex shrink-0 items-center self-stretch border-l border-ink/25 pl-3"
         >
-          <path d="M1 1l4 4 4-4" strokeLinecap="square" />
-        </svg>
+          <svg
+            viewBox="0 0 10 6"
+            className={cn(
+              "h-1.5 w-2.5 fill-none stroke-current stroke-[1.5] text-ink-soft",
+              "transition-transform duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+              open && "rotate-180",
+            )}
+          >
+            <path d="M1 1l4 4 4-4" strokeLinecap="square" />
+          </svg>
+        </span>
       </button>
 
       {/* `visibility` rather than the `hidden` attribute: hidden is
