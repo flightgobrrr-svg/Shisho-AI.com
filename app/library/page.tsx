@@ -5,7 +5,13 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { StageTrail } from "@/components/map/StageTrail";
-import { COLLECTIONS, PREVIEW_CASES } from "@/lib/library";
+import {
+  COLLECTIONS,
+  COURT_FILTERS,
+  PREVIEW_CASES,
+  isCollectionId,
+  isCourtFilter,
+} from "@/lib/library";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
@@ -14,7 +20,29 @@ export const metadata: Metadata = {
     "Supreme Court and High Court judgments, bare acts, and commentary — searchable and explained in plain language.",
 };
 
-export default function LibraryPage() {
+/**
+ * Accepts `?court=` and `?collection=` so the map's six Library boxes land
+ * somewhere that reflects their label instead of all arriving at one page.
+ * An unrecognised value is ignored rather than erroring — a bad query should
+ * degrade to the full Library, not a 404.
+ */
+export default async function LibraryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ court?: string; collection?: string }>;
+}) {
+  const params = await searchParams;
+  const court = isCourtFilter(params.court) ? params.court : null;
+  const collection = isCollectionId(params.collection) ? params.collection : null;
+  const filter = court ? COURT_FILTERS[court] : null;
+
+  const cases = filter ? PREVIEW_CASES.filter(filter.test) : PREVIEW_CASES;
+  const collections = collection
+    ? COLLECTIONS.filter((c) => c.id === collection)
+    : COLLECTIONS;
+  const activeLabel =
+    filter?.label ?? COLLECTIONS.find((c) => c.id === collection)?.name ?? null;
+
   return (
     <>
       <Section>
@@ -29,16 +57,31 @@ export default function LibraryPage() {
             searchable, correctly cited, and explained in plain language. Search
             and full text are on the way; below is what the library will hold.
           </p>
+
+          {activeLabel && (
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <span className="label-mono text-ink-soft">Showing</span>
+              <span className="flex min-h-11 items-center border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink">
+                {activeLabel}
+              </span>
+              <Link
+                href="/library"
+                className="underline-draw flex min-h-11 items-center text-[14px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
+              >
+                Show everything
+              </Link>
+            </div>
+          )}
         </Container>
       </Section>
 
       <Section id="collections" tone="raised" className="border-y border-ink/10 !pt-0">
         <Container>
           <h2 className="font-display text-[22px] font-semibold text-ink">
-            Three collections
+            {collection ? collections[0]?.name : "Three collections"}
           </h2>
           <ul className="reveal-stagger mt-10 grid gap-6 md:grid-cols-3">
-            {COLLECTIONS.map((collection, i) => (
+            {collections.map((collection, i) => (
               <li
                 key={collection.id}
                 style={{ "--i": i } as React.CSSProperties}
@@ -76,8 +119,27 @@ export default function LibraryPage() {
             </p>
           </div>
 
+          {cases.length === 0 ? (
+            /* An empty result that explains itself. `trial-courts` matches
+               nothing by design, and saying why is the whole reason that box
+               is allowed to be a link. */
+            <div className="mt-12 max-w-[62ch] border-l-2 border-seal/70 pl-6">
+              <p className="font-display text-[19px] leading-snug font-semibold text-ink">
+                Nothing here yet.
+              </p>
+              <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
+                {filter?.empty}
+              </p>
+              <Link
+                href="/library"
+                className="underline-draw mt-5 inline-block text-[14px] text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]"
+              >
+                Show everything
+              </Link>
+            </div>
+          ) : (
           <ul className="reveal-stagger mt-12 divide-y divide-ink/10 border-y border-ink/10">
-            {PREVIEW_CASES.map((item, i) => (
+            {cases.map((item, i) => (
               <li
                 key={item.citation}
                 style={{ "--i": i } as React.CSSProperties}
@@ -98,6 +160,7 @@ export default function LibraryPage() {
               </li>
             ))}
           </ul>
+          )}
         </Container>
       </Section>
 

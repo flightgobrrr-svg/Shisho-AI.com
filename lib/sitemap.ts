@@ -90,8 +90,8 @@ export const MAP_STAGES: MapStage[] = [
       { label: "Lawyers", ref: "2A", href: "/courses#proficient" },
       { label: "Student", ref: "2B", href: "/courses#starter" },
       { label: "Clerk", ref: "2C", href: "/documents" },
-      { label: "High Court", href: "/library" },
-      { label: "Trial Courts", href: "/library" },
+      { label: "High Court", href: "/library?court=high-court" },
+      { label: "Trial Courts", href: "/library?court=trial-courts" },
       { label: "Drafts", href: "/documents" },
     ],
   },
@@ -100,7 +100,7 @@ export const MAP_STAGES: MapStage[] = [
     title: "State",
     summary: "The matter moves up: writ jurisdiction and the Supreme Court.",
     serves: ["library"],
-    boxes: [{ label: "Supreme Court", href: "/library" }],
+    boxes: [{ label: "Supreme Court", href: "/library?court=supreme-court" }],
     statePicker: true,
   },
   {
@@ -112,7 +112,7 @@ export const MAP_STAGES: MapStage[] = [
        this transcription had misread as "Thorp". Petition moves to 4D. */
     boxes: [
       { label: "Draft", ref: "4A", href: "/draft-bot" },
-      { label: "Bare Acts", ref: "4B", href: "/library" },
+      { label: "Bare Acts", ref: "4B", href: "/library?collection=acts" },
       { label: "Thesis", ref: "4C", href: "/courses" },
       { label: "Petition", ref: "4D", href: "/documents/petition" },
     ],
@@ -171,8 +171,8 @@ export const MAP_STAGES: MapStage[] = [
     summary: "Every proposition tied to an authority that actually binds.",
     serves: ["library"],
     boxes: [
-      { label: "SC citations", href: "/library" },
-      { label: "HC citations", href: "/library" },
+      { label: "SC citations", href: "/library?court=supreme-court" },
+      { label: "HC citations", href: "/library?court=high-court" },
     ],
   },
   {

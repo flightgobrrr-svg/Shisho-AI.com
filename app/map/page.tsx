@@ -5,6 +5,7 @@ import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
 import { Button } from "@/components/ui/Button";
 import { StateSelect } from "@/components/map/StateSelect";
+import { StageIndex } from "@/components/map/StageIndex";
 import { BoxMenu } from "@/components/map/BoxMenu";
 import { MAP_STAGES, PRODUCT_META } from "@/lib/sitemap";
 import { cn } from "@/lib/cn";
@@ -30,35 +31,16 @@ export default function MapPage() {
         <Container>
           <Eyebrow>The map</Eyebrow>
           <h1 className="mt-4 max-w-3xl font-display text-title font-semibold">
-            Every stage of a matter, <Emphasis>in order</Emphasis>.
+            Where Shisho meets a <Emphasis>matter</Emphasis>.
           </h1>
           <p className="mt-5 max-w-[58ch] text-[16px] leading-relaxed text-ink-soft">
-            From the first client meeting to written arguments and citation
-            checks. Codes like <span className="label-mono text-ink">4B</span>{" "}
-            are the sub-references drawn on the original sketch this map was
-            transcribed from.
+            A matter in sequence — from the first client meeting through
+            pleadings and trial to the citations it rests on — and what this
+            site does at each point. The first and last stages are the site's
+            own, not the court's.
           </p>
 
-          {/* An index, for the two things the spine could not give: knowing
-              how far this goes before committing to the scroll, and a way past
-              it. Nine stages over ~2,400px previously offered no jump and no
-              sense of extent — a reader had to scroll the whole thing to learn
-              what was in it. */}
-          <nav aria-label="Jump to a stage" className="mt-9">
-            <ul className="flex flex-wrap gap-2">
-              {MAP_STAGES.map((stage) => (
-                <li key={stage.n}>
-                  <a
-                    href={`#stage-${stage.n}`}
-                    className="group flex min-h-11 items-center gap-2 border border-ink/25 bg-paper-raised py-2 pr-3.5 pl-2 text-[13.5px] text-ink-soft transition-[transform,border-color,color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:-translate-y-0.5 hover:border-ink/60 hover:text-ink"
-                  >
-                    <StepMark n={stage.n} className="size-5 text-[10px]" />
-                    {stage.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <StageIndex />
         </Container>
       </Section>
 
@@ -73,6 +55,11 @@ export default function MapPage() {
           collided with the hairline above it. */}
       <Section className="border-y border-ink/10">
         <Container>
+          {/* A real heading for the list, so the nine stages nest under it as
+              h3 instead of standing as nine sibling h2s alongside the closing
+              call to action — which a screen-reader heading list read as a
+              tenth stage. */}
+          <h2 className="sr-only">The nine stages</h2>
           <ol aria-label="Stages of a matter" className="reveal-stagger">
             {MAP_STAGES.map((stage, i) => (
               <li
@@ -98,25 +85,25 @@ export default function MapPage() {
                       contents. Display serif at 19px puts the hierarchy back
                       the right way up; the mono treatment stays on the number
                       mark, where it belongs. */}
-                  <h2 className="font-display text-[19px] leading-none font-semibold text-ink">
+                  <h3 className="font-display text-[19px] leading-none font-semibold text-ink">
                     {stage.title}
-                  </h2>
+                  </h3>
 
                   {/* The products that answer this stage. The homepage flow has
                       carried these since it was built; the map itself did not,
                       which left it linking to documents but never to the three
                       things that actually do the work. */}
-                  {/* Pushed right, into the empty column. Sitting beside the
-                      title they crowded it and read as part of the heading —
-                      a problem that only appeared once the title was promoted
-                      to display serif. Right-aligned, the row carries one
-                      thing on each side instead of three competing systems. */}
+                  {/* Under the title at every width. Pushing them right on
+                      desktop left them 400-600px from the stage they modify,
+                      with stage 8's lone chip floating beside nothing —
+                      proximity is the grouping cue, and distance said
+                      "unrelated". Mobile had it right all along. */}
                   {/* `ml-9.5` on mobile, where the chips wrap onto their own
                       line: without it they start at the NUMBER's indent while
                       the summary and boxes start at the box indent, so they
                       read as a stray fourth row of the flow. */}
                   {stage.serves.length > 0 && (
-                    <ul className="ml-9.5 flex flex-wrap gap-2 sm:ml-auto">
+                    <ul className="ml-9.5 flex flex-wrap gap-2">
                       {stage.serves.map((product) => {
                         const meta = PRODUCT_META[product];
                         return (

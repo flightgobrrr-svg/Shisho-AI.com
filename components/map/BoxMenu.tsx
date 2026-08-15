@@ -77,7 +77,7 @@ export function BoxMenu({
         )}
       >
         {boxRef && (
-          <span className="label-mono shrink-0 text-ink-soft/70">{boxRef}</span>
+          <span className="label-mono shrink-0 text-ink-soft">{boxRef}</span>
         )}
         <span className="min-w-0">{label}</span>
 

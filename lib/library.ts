@@ -257,3 +257,45 @@ export const PREVIEW_CASES: PreviewCase[] = [
       "Section 12A, Commercial Courts Act, 2015 — a plaint that genuinely contemplates urgent interim relief need not go through pre-institution mediation first",
   },
 ];
+
+/**
+ * Court filters for /library?court=…
+ *
+ * The map sends six boxes here — Supreme Court, High Court, Trial Courts, and
+ * the SC/HC citation boxes — which all used to land on the same unfiltered
+ * page. A reader clicking three differently-labelled boxes and arriving at one
+ * view learns that the boxes are decorative.
+ *
+ * `trial-courts` deliberately matches nothing. The Library holds no trial-court
+ * material yet, and an honest empty state is worth more than either a silent
+ * redirect to everything or a box that pretends not to be a destination.
+ */
+export type CourtFilter = "supreme-court" | "high-court" | "trial-courts";
+
+export const COURT_FILTERS: Record<
+  CourtFilter,
+  { label: string; test: (c: PreviewCase) => boolean; empty?: string }
+> = {
+  "supreme-court": {
+    label: "Supreme Court",
+    test: (c) => c.court === "Supreme Court",
+  },
+  "high-court": {
+    label: "High Courts",
+    test: (c) => c.court.includes("High Court"),
+  },
+  "trial-courts": {
+    label: "Trial Courts",
+    test: () => false,
+    empty:
+      "The Library does not hold trial-court material yet. Trial courts do not report judgments the way the Supreme Court and High Courts do, so what belongs here is procedure and practice rather than citable authority.",
+  },
+};
+
+export function isCourtFilter(v: unknown): v is CourtFilter {
+  return typeof v === "string" && v in COURT_FILTERS;
+}
+
+export function isCollectionId(v: unknown): v is string {
+  return typeof v === "string" && COLLECTIONS.some((c) => c.id === v);
+}
