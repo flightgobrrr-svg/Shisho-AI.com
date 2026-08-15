@@ -82,6 +82,11 @@ export const PRIMARY_NAV: NavLink[] = [
     blurb: "Every stage of a matter, from first meeting to written arguments",
     children: [
       {
+        href: "/documents",
+        label: "Documents",
+        blurb: "Every pleading, and what it must contain",
+      },
+      {
         href: "/map#stage-2",
         label: "Advocate & forum",
         blurb: "Who brings the matter, and where it belongs",
@@ -140,6 +145,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { href: "/library", label: "Legal Library" },
       { href: "/courses", label: "Courses" },
       { href: "/map", label: "The Map" },
+      { href: "/documents", label: "Documents" },
       { href: "/pricing", label: "Pricing" },
     ],
   },

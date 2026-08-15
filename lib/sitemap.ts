@@ -40,11 +40,14 @@ export type MapBox = {
   /** Where this box goes, when something on the site actually serves it. */
   href?: string;
   /**
-   * Turns the box into a choice — the options render as a select inside it.
+   * Turns the box into a choice. Each option is a real destination, so the
+   * menu navigates rather than just setting a value — every box on the map
+   * leads somewhere.
+   *
    * Mutually exclusive with `href`: a box cannot be both a link and a control
    * without nesting one interactive element inside another.
    */
-  options?: readonly string[];
+  options?: readonly { label: string; href: string }[];
 };
 
 export type MapStage = {
@@ -84,12 +87,12 @@ export const MAP_STAGES: MapStage[] = [
        trial courts, drafts. Refs renumbered to follow that order rather than
        leaving 2A, 2C, 2B running down the row. */
     boxes: [
-      { label: "Lawyers", ref: "2A" },
-      { label: "Student", ref: "2B", href: "/courses" },
-      { label: "Clerk", ref: "2C" },
+      { label: "Lawyers", ref: "2A", href: "/courses#proficient" },
+      { label: "Student", ref: "2B", href: "/courses#starter" },
+      { label: "Clerk", ref: "2C", href: "/documents" },
       { label: "High Court", href: "/library" },
       { label: "Trial Courts", href: "/library" },
-      { label: "Drafts", href: "/draft-bot" },
+      { label: "Drafts", href: "/documents" },
     ],
   },
   {
@@ -110,8 +113,8 @@ export const MAP_STAGES: MapStage[] = [
     boxes: [
       { label: "Draft", ref: "4A", href: "/draft-bot" },
       { label: "Bare Acts", ref: "4B", href: "/library" },
-      { label: "Thesis", ref: "4C" },
-      { label: "Petition", ref: "4D", href: "/draft-bot" },
+      { label: "Thesis", ref: "4C", href: "/courses" },
+      { label: "Petition", ref: "4D", href: "/documents/petition" },
     ],
   },
   {
@@ -121,10 +124,10 @@ export const MAP_STAGES: MapStage[] = [
       "Relief sought while the suit is pending — the application, the affidavit it rests on, and the replies to it.",
     serves: ["draft-bot"],
     boxes: [
-      { label: "Affidavit", href: "/draft-bot" },
-      { label: "Petition", href: "/draft-bot" },
-      { label: "Counter-claim", href: "/draft-bot" },
-      { label: "Rejoinder", href: "/draft-bot" },
+      { label: "Affidavit", href: "/documents/affidavit" },
+      { label: "Petition", href: "/documents/petition" },
+      { label: "Counter-claim", href: "/documents/counter-claim" },
+      { label: "Rejoinder", href: "/documents/rejoinder" },
     ],
   },
   {
@@ -137,11 +140,11 @@ export const MAP_STAGES: MapStage[] = [
        written statement and counter-claim rather than a stage of its own, and
        the stage ends where the issues are settled. */
     boxes: [
-      { label: "Plaint", href: "/draft-bot" },
-      { label: "Written statement", href: "/draft-bot" },
-      { label: "Counter-claim", href: "/draft-bot" },
-      { label: "Rejoinder", href: "/draft-bot" },
-      { label: "Issues" },
+      { label: "Plaint", href: "/documents/plaint" },
+      { label: "Written statement", href: "/documents/written-statement" },
+      { label: "Counter-claim", href: "/documents/counter-claim" },
+      { label: "Rejoinder", href: "/documents/rejoinder" },
+      { label: "Issues", href: "/documents/issues" },
     ],
   },
   {
@@ -150,9 +153,16 @@ export const MAP_STAGES: MapStage[] = [
     summary: "Evidence and argument, once the issues are settled.",
     serves: ["draft-bot", "courses"],
     boxes: [
-      { label: "Examination-in-chief", ref: "7A" },
-      { label: "Cross-examination", ref: "7B" },
-      { label: "Arguments", ref: "7C", options: ["Oral", "Written"] },
+      { label: "Examination-in-chief", ref: "7A", href: "/documents/examination-in-chief" },
+      { label: "Cross-examination", ref: "7B", href: "/documents/cross-examination" },
+      {
+        label: "Arguments",
+        ref: "7C",
+        options: [
+          { label: "Oral", href: "/documents/oral-arguments" },
+          { label: "Written", href: "/documents/written-arguments" },
+        ],
+      },
     ],
   },
   {

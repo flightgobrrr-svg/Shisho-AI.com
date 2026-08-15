@@ -1,21 +1,25 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 /**
- * A map box that opens a choice when clicked — e.g. Arguments: oral or
+ * A map box that opens a short menu when clicked — e.g. Arguments: oral or
  * written.
  *
  * The whole box is the trigger, so it reads as one object rather than a label
- * with a control bolted to its side. The panel is click-toggled, not hover-
- * opened like the nav menus: this is a selection someone commits to, and a
- * menu that opens on hover and closes on leave is hostile to that.
+ * with a control bolted to its side. Click-toggled, not hover-opened like the
+ * nav menus: this is a destination someone commits to, and a menu that closes
+ * when the pointer strays is hostile to that.
  *
- * Built as a disclosure of plain buttons rather than a listbox. A real listbox
- * owes the user arrow-key roving focus and typeahead; buttons get Tab order
- * and Enter for free, and Escape returns focus to the trigger. Choosing the
- * honest simpler pattern beats a half-implemented ARIA one.
+ * The options are LINKS, not values. A box that only recorded a choice would
+ * be the one dead end left on the map, so choosing here navigates.
+ *
+ * Built as a disclosure of links rather than a menubar widget: a real ARIA
+ * menu owes the user roving arrow-key focus and typeahead, while links get Tab
+ * order, Enter, and open-in-new-tab for free. Escape closes and returns focus
+ * to the trigger.
  */
 export function BoxMenu({
   label,
@@ -25,12 +29,11 @@ export function BoxMenu({
 }: {
   label: string;
   boxRef?: string;
-  options: readonly string[];
+  options: readonly { label: string; href: string }[];
   className?: string;
 }) {
   const panelId = useId();
   const [open, setOpen] = useState(false);
-  const [chosen, setChosen] = useState<string | null>(null);
 
   const rootEl = useRef<HTMLDivElement>(null);
   const triggerEl = useRef<HTMLButtonElement>(null);
@@ -78,19 +81,11 @@ export function BoxMenu({
         )}
         <span className="min-w-0">{label}</span>
 
-        {/* The chosen value rides along quietly so the box still reports its
-            own state once the panel is shut. */}
-        {chosen && (
-          <span className="ml-auto shrink-0 text-[13px] text-ink-soft">
-            {chosen}
-          </span>
-        )}
-
         <svg
           aria-hidden="true"
           viewBox="0 0 10 6"
           className={cn(
-            "ml-1.5 h-1.5 w-2.5 shrink-0 fill-none stroke-current stroke-[1.5] text-ink-soft",
+            "ml-auto h-1.5 w-2.5 shrink-0 fill-none stroke-current stroke-[1.5] text-ink-soft",
             "transition-transform duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
             open && "rotate-180",
           )}
@@ -102,32 +97,18 @@ export function BoxMenu({
       <div
         id={panelId}
         hidden={!open}
-        className="absolute top-[calc(100%+4px)] left-0 z-20 w-full min-w-36 border border-ink/45 bg-paper-raised p-1 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]"
+        className="absolute top-[calc(100%+4px)] left-0 z-20 w-full min-w-40 border border-ink/45 bg-paper-raised p-1 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]"
       >
         <ul>
           {options.map((option) => (
-            <li key={option}>
-              <button
-                type="button"
-                aria-pressed={chosen === option}
-                onClick={() => {
-                  setChosen(option);
-                  setOpen(false);
-                  triggerEl.current?.focus();
-                }}
-                className={cn(
-                  "flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left text-[14px]",
-                  "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper",
-                  chosen === option ? "text-ink" : "text-ink-soft",
-                )}
+            <li key={option.href}>
+              <Link
+                href={option.href}
+                onClick={() => setOpen(false)}
+                className="block px-3 py-2 text-[14px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper hover:text-ink"
               >
-                {option}
-                {chosen === option && (
-                  <span aria-hidden="true" className="text-seal">
-                    &#10003;
-                  </span>
-                )}
-              </button>
+                {option.label}
+              </Link>
             </li>
           ))}
         </ul>
