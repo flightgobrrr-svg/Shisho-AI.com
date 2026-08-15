@@ -57,3 +57,64 @@ export const UNION_TERRITORIES = [
 export type StateName =
   | (typeof STATES)[number]
   | (typeof UNION_TERRITORIES)[number];
+
+/**
+ * The High Court exercising jurisdiction over each state and union territory.
+ *
+ * VERIFIED against the list of High Courts and their territorial jurisdiction
+ * before it was written down — the same rule lib/library.ts and
+ * lib/documents.ts apply. Three courts sit over more than one territory, which
+ * is exactly why this could not be guessed from the state name:
+ *
+ *   Bombay .................. Maharashtra, Goa, Dadra and Nagar Haveli and
+ *                             Daman and Diu
+ *   Gauhati ................. Assam, Arunachal Pradesh, Nagaland, Mizoram
+ *   Punjab and Haryana ...... Punjab, Haryana, Chandigarh
+ *   Calcutta ................ West Bengal, Andaman and Nicobar Islands
+ *   Madras .................. Tamil Nadu, Puducherry
+ *   Kerala .................. Kerala, Lakshadweep
+ *   J&K and Ladakh .......... Jammu and Kashmir, Ladakh
+ *
+ * Several courts are named for a city that has since been renamed (Bombay,
+ * Madras, Calcutta). Those are the courts' own current legal names and are
+ * deliberately not "corrected".
+ */
+export const HIGH_COURT_BY_STATE: Record<StateName, string> = {
+  "Andhra Pradesh": "Andhra Pradesh High Court",
+  "Arunachal Pradesh": "Gauhati High Court",
+  Assam: "Gauhati High Court",
+  Bihar: "Patna High Court",
+  Chhattisgarh: "Chhattisgarh High Court",
+  Goa: "Bombay High Court",
+  Gujarat: "Gujarat High Court",
+  Haryana: "Punjab and Haryana High Court",
+  "Himachal Pradesh": "Himachal Pradesh High Court",
+  Jharkhand: "Jharkhand High Court",
+  Karnataka: "Karnataka High Court",
+  Kerala: "Kerala High Court",
+  "Madhya Pradesh": "Madhya Pradesh High Court",
+  Maharashtra: "Bombay High Court",
+  Manipur: "Manipur High Court",
+  Meghalaya: "Meghalaya High Court",
+  Mizoram: "Gauhati High Court",
+  Nagaland: "Gauhati High Court",
+  Odisha: "Orissa High Court",
+  Punjab: "Punjab and Haryana High Court",
+  Rajasthan: "Rajasthan High Court",
+  Sikkim: "Sikkim High Court",
+  "Tamil Nadu": "Madras High Court",
+  Telangana: "Telangana High Court",
+  Tripura: "Tripura High Court",
+  "Uttar Pradesh": "Allahabad High Court",
+  Uttarakhand: "Uttarakhand High Court",
+  "West Bengal": "Calcutta High Court",
+
+  "Andaman and Nicobar Islands": "Calcutta High Court",
+  Chandigarh: "Punjab and Haryana High Court",
+  "Dadra and Nagar Haveli and Daman and Diu": "Bombay High Court",
+  "Delhi (NCT)": "Delhi High Court",
+  "Jammu and Kashmir": "High Court of Jammu & Kashmir and Ladakh",
+  Ladakh: "High Court of Jammu & Kashmir and Ladakh",
+  Lakshadweep: "Kerala High Court",
+  Puducherry: "Madras High Court",
+};

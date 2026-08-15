@@ -47,7 +47,7 @@ export function StageTrail({
           <li key={stage.n}>
             <Link
               href={`/map#stage-${stage.n}`}
-              className="group flex items-center gap-2 border border-ink/45 bg-paper-raised py-1.5 pr-3 pl-1.5 text-[13.5px] text-ink-soft transition-[transform,border-color,color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:-translate-y-0.5 hover:border-ink/75 hover:text-ink"
+              className="group flex min-h-11 items-center gap-2 border border-ink/45 bg-paper-raised py-2 pr-3.5 pl-2 text-[13.5px] text-ink-soft transition-[transform,border-color,color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:-translate-y-0.5 hover:border-ink/75 hover:text-ink"
             >
               <StepMark n={stage.n} className="size-5 text-[10px]" />
               {stage.title}

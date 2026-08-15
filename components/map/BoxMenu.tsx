@@ -105,7 +105,7 @@ export function BoxMenu({
               <Link
                 href={option.href}
                 onClick={() => setOpen(false)}
-                className="block px-3 py-2 text-[14px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper hover:text-ink"
+                className="flex min-h-11 items-center px-3 py-2.5 text-[14px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper hover:text-ink"
               >
                 {option.label}
               </Link>

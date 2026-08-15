@@ -33,7 +33,9 @@ export default function MapPage() {
           </h1>
           <p className="mt-5 max-w-[58ch] text-[16px] leading-relaxed text-ink-soft">
             From the first client meeting to written arguments and citation
-            checks.
+            checks. Codes like <span className="label-mono text-ink">4B</span>{" "}
+            are the sub-references drawn on the original sketch this map was
+            transcribed from.
           </p>
         </Container>
       </Section>
@@ -68,24 +70,38 @@ export default function MapPage() {
 
                 <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
                   <StepMark n={stage.n} className="relative bg-paper" />
-                  {/* Indigo, like every other mono label on the site — the
-                      palette assigns the cool counter-tone to mono labels and
-                      citations, and these were the one set reading as grey. */}
-                  <h2 className="label-mono text-indigo">{stage.title}</h2>
+                  {/* The nine stage names ARE the content of this page. Set as
+                      11px mono they were smaller than the box labels they
+                      contain, so the structure read as captions on its own
+                      contents. Display serif at 19px puts the hierarchy back
+                      the right way up; the mono treatment stays on the number
+                      mark, where it belongs. */}
+                  <h2 className="font-display text-[19px] leading-none font-semibold text-ink">
+                    {stage.title}
+                  </h2>
 
                   {/* The products that answer this stage. The homepage flow has
                       carried these since it was built; the map itself did not,
                       which left it linking to documents but never to the three
                       things that actually do the work. */}
+                  {/* Pushed right, into the empty column. Sitting beside the
+                      title they crowded it and read as part of the heading —
+                      a problem that only appeared once the title was promoted
+                      to display serif. Right-aligned, the row carries one
+                      thing on each side instead of three competing systems. */}
+                  {/* `ml-9.5` on mobile, where the chips wrap onto their own
+                      line: without it they start at the NUMBER's indent while
+                      the summary and boxes start at the box indent, so they
+                      read as a stray fourth row of the flow. */}
                   {stage.serves.length > 0 && (
-                    <ul className="flex flex-wrap gap-2">
+                    <ul className="ml-9.5 flex flex-wrap gap-2 sm:ml-auto">
                       {stage.serves.map((product) => {
                         const meta = PRODUCT_META[product];
                         return (
                           <li key={product}>
                             <Link
                               href={meta.href}
-                              className="label-mono inline-flex items-center border border-ink/25 px-2 py-1 text-ink-soft/80 transition-[color,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/60 hover:text-ink"
+                              className="label-mono inline-flex min-h-11 items-center border border-ink/25 px-3 py-2 text-ink-soft transition-[color,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/60 hover:text-ink"
                             >
                               {meta.label}
                             </Link>
@@ -95,6 +111,15 @@ export default function MapPage() {
                     </ul>
                   )}
                 </div>
+
+                {/* Every stage has carried a one-line summary in
+                    lib/sitemap.ts since the homepage flow was built, and this
+                    page never printed it — leaving "Interlocutory Application"
+                    and "Pleadings / Issues" bare in front of the exact reader
+                    who cannot decode them. */}
+                <p className="mt-2.5 ml-9.5 max-w-[58ch] text-[14.5px] leading-relaxed text-ink-soft">
+                  {stage.summary}
+                </p>
 
                 {/* Boxes take their natural width and pack along the row.
                     A fixed grid was tried and read as partitioned: single-box
@@ -108,7 +133,7 @@ export default function MapPage() {
                     const content = (
                       <>
                         {box.ref && (
-                          <span className="label-mono shrink-0 text-ink-soft/70">
+                          <span className="label-mono shrink-0 text-ink-soft">
                             {box.ref}
                           </span>
                         )}

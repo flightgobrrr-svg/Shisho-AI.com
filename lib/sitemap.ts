@@ -192,12 +192,3 @@ export const MAP_STAGES: MapStage[] = [
 export function stagesServedBy(product: Product) {
   return MAP_STAGES.filter((s) => s.serves.includes(product));
 }
-
-/** The stage a given map box belongs to, found by its destination. */
-export function stageForHref(href: string) {
-  return MAP_STAGES.find((s) =>
-    s.boxes.some(
-      (b) => b.href === href || b.options?.some((o) => o.href === href),
-    ),
-  );
-}
