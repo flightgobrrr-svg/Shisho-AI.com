@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
+import { StageTrail } from "@/components/map/StageTrail";
 import { COLLECTIONS, PREVIEW_CASES } from "@/lib/library";
 import { cn } from "@/lib/cn";
 
@@ -22,6 +23,7 @@ export default function LibraryPage() {
           <h1 className="mt-4 max-w-3xl font-display text-title md:text-display">
             The <Emphasis>authorities</Emphasis>, explained.
           </h1>
+          <StageTrail product="library" className="mt-6" />
           <p className="mt-5 max-w-[52ch] text-[17px] leading-relaxed text-ink-soft">
             Supreme Court and High Court judgments, bare acts, and commentary —
             searchable, correctly cited, and explained in plain language. Search

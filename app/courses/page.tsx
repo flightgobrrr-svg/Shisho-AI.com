@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
+import { StageTrail } from "@/components/map/StageTrail";
 import { COURSES } from "@/lib/courses";
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function CoursesPage() {
           <h1 className="mt-4 max-w-3xl font-display text-[2.05rem] leading-[1.08] font-semibold tracking-[-0.02em] sm:text-[2.6rem] lg:text-display">
             Two courses, one <Emphasis>mentor</Emphasis>.
           </h1>
+          <StageTrail product="courses" className="mt-6" />
           <p className="mt-6 max-w-[52ch] text-[16.5px] leading-relaxed text-ink-soft md:text-[17.5px]">
             Both tracks are built entirely on Indian law — the Constitution, the
             CPC, the Indian Contract Act, and the authorities that actually bind

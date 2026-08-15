@@ -5,6 +5,7 @@ import { PlanSwitcher } from "@/components/draft/PlanSwitcher";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { PhotoBackdrop } from "@/components/ui/PhotoBackdrop";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
+import { StageTrail } from "@/components/map/StageTrail";
 import {
   entitlementFor,
   PLAN_COOKIE,
@@ -81,6 +82,7 @@ export default async function DraftBotPage() {
         <h1 className="mt-4 max-w-3xl font-display text-[2rem] leading-[1.1] font-semibold tracking-[-0.02em] sm:text-[2.4rem]">
           Describe the facts, then have the draft <Emphasis>marked</Emphasis>.
         </h1>
+        <StageTrail product="draft-bot" className="mt-6" />
         <p className="mt-5 max-w-[52ch] text-[16px] leading-relaxed text-ink-soft">
           Tell Shisho the facts and attach a file if you have one — it drafts
           the document, then marks it up in the margin the same way a senior

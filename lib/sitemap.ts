@@ -183,3 +183,21 @@ export const MAP_STAGES: MapStage[] = [
     boxes: [{ label: "Internship", href: "/internship" }],
   },
 ];
+
+/**
+ * The stages a given product answers, derived from `serves` rather than listed
+ * again. This is what lets a product page say where it sits on the map without
+ * a second copy of that relationship drifting out of step with this one.
+ */
+export function stagesServedBy(product: Product) {
+  return MAP_STAGES.filter((s) => s.serves.includes(product));
+}
+
+/** The stage a given map box belongs to, found by its destination. */
+export function stageForHref(href: string) {
+  return MAP_STAGES.find((s) =>
+    s.boxes.some(
+      (b) => b.href === href || b.options?.some((o) => o.href === href),
+    ),
+  );
+}

@@ -5,7 +5,7 @@ import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
 import { StateSelect } from "@/components/map/StateSelect";
 import { BoxMenu } from "@/components/map/BoxMenu";
-import { MAP_STAGES } from "@/lib/sitemap";
+import { MAP_STAGES, PRODUCT_META } from "@/lib/sitemap";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
@@ -66,12 +66,34 @@ export default function MapPage() {
                   />
                 )}
 
-                <div className="flex items-center gap-3.5">
+                <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
                   <StepMark n={stage.n} className="relative bg-paper" />
                   {/* Indigo, like every other mono label on the site — the
                       palette assigns the cool counter-tone to mono labels and
                       citations, and these were the one set reading as grey. */}
                   <h2 className="label-mono text-indigo">{stage.title}</h2>
+
+                  {/* The products that answer this stage. The homepage flow has
+                      carried these since it was built; the map itself did not,
+                      which left it linking to documents but never to the three
+                      things that actually do the work. */}
+                  {stage.serves.length > 0 && (
+                    <ul className="flex flex-wrap gap-2">
+                      {stage.serves.map((product) => {
+                        const meta = PRODUCT_META[product];
+                        return (
+                          <li key={product}>
+                            <Link
+                              href={meta.href}
+                              className="label-mono inline-flex items-center border border-ink/25 px-2 py-1 text-ink-soft/80 transition-[color,border-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/60 hover:text-ink"
+                            >
+                              {meta.label}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </div>
 
                 {/* Boxes take their natural width and pack along the row.

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
+import { StageTrail } from "@/components/map/StageTrail";
 import { DOCUMENTS, documentsByStage } from "@/lib/documents";
 import { MAP_STAGES } from "@/lib/sitemap";
 
@@ -35,6 +36,10 @@ export default function DocumentsPage() {
             it, what it must contain to be competent, and the ways it actually
             fails.
           </p>
+
+          {/* The index is the hub for stages 5 to 7, so it carries the return
+              path to all three rather than to one. */}
+          <StageTrail stages={[5, 6, 7]} className="mt-7" />
         </Container>
       </Section>
 
