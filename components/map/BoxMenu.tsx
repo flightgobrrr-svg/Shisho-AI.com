@@ -94,10 +94,23 @@ export function BoxMenu({
         </svg>
       </button>
 
+      {/* `visibility` rather than the `hidden` attribute: hidden is
+          display:none, which cannot transition from, so the panel used to
+          appear with no acknowledgment at all. visibility:hidden keeps it out
+          of the tab order and the accessibility tree just the same, and it is
+          transitionable — so the panel can answer the click.
+
+          150ms in, and the transform is 3px: this is feedback, not an
+          entrance. Anything longer reads as latency on a menu. */}
       <div
         id={panelId}
-        hidden={!open}
-        className="absolute top-[calc(100%+4px)] left-0 z-20 w-full min-w-40 border border-ink/45 bg-paper-raised p-1 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]"
+        className={cn(
+          "absolute top-[calc(100%+4px)] left-0 z-20 w-full min-w-40 border border-ink/45 bg-paper-raised p-1 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]",
+          "transition-[opacity,transform,visibility] duration-150 ease-[var(--ease-precise)]",
+          open
+            ? "visible translate-y-0 opacity-100"
+            : "invisible -translate-y-1 opacity-0",
+        )}
       >
         <ul>
           {options.map((option) => (

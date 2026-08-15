@@ -64,7 +64,7 @@ export default function MapPage() {
                 {i < MAP_STAGES.length - 1 && (
                   <span
                     aria-hidden="true"
-                    className="absolute top-7 bottom-0 left-3 w-px bg-ink/30"
+                    className="stage-spine absolute top-7 bottom-0 left-3 w-px bg-ink/30"
                   />
                 )}
 

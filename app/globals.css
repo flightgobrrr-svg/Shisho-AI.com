@@ -299,8 +299,21 @@
 }
 
 /* --- Staggered grids ------------------------------------------------------
-   Children carry `--i` (their index); the reveal offsets by 60ms each, so a
-   grid resolves as a wave rather than all at once.
+   Each child reveals on its OWN ViewTimeline, so a grid already resolves as a
+   wave: an item enters when the reader reaches it.
+
+   There is no `animation-delay` here, deliberately. A time delay on a progress
+   timeline does not wait its turn — it offsets the timeline itself, so a
+   sibling can sit at negative progress and `fill-mode: both` pins it to the
+   hidden keyframe. Measured on the /documents grid before removal: three cards
+   sharing one row, at an identical viewport top, resolved to 1, 1 and 0.84.
+   After removal, same row, same scroll: 1 and 1.
+
+   The effect was confined to siblings sharing a row. A vertical list was never
+   harmed — each item there has its own view timeline and enters as the reader
+   reaches it, which is the stagger, and every stage of /map was verified to
+   reach full opacity once genuinely on screen. `--i` is still read by the
+   transition-based fallback below, where a time delay means what it says.
    ------------------------------------------------------------------------ */
 @supports (animation-timeline: view()) {
   .reveal-stagger > * {
@@ -310,7 +323,6 @@
     animation-fill-mode: both;
     animation-timeline: view();
     animation-range: entry 6% cover 24%;
-    animation-delay: calc(var(--i, 0) * 60ms);
   }
 }
 
@@ -824,4 +836,66 @@
   .film__before {
     text-decoration-color: var(--color-seal) !important;
   }
+}
+
+/* ============================================================================
+   THE MAP'S SPINE — the one authored moment on /map
+   ----------------------------------------------------------------------------
+   The connector between stages draws downward as the reader descends. It is
+   the only motion on the page that is not feedback, and it earns that because
+   the line IS the argument: a matter is a sequence, and the spine is the
+   through-line being ruled down the page as you follow it.
+
+   Scroll-driven because the scroll relationship carries the meaning — the line
+   tracks the reader, it does not play at them. Transform only, so it stays on
+   the compositor.
+
+   Resting state is scaleY(1), the finished line, per the contract the rest of
+   this file keeps: if the timeline never runs, the map is fully ruled.
+   ========================================================================== */
+.stage-spine {
+  transform: scaleY(1);
+  transform-origin: top;
+}
+
+@supports (animation-timeline: view()) {
+  .stage-spine {
+    animation-name: shisho-rule-down;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    /* Draws while the stage crosses the upper half of the viewport, so the
+       line reaches the next number at about the moment that number arrives. */
+    animation-range: entry 30% cover 45%;
+  }
+}
+
+@keyframes shisho-rule-down {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* --- The court answer, at stage 3 ------------------------------------------
+   Re-keyed on each selection so the answer arrives rather than swapping in
+   place. 200ms: long enough to read as a response, short enough not to feel
+   like latency.
+   ------------------------------------------------------------------------ */
+@keyframes shisho-answer-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.answer-in {
+  animation: shisho-answer-in 200ms var(--ease-precise) both;
 }

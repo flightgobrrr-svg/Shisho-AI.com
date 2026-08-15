@@ -59,16 +59,18 @@ export function StateSelect() {
         </optgroup>
       </select>
 
-      {/* aria-live so the answer is announced, not merely drawn. */}
+      {/* aria-live so the answer is announced, not merely drawn. The key is
+          the selection, so React remounts the line and the arrival animation
+          replays for each new answer instead of firing once. */}
       <p aria-live="polite" className="mt-3 text-[14px] leading-relaxed">
         {court ? (
-          <>
+          <span key={selected} className="answer-in block">
             <span className="text-ink-soft">Writ jurisdiction lies with the</span>{" "}
             <span className="font-display text-[16px] font-semibold text-ink">
               {court}
             </span>
             <span className="text-ink-soft">.</span>
-          </>
+          </span>
         ) : (
           <span className="text-ink-soft">
             28 states and 8 union territories, and the High Court over each.
