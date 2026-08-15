@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/library`, lastModified: updated, priority: 0.5 },
     { url: `${SITE_URL}/map`, lastModified: updated, priority: 0.5 },
     { url: `${SITE_URL}/documents`, lastModified: updated, priority: 0.7 },
+    { url: `${SITE_URL}/internship`, lastModified: updated, priority: 0.5 },
     ...DOCUMENTS.map((d) => ({
       url: `${SITE_URL}/documents/${d.slug}`,
       lastModified: updated,

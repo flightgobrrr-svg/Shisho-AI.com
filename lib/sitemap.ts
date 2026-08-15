@@ -180,6 +180,6 @@ export const MAP_STAGES: MapStage[] = [
     title: "Beyond the matter",
     summary: "What comes after the file closes.",
     serves: [],
-    boxes: [{ label: "Internship" }],
+    boxes: [{ label: "Internship", href: "/internship" }],
   },
 ];
