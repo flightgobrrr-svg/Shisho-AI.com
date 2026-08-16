@@ -62,7 +62,13 @@ export function StateSelect() {
       {/* aria-live so the answer is announced, not merely drawn. The key is
           the selection, so React remounts the line and the arrival animation
           replays for each new answer instead of firing once. */}
-      <p aria-live="polite" className="mt-3 text-[14px] leading-relaxed">
+      {/* Height reserved. "High Court of Jammu & Kashmir and Ladakh" wraps to
+          two lines where every other answer takes one, and the 26px growth
+          shunted stages 4 to 9 down the page while the reader was mid-read. */}
+      <p
+        aria-live="polite"
+        className="mt-3 min-h-13 text-[14px] leading-relaxed"
+      >
         {court ? (
           <span key={selected} className="answer-in block">
             <span className="text-ink-soft">Writ jurisdiction lies with the</span>{" "}

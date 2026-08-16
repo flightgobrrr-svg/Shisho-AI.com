@@ -80,25 +80,41 @@ export function StageIndex() {
   }, []);
 
   return (
-    <nav aria-label="Jump to a stage" className="mt-9">
-      <ul className="flex flex-wrap gap-2">
+    /* The index is a CONTROL, and it used to be built out of the same object
+       as the content: 44px bordered rectangles with a numbered square, against
+       52px bordered rectangles with a numbered square. Under blur the index
+       band and stage 2's box row were indistinguishable. Dropping the border
+       and the fill — one hairline under the whole row instead — separates the
+       two classes by kind rather than by size.
+
+       One scrolling row on mobile. Wrapped, the nine chips took 252px across
+       five rows, 35% of an 812px viewport, and pushed the first box to 894px:
+       nothing of the map itself was visible on the first screen. */
+    <nav
+      aria-label="Jump to a stage"
+      className="mt-9 border-b border-ink/10 pb-3"
+    >
+      <ul className="-mx-6 flex snap-x gap-x-6 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:gap-y-1 sm:overflow-visible sm:px-0">
         {MAP_STAGES.map((stage) => {
           const isActive = active === stage.n;
           return (
-            <li key={stage.n}>
+            <li key={stage.n} className="snap-start">
               <a
                 href={`#stage-${stage.n}`}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "group flex min-h-11 items-center gap-2 border py-2 pr-3.5 pl-2 text-[13.5px]",
-                  "transition-[transform,border-color,color,background-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
-                  "hover:-translate-y-0.5 hover:border-ink/60 hover:text-ink",
-                  isActive
-                    ? "border-ink/75 bg-paper text-ink"
-                    : "border-ink/25 bg-paper-raised text-ink-soft",
+                  "flex min-h-11 items-center gap-2 whitespace-nowrap text-[13.5px]",
+                  "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink",
+                  isActive ? "text-ink" : "text-ink-soft",
                 )}
               >
-                <StepMark n={stage.n} className="size-5 text-[10px]" />
+                <StepMark
+                  n={stage.n}
+                  className={cn(
+                    "size-5 text-[10px]",
+                    isActive && "border-ink/75 text-ink",
+                  )}
+                />
                 {stage.title}
               </a>
             </li>

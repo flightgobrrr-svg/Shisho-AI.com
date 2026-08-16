@@ -60,24 +60,40 @@ export default function MapPage() {
               call to action — which a screen-reader heading list read as a
               tenth stage. */}
           <h2 className="sr-only">The nine stages</h2>
-          <ol aria-label="Stages of a matter" className="reveal-stagger">
+          {/* The list keeps its own measure, narrower than the container the
+              header uses. Measured before: the ol declared 1088px and its
+              widest row drew 661px, leaving a mean dead column of 672px — 62%
+              of the measure — identical at 1280 and 1600, because 1600 only
+              widened the outer margin. At 768 the dead column was 5px, so the
+              flow was already calibrated for that width and was being rendered
+              inside a frame twice its size. */}
+          <ol
+            aria-label="Stages of a matter"
+            className="reveal-stagger max-w-3xl"
+          >
             {MAP_STAGES.map((stage, i) => (
               <li
                 key={stage.n}
                 id={`stage-${stage.n}`}
                 style={{ "--i": i } as React.CSSProperties}
-                className="relative pb-10 last:pb-0"
+                className="relative pb-16 last:pb-0"
               >
                 {/* The spine running down the flow. Stops at the last stage so
                     the line never dangles past the final box. */}
                 {i < MAP_STAGES.length - 1 && (
                   <span
                     aria-hidden="true"
-                    className="stage-spine absolute top-7 bottom-0 left-3 w-px bg-ink/30"
+                    className="stage-spine absolute top-6 bottom-0 left-3 w-px bg-ink/30"
                   />
                 )}
 
-                <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
+                {/* items-START, not center. The head row grows from 24px to
+                    44px wherever product chips are present, which pushed the
+                    mark down and left the spine ending 10px short of the next
+                    number at seven of the eight joints. Top-aligning the row
+                    pins the mark to the stage's own top, so `top-6` meets it
+                    exactly and `bottom-0` lands on the next one. */}
+                <div className="flex flex-wrap items-start gap-x-3.5 gap-y-2">
                   <StepMark n={stage.n} className="relative bg-paper" />
                   {/* The nine stage names ARE the content of this page. Set as
                       11px mono they were smaller than the box labels they
@@ -85,7 +101,7 @@ export default function MapPage() {
                       contents. Display serif at 19px puts the hierarchy back
                       the right way up; the mono treatment stays on the number
                       mark, where it belongs. */}
-                  <h3 className="font-display text-[19px] leading-none font-semibold text-ink">
+                  <h3 className="mt-0.5 font-display text-[19px] leading-none font-semibold text-ink">
                     {stage.title}
                   </h3>
 
@@ -143,7 +159,7 @@ export default function MapPage() {
                     into a ragged block of cells. Packing them keeps each stage
                     one continuous strip. Uniform height still holds the rows
                     level, so this stays tidy without turning into a table. */}
-                <ul className="mt-4 ml-9.5 flex flex-wrap items-stretch gap-2.5">
+                <ul className="mt-3 ml-9.5 flex flex-wrap items-stretch gap-2.5">
                   {stage.boxes.map((box) => {
                     const content = (
                       <>
