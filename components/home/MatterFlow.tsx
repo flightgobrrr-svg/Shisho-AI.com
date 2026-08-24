@@ -15,6 +15,13 @@ import { MAP_STAGES, PRODUCT_META } from "@/lib/sitemap";
  * before they could get anywhere. A stage of a matter is something they can
  * simply point at.
  *
+ * A persona router is back, deliberately — see components/motion/EntryGate's
+ * own comment for the reasoning — but it no longer lives on this page. It is
+ * now the mandatory front door itself, asked once per session before this
+ * page ever renders, rather than a homepage section sitting beside this one.
+ * By the time anyone reads "Find the stage you are at," they have already
+ * answered who they are; this asks the different, remaining question.
+ *
  * Stages and copy come from lib/sitemap.ts, which /map also reads, so the two
  * views can never drift. A stage with no `serves` renders without chips: it is
  * on the map but nothing on the site answers it yet, and that is worth showing

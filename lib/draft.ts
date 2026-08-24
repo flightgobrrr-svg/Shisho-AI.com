@@ -8,13 +8,45 @@
  * as model output.
  */
 
-export const DOC_TYPES = ["plaint", "notice", "application", "contract"] as const;
+/**
+ * The document types Shisho will draft or mark up.
+ *
+ * Eight of these share a slug with a reference page in lib/documents.ts, so a
+ * document page can hand the workspace its own type — see `draftsAs` there.
+ * `notice` and `contract` keep their own slugs: they are real drafting jobs
+ * with no page, since they sit outside the litigation spine.
+ *
+ * Three documents on the map deliberately have NO type here. `issues` is
+ * settled by the court under Order XIV Rule 1, and cross-examination and oral
+ * arguments happen at the bar. None is a document a party drafts and files, so
+ * offering to draft one would misdescribe the work.
+ *
+ * Ordered as a matter actually runs — this order drives the picker.
+ */
+export const DOC_TYPES = [
+  "notice",
+  "plaint",
+  "written-statement",
+  "counter-claim",
+  "rejoinder",
+  "application",
+  "affidavit",
+  "examination-in-chief",
+  "written-arguments",
+  "contract",
+] as const;
 export type DocType = (typeof DOC_TYPES)[number];
 
 export const DOC_TYPE_LABELS: Record<DocType, string> = {
-  plaint: "Plaint",
   notice: "Legal notice",
+  plaint: "Plaint",
+  "written-statement": "Written statement",
+  "counter-claim": "Counter-claim",
+  rejoinder: "Rejoinder",
   application: "Interlocutory application",
+  affidavit: "Affidavit",
+  "examination-in-chief": "Examination-in-chief",
+  "written-arguments": "Written arguments",
   contract: "Contract",
 };
 
@@ -107,11 +139,46 @@ const RULES: Rule[] = [
   },
   {
     id: "verification",
-    docTypes: ["plaint", "application"],
+    docTypes: [
+      "plaint",
+      "application",
+      "written-statement",
+      "counter-claim",
+      "rejoinder",
+    ],
     match: (d) => (/verif(y|ied|ication)/i.test(d) ? null : tailAnchor(d)),
     severity: "must-fix",
     note: "No verification clause. Every pleading must be verified at its foot, stating which paragraphs are true to knowledge and which to information believed to be true.",
     authority: "Order VI R. 15, CPC 1908",
+  },
+  {
+    id: "general-denial",
+    docTypes: ["written-statement", "rejoinder"],
+    match: (d) =>
+      firstMatch(
+        d,
+        /den(?:y|ies|ied)\s+each\s+and\s+every|general(?:ly)?\s+den(?:y|ies|ied)/i,
+      ),
+    severity: "must-fix",
+    note: "A general denial does not meet the allegation. Deny paragraph by paragraph — an allegation not specifically denied, or denied evasively, is taken to be admitted.",
+    authority: "Order VIII Rr. 3–5, CPC 1908",
+  },
+  {
+    id: "belief-without-source",
+    docTypes: ["affidavit", "examination-in-chief"],
+    match: (d) =>
+      firstMatch(d, /information and belief|believed to be true|on information/i),
+    severity: "consider",
+    note: "Name the source of the information. An affidavit is confined to facts the deponent can prove of his own knowledge; anything on belief must say where it came from, or there is nothing behind it.",
+    authority: "Order XIX R. 3, CPC 1908",
+  },
+  {
+    id: "arguments-by-issue",
+    docTypes: ["written-arguments"],
+    match: (d) => (/issue\s*(?:no\.?|number)?\s*\d/i.test(d) ? null : tailAnchor(d)),
+    severity: "must-fix",
+    note: "Written arguments run issue by issue, under distinct headings, against the issues as framed. Argument not tied to an issue gives the court nothing to decide.",
+    authority: "Order XVIII R. 2(3A), CPC 1908",
   },
   {
     id: "omnibus-prayer",

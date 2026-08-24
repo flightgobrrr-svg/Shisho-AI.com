@@ -50,12 +50,16 @@ const SEVERITY_STYLES: Record<Annotation["severity"], string> = {
 export function DraftWorkspace({
   entitlement,
   assistantEntitlement,
+  initialDocType = "plaint",
 }: {
   entitlement: Entitlement;
   assistantEntitlement: AssistantEntitlement;
+  /** Pre-selected when the reader arrived from a document page via ?doc=.
+   *  Already resolved and validated on the server; defaults to the plaint. */
+  initialDocType?: DocType;
 }) {
   const [draft, setDraft] = useState("");
-  const [docType, setDocType] = useState<DocType>("plaint");
+  const [docType, setDocType] = useState<DocType>(initialDocType);
   const [annotations, setAnnotations] = useState<Annotation[] | null>(null);
   const [mode, setMode] = useState<DraftResponse["mode"] | null>(null);
   const [status, setStatus] = useState<"idle" | "pending">("idle");
@@ -125,6 +129,7 @@ export function DraftWorkspace({
       <div id="ask">
         <DraftingAgent
           entitlement={assistantEntitlement}
+          contextDocType={docType}
           onDraft={(text, dt) => {
             setDraft(text);
             if (dt && isDocType(dt)) setDocType(dt);

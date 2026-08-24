@@ -32,9 +32,15 @@ const ACCEPT_ATTRIBUTE = ".txt,.pdf,.docx,image/*";
  */
 export function DraftingAgent({
   entitlement,
+  contextDocType,
   onDraft,
 }: {
   entitlement: AssistantEntitlement;
+  /** What the workspace's picker is set to, sent as grounding so a reader who
+   *  arrived from a document page gets that document drafted rather than the
+   *  default. Advisory only — the route re-validates it with isDocType, and
+   *  in live mode the model still decides. */
+  contextDocType?: DocType;
   onDraft: (draft: string, docType: DocType | null) => void;
 }) {
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
@@ -90,10 +96,15 @@ export function DraftingAgent({
     try {
       const body: {
         messages: ChatMessage[];
+        context?: { docType: DocType };
         file?: { filename: string; mimeType: string; dataBase64: string };
       } = {
         messages: nextMessages.map(({ role, content }) => ({ role, content })),
       };
+
+      if (contextDocType) {
+        body.context = { docType: contextDocType };
+      }
 
       if (file) {
         body.file = {

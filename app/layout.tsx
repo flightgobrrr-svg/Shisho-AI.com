@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EB_Garamond, IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import { CustomCursor } from "@/components/motion/CustomCursor";
+import { EntryGate } from "@/components/motion/EntryGate";
 import { Analytics } from "@vercel/analytics/next";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -77,6 +78,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
+      data-scroll-behavior="smooth"
       className={`${garamond.variable} ${instrument.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
@@ -86,6 +88,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <EntryGate />
         <CustomCursor />
         <Nav />
         <main id="main" className="flex-1">

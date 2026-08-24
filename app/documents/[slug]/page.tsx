@@ -125,11 +125,24 @@ export default async function DocumentPage({
             </div>
           </div>
 
+          {/* The draft CTA is offered only where `draftsAs` is set — that is,
+              where the document is one a party drafts and files. Issues are
+              settled by the court, and cross-examination and oral arguments
+              happen at the bar; on those three the Library leads instead,
+              rather than offering to draft something that is never drafted. */}
           <div className="mt-14 flex flex-wrap gap-3 border-t border-ink/10 pt-10">
-            <Button href="/draft-bot">Draft this with Shisho</Button>
-            <Button href="/library" variant="ghost">
-              Find the authority
-            </Button>
+            {doc.draftsAs ? (
+              <>
+                <Button href={`/draft-bot?doc=${doc.slug}`}>
+                  Draft this with Shisho
+                </Button>
+                <Button href="/library" variant="ghost">
+                  Find the authority
+                </Button>
+              </>
+            ) : (
+              <Button href="/library">Find the authority</Button>
+            )}
           </div>
         </Container>
       </Section>

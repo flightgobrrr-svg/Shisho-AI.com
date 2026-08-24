@@ -35,8 +35,22 @@
  * places and is called out where it does, rather than flattened into one rule.
  */
 
+import type { DocType } from "@/lib/draft";
+
 export type LegalDocument = {
   slug: string;
+  /**
+   * The Shisho draft type this document maps to, so a document page can
+   * pre-load the workspace instead of dropping the reader on a generic one.
+   * Where the slug and the type share a name that is deliberate, not
+   * incidental — the relationship lives here and nowhere else.
+   *
+   * ABSENT means the document is not one a party drafts and files, and the
+   * page must not offer to draft it: `issues` is settled by the court on the
+   * pleadings (Order XIV Rule 1), and cross-examination and oral arguments
+   * happen at the bar.
+   */
+  draftsAs?: DocType;
   /** Title case, as an advocate would name it. */
   name: string;
   /** The map stage this belongs to (lib/sitemap.ts). */
@@ -56,6 +70,7 @@ export type LegalDocument = {
 export const DOCUMENTS: LegalDocument[] = [
   {
     slug: "plaint",
+    draftsAs: "plaint",
     name: "Plaint",
     stage: 6,
     lede: "The suit itself — the document that starts a civil case and fixes the case you must prove.",
@@ -81,6 +96,7 @@ export const DOCUMENTS: LegalDocument[] = [
   },
   {
     slug: "written-statement",
+    draftsAs: "written-statement",
     name: "Written Statement",
     stage: 6,
     lede: "The defence — and the one document where saying nothing is treated as saying yes.",
@@ -105,6 +121,7 @@ export const DOCUMENTS: LegalDocument[] = [
   },
   {
     slug: "counter-claim",
+    draftsAs: "counter-claim",
     name: "Counter-claim",
     stage: 6,
     lede: "The defendant suing back inside the same suit — a cross-suit in all but name.",
@@ -128,6 +145,7 @@ export const DOCUMENTS: LegalDocument[] = [
   },
   {
     slug: "rejoinder",
+    draftsAs: "rejoinder",
     name: "Rejoinder",
     stage: 6,
     lede: "The plaintiff's answer to new matter in the written statement — permitted, but not as of right.",
@@ -150,6 +168,7 @@ export const DOCUMENTS: LegalDocument[] = [
   },
   {
     slug: "affidavit",
+    draftsAs: "affidavit",
     name: "Affidavit",
     stage: 5,
     lede: "Evidence on oath, in writing — and the document most often spoiled by argument.",
@@ -173,6 +192,7 @@ export const DOCUMENTS: LegalDocument[] = [
   },
   {
     slug: "petition",
+    draftsAs: "application",
     name: "Interlocutory Application",
     stage: 5,
     lede: "Relief you need while the suit is still running — most often an injunction.",
@@ -220,6 +240,7 @@ export const DOCUMENTS: LegalDocument[] = [
   },
   {
     slug: "examination-in-chief",
+    draftsAs: "examination-in-chief",
     name: "Examination-in-chief",
     stage: 7,
     lede: "Your own witness's evidence — now filed on affidavit before anyone speaks.",
@@ -265,6 +286,7 @@ export const DOCUMENTS: LegalDocument[] = [
   },
   {
     slug: "written-arguments",
+    draftsAs: "written-arguments",
     name: "Written Arguments",
     stage: 7,
     lede: "The case in writing, on the record — and it must be in before you stand up.",

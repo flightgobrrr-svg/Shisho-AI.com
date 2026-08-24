@@ -6,6 +6,7 @@ import { Emphasis } from "@/components/ui/Emphasis";
 import { PhotoBackdrop } from "@/components/ui/PhotoBackdrop";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { StageTrail } from "@/components/map/StageTrail";
+import { getDocument } from "@/lib/documents";
 import {
   entitlementFor,
   PLAN_COOKIE,
@@ -22,7 +23,7 @@ import {
 export const metadata: Metadata = {
   title: "Shisho",
   description:
-    "Describe your facts and Shisho drafts a plaint, notice, application, or contract — then marks it up under Indian law.",
+    "Describe your facts and Shisho drafts the document — from the notice before suit to written arguments — then marks it up under Indian law.",
 };
 
 const DRAFT_TYPES = [
@@ -34,8 +35,24 @@ const DRAFT_TYPES = [
   "Synopsis, list of dates & grounds of appeal",
 ];
 
-export default async function DraftBotPage() {
-  const cookieStore = await cookies();
+export default async function DraftBotPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const [cookieStore, params] = await Promise.all([cookies(), searchParams]);
+
+  /* ?doc=<slug> arrives from a document page's "Draft this with Shisho".
+
+     Resolved HERE, on the server, against lib/documents.ts — so the query
+     string never reaches the workspace as a document type. An unknown slug,
+     a hand-edited one, or one naming a document that is not drafted at all
+     resolves to nothing and the page falls back to its default. */
+  const requested =
+    typeof params.doc === "string" ? getDocument(params.doc) : undefined;
+  const target = requested?.draftsAs
+    ? { docType: requested.draftsAs, name: requested.name }
+    : null;
 
   const plan = readPlan(cookieStore.get(PLAN_COOKIE)?.value);
   const used = readUsage(cookieStore.get(USAGE_COOKIE)?.value);
@@ -83,6 +100,11 @@ export default async function DraftBotPage() {
           Describe the facts, then have the draft <Emphasis>marked</Emphasis>.
         </h1>
         <StageTrail product="draft-bot" className="mt-6" />
+        {target ? (
+          <p className="label-mono mt-6 text-ink-soft">
+            Set up to draft: {target.name}
+          </p>
+        ) : null}
         <p className="mt-5 max-w-[52ch] text-[16px] leading-relaxed text-ink-soft">
           Tell Shisho the facts and attach a file if you have one — it drafts
           the document, then marks it up in the margin the same way a senior
@@ -95,6 +117,7 @@ export default async function DraftBotPage() {
           <DraftWorkspace
             entitlement={entitlement}
             assistantEntitlement={assistantEntitlement}
+            initialDocType={target?.docType}
           />
         </div>
       </Container>

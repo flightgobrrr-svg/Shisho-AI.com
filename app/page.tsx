@@ -13,8 +13,9 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      {/* The matter's own sequence is the way in; the three products are
-          introduced after it, as the things that answer those stages. */}
+      {/* Who you are is now asked once, in the mandatory entry gate
+          (components/motion/EntryGate.tsx) before this page is ever seen —
+          see MatterFlow's own comment for what that means for this section. */}
       <MatterFlow />
       <FeatureStrip />
       {/* Features described, then shown. */}

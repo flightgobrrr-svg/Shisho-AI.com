@@ -12,7 +12,7 @@
  * lib/entitlements.ts, which stay untouched.
  */
 
-import { DOC_TYPES, type DocType } from "@/lib/draft";
+import { DOC_TYPES, DOC_TYPE_LABELS, type DocType } from "@/lib/draft";
 
 export type ChatRole = "user" | "assistant";
 
@@ -99,6 +99,18 @@ function guessDocType(message: string, context?: AssistantContext): DocType {
     return context.docType as DocType;
   }
   const lower = message.toLowerCase();
+
+  /* Most specific first: an "affidavit of evidence" is an examination-in-chief
+     rather than a bare affidavit, and "written statement" must not fall
+     through to "written arguments". */
+  if (/\bwritten.statements?\b/.test(lower)) return "written-statement";
+  if (/\bcounter.?claims?\b/.test(lower)) return "counter-claim";
+  if (/\brejoinder\b|\breplication\b/.test(lower)) return "rejoinder";
+  if (/\bexamination.in.chief\b|\baffidavit of evidence\b/.test(lower)) {
+    return "examination-in-chief";
+  }
+  if (/\bwritten.arguments?\b/.test(lower)) return "written-arguments";
+  if (/\baffidavit\b/.test(lower)) return "affidavit";
   if (/\bnotice\b/.test(lower)) return "notice";
   if (/\bcontract\b|\bagreement\b/.test(lower)) return "contract";
   if (/\bapplication\b|\binterlocutory\b|\bstay\b|\binjunction\b/.test(lower)) {
@@ -143,6 +155,72 @@ Under instructions from and on behalf of my client, [client's name], I address y
 
 [Advocate's name]
 For the Sender`,
+  "written-statement": `IN THE COURT OF THE CIVIL JUDGE AT [PLACE]
+
+[SUIT No. ____ of 20__]
+
+[Plaintiff's name] ..... Plaintiff
+versus
+[Defendant's name] ..... Defendant
+
+WRITTEN STATEMENT ON BEHALF OF THE DEFENDANT
+
+PRELIMINARY OBJECTIONS
+
+1. [Objections going to the root — limitation, jurisdiction, no cause of action, non-joinder. Limitation is not saved for later; unpleaded, it is very hard to argue.]
+
+PARAGRAPH-WISE REPLY
+
+2. [Reply to paragraph 1 of the plaint. Admit, deny, or state what is not admitted — specifically. An allegation not specifically denied is taken to be admitted.]
+3. [Reply to paragraph 2 of the plaint.]
+
+ADDITIONAL PLEAS
+
+4. [New facts the Plaintiff must meet — discharge, fraud, and anything else that would otherwise take him by surprise.]
+
+PRAYER
+
+It is therefore prayed that the suit be dismissed with costs.
+
+VERIFICATION
+Verified at [place] on this [date] that the contents of paragraphs 1 to 4 are true to my knowledge and the rest are believed to be true on information received.`,
+  "counter-claim": `IN THE COURT OF THE CIVIL JUDGE AT [PLACE]
+
+[SUIT No. ____ of 20__]
+
+COUNTER-CLAIM ON BEHALF OF THE DEFENDANT
+[Under Order VIII Rule 6A CPC, filed with the written statement.]
+
+MOST RESPECTFULLY SHOWETH:
+
+1. [The right or claim accruing to the Defendant against the Plaintiff, and the date it accrued — it must have accrued before the defence was delivered.]
+2. [The facts constituting the cause of action for the counter-claim, pleaded as they would be in a plaint, not as argument against the plaint.]
+3. [The value of the counter-claim, for jurisdiction and for court fee. Court fee is payable as on a plaint.]
+
+PRAYER
+
+It is therefore prayed that this Hon'ble Court may be pleased to [specific relief claimed against the Plaintiff], with costs.
+
+VERIFICATION
+Verified at [place] on this [date] that the contents of paragraphs 1 to 3 are true to my knowledge and the rest are believed to be true on information received.`,
+  rejoinder: `IN THE COURT OF THE CIVIL JUDGE AT [PLACE]
+
+[SUIT No. ____ of 20__]
+
+REJOINDER ON BEHALF OF THE PLAINTIFF TO THE WRITTEN STATEMENT
+[Filed with the leave of this Hon'ble Court granted on [date]. A rejoinder is not a pleading the Code guarantees.]
+
+MOST RESPECTFULLY SHOWETH:
+
+1. [Answer confined to the new facts raised in the written statement. A rejoinder cannot repair a cause of action that was never pleaded, and cannot set up a fresh case — that needs an amendment under Order VI Rule 17.]
+2. [Specific denial of each new allegation not admitted.]
+
+PRAYER
+
+It is therefore prayed that the preliminary objections and additional pleas be rejected and the suit decreed as prayed.
+
+VERIFICATION
+Verified at [place] on this [date] that the contents of paragraphs 1 to 2 are true to my knowledge and the rest are believed to be true on information received.`,
   application: `IN THE COURT OF [FORUM]
 
 [SUIT/CASE No. ____ of 20__]
@@ -157,6 +235,68 @@ MOST RESPECTFULLY SHOWETH:
 PRAYER
 
 It is therefore prayed that this Hon'ble Court may be pleased to [interim relief sought], pending disposal of the main [suit/petition].`,
+  affidavit: `IN THE COURT OF [FORUM]
+
+[SUIT/CASE No. ____ of 20__]
+
+AFFIDAVIT OF [deponent's name]
+
+I, [full name], aged about [age] years, [occupation], resident of [address], do hereby solemnly affirm and state as follows:
+
+1. That I am the [capacity — Plaintiff / Defendant / authorised representative] in the above matter and am competent to swear this affidavit.
+2. [One matter to a paragraph, confined to facts within my own knowledge. No argument and no submission — an affidavit that argues is not an affidavit under Order XIX Rule 3.]
+3. [For anything on information: name the source of the information, then state that it is believed to be true.]
+
+DEPONENT
+
+VERIFICATION
+Verified at [place] on this [date] that paragraphs [__] of this affidavit are true to my knowledge and paragraphs [__] are true on information received from [source] and believed by me to be true, and that nothing material has been concealed.
+
+DEPONENT
+
+[To be sworn or affirmed before a person authorised to administer the oath under Section 139 CPC.]`,
+  "examination-in-chief": `IN THE COURT OF [FORUM]
+
+[SUIT No. ____ of 20__]
+
+AFFIDAVIT BY WAY OF EXAMINATION-IN-CHIEF OF [witness's name], [PW-__ / DW-__]
+[Filed under Order XVIII Rule 4 CPC.]
+
+I, [full name], aged about [age] years, [occupation], resident of [address], do hereby solemnly affirm and state as follows:
+
+1. That I am the [capacity] in the above matter and depose to the following facts from my own knowledge.
+2. [The facts this witness is called to prove, in the order they occurred. Evidence, not argument — an affidavit that argues is neither a valid affidavit nor a valid examination-in-chief.]
+3. That I have seen the [document] dated [date], now shown to me and marked Exhibit [__]. [Every document to be proved through this witness must be brought in here, or it is left unproved.]
+
+DEPONENT
+
+VERIFICATION
+Verified at [place] on this [date] that the contents of this affidavit are true to my knowledge.
+
+DEPONENT
+
+[A copy is to be furnished to the opposite party, since cross-examination proceeds on it.]`,
+  "written-arguments": `IN THE COURT OF [FORUM]
+
+[SUIT No. ____ of 20__]
+
+WRITTEN ARGUMENTS ON BEHALF OF THE [PLAINTIFF / DEFENDANT]
+[Filed under Order XVIII Rule 2(3A) CPC — concise, under distinct headings, within four weeks before oral arguments commence.]
+
+I. LIST OF DATES
+[The chronology, briefly.]
+
+II. ISSUE NO. 1 — [the issue as framed by the court]
+[The submission on this issue, and the evidence on record it rests on — the deposition of [PW-__], Exhibit [__]. Argument, not the plaint restated.]
+[Authority: [case and citation], cited for the proposition that [proposition it is cited for].]
+
+III. ISSUE NO. 2 — [the issue as framed by the court]
+[As above, issue by issue.]
+
+IV. CONCLUSION
+[The relief sought, tied back to the issues answered.]
+
+[A copy has been furnished to the opposite party.]`,
   contract: `THIS AGREEMENT is made on [date]
 
 BETWEEN
@@ -198,7 +338,8 @@ export function demoReply(
     return {
       mode: "demo",
       reply:
-        `Demo mode — here is a sample ${docType} skeleton, not a real draft from your facts. ` +
+        `Demo mode — here is a sample ${DOC_TYPE_LABELS[docType].toLowerCase()} skeleton, ` +
+        "not a real draft from your facts. " +
         "It's in the workspace below; connect a model to get one actually built from what you tell me.",
       draft: DEMO_SKELETONS[docType],
       docType,
