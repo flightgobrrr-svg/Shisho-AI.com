@@ -44,6 +44,8 @@ export type CaseCitations = {
 };
 
 export type CaseDigest = {
+  /** ISO time the digest was generated (from the cache row, or now). */
+  generatedAt?: string;
   courtHeader: string;
   /** The judgment's own title — deterministic (from the identity passed in,
    *  never AI-generated), stored so app/library/lookup can render an ad-hoc
@@ -353,19 +355,23 @@ async function cachedOrGenerated(
   if (isSupabaseConfigured()) {
     const { data, error } = await supabase()
       .from("case_briefs")
-      .select("digest, mode")
+      .select("digest, mode, generated_at")
       .eq("slug", slug)
       .maybeSingle();
 
     if (!error && data) {
-      return { ...(data.digest as Omit<CaseDigest, "mode">), mode: data.mode };
+      return {
+        ...(data.digest as Omit<CaseDigest, "mode">),
+        mode: data.mode,
+        generatedAt: data.generated_at,
+      };
     }
   }
 
-  const digest = await generateDigest(identity, fallbackRatio);
+  const digest = { ...(await generateDigest(identity, fallbackRatio)), generatedAt: new Date().toISOString() };
 
   if (isSupabaseConfigured()) {
-    const { mode, ...digestFields } = digest;
+    const { mode, generatedAt: _generatedAt, ...digestFields } = digest;
     const { error } = await supabase()
       .from("case_briefs")
       .upsert({ slug, digest: digestFields, mode }, { onConflict: "slug" });

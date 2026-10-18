@@ -48,7 +48,7 @@ export function LiveSessionsList({ sessions }: { sessions: LiveSession[] }) {
             {session.description}
           </p>
           <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="label-mono shrink-0 text-ink-soft/70">{session.duration}</span>
+            <span className="label-mono shrink-0 text-ink-faint">{session.duration}</span>
             {session.joinUrl ? (
               <Button href={session.joinUrl} size="sm">
                 Join

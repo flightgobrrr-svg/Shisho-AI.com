@@ -54,9 +54,9 @@ export function ProvisionSearch({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Act, section, or subject…"
-          className="h-11 min-w-0 flex-1 border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-soft/60 sm:max-w-sm"
+          className="h-11 min-w-0 flex-1 border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-faint sm:max-w-sm"
         />
-        <p className="label-mono text-ink-soft/70" aria-live="polite">
+        <p className="label-mono text-ink-faint" aria-live="polite">
           Showing {results.length} of {provisions.length}
         </p>
       </div>
@@ -101,7 +101,7 @@ export function ProvisionSearch({
                         <span className="text-ink-soft"> — {p.title}</span>
                       </p>
                       {!p.verbatim && (
-                        <span className="label-mono text-[11px] text-ink-soft/50">
+                        <span className="label-mono text-[11px] text-ink-faint">
                           plain-language summary
                         </span>
                       )}
@@ -118,7 +118,7 @@ export function ProvisionSearch({
                     )}
 
                     {((p.usedIn && p.usedIn.length > 0) || (p.citedIn && p.citedIn.length > 0)) && (
-                      <p className="mt-3 space-x-1 text-[13px] leading-relaxed text-ink-soft/70">
+                      <p className="mt-3 space-x-1 text-[13px] leading-relaxed text-ink-faint">
                         {p.usedIn && p.usedIn.length > 0 && (
                           <span>
                             Used by{" "}

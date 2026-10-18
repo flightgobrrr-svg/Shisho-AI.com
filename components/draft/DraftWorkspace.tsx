@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { findDocumentForAuthority } from "@/lib/documents";
+import { buildReviewHtml, downloadHtml } from "@/lib/reviewExport";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/motion/Magnetic";
@@ -93,6 +94,7 @@ export function DraftWorkspace({
   const [locked, setLocked] = useState(!entitlement.allowed);
   const [remaining, setRemaining] = useState(entitlement.remaining);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [onlyMustFix, setOnlyMustFix] = useState(false);
 
   /* Two modes, not two pages — the chat and the reviewer keep the same
      backend calls and the same state they always had, only one is visible
@@ -113,6 +115,19 @@ export function DraftWorkspace({
   const [driveTemplateName, setDriveTemplateName] = useState(initialDriveTemplateName);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const visibleAnnotations = annotations
+    ? annotations.filter((a) => !onlyMustFix || a.severity === "must-fix")
+    : null;
+  const mustFixCount = annotations?.filter((a) => a.severity === "must-fix").length ?? 0;
+
+  function exportReview() {
+    if (!annotations) return;
+    downloadHtml(
+      "shisho-review.html",
+      buildReviewHtml(draft, annotations, DOC_TYPE_LABELS[docType]),
+    );
+  }
 
   async function review() {
     setStatus("pending");
@@ -192,7 +207,7 @@ export function DraftWorkspace({
           <span
             className={cn(
               "mt-1 block text-[12.5px] leading-snug",
-              activeMode === "new" ? "text-paper-raised/70" : "text-ink-soft/70",
+              activeMode === "new" ? "text-paper-raised/70" : "text-ink-faint",
             )}
           >
             Describe the facts to Shisho
@@ -217,7 +232,7 @@ export function DraftWorkspace({
           <span
             className={cn(
               "mt-1 block text-[12.5px] leading-snug",
-              activeMode === "review" ? "text-paper-raised/70" : "text-ink-soft/70",
+              activeMode === "review" ? "text-paper-raised/70" : "text-ink-faint",
             )}
           >
             Paste a document for clause-level notes
@@ -267,7 +282,7 @@ export function DraftWorkspace({
           <div>
             <label
               htmlFor="doc-type"
-              className="label-mono block text-ink-soft/70"
+              className="label-mono block text-ink-faint"
             >
               Document type
             </label>
@@ -307,12 +322,12 @@ export function DraftWorkspace({
           className={cn(
             "mt-4 block h-[26rem] w-full resize-y rounded-seal border border-ink/45 bg-paper-raised p-5",
             "font-mono text-[12.5px] leading-[1.9] text-ink",
-            "placeholder:text-ink-soft/50 lg:h-[34rem]",
+            "placeholder:text-ink-faint lg:h-[34rem]",
           )}
         />
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <p className="label-mono text-ink-soft/60">
+          <p className="label-mono text-ink-faint">
             {draft.length.toLocaleString("en-IN")} / {MAX_DRAFT_CHARS.toLocaleString("en-IN")}
           </p>
           <div className="flex items-center gap-4">
@@ -343,7 +358,7 @@ export function DraftWorkspace({
       {/* ================= Notes ================= */}
       <aside className="min-w-0">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="label-mono text-ink-soft/70">Shisho notes</h2>
+          <h2 className="label-mono text-ink-faint">Shisho notes</h2>
           {mode === "demo" ? (
             <span className="label-mono rounded-seal border border-ink/45 px-1.5 py-0.5 text-ink-soft">
               Demo
@@ -376,6 +391,30 @@ export function DraftWorkspace({
               </p>
             ) : null}
 
+            {status === "idle" && annotations && annotations.length > 1 ? (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-ink-soft">
+                <button
+                  type="button"
+                  onClick={() => setOnlyMustFix((v) => !v)}
+                  aria-pressed={onlyMustFix}
+                  className="underline-draw text-ink"
+                >
+                  {onlyMustFix ? "Show all notes" : `Show only must-fix (${mustFixCount})`}
+                </button>
+                <button type="button" onClick={exportReview} className="underline-draw text-ink">
+                  Download review
+                </button>
+              </div>
+            ) : null}
+
+            {status === "idle" && annotations && annotations.length === 1 ? (
+              <div className="text-[12.5px]">
+                <button type="button" onClick={exportReview} className="underline-draw text-ink">
+                  Download review
+                </button>
+              </div>
+            ) : null}
+
             {status === "idle" && annotations === null ? (
               <p className="text-[14px] leading-relaxed text-ink-soft">
                 Paste a draft and ask for a review. Notes will appear here,
@@ -390,7 +429,7 @@ export function DraftWorkspace({
             ) : null}
 
             {status === "idle" &&
-              annotations?.map((annotation, i) => {
+              visibleAnnotations?.map((annotation, i) => {
                 const doc = annotation.authority
                   ? findDocumentForAuthority(annotation.authority)
                   : undefined;
@@ -416,7 +455,7 @@ export function DraftWorkspace({
                     {SEVERITY_LABELS[annotation.severity]}
                   </span>
 
-                  <span className="mt-2.5 block font-mono text-[11px] leading-snug text-ink-soft/70 italic">
+                  <span className="mt-2.5 block font-mono text-[11px] leading-snug text-ink-faint italic">
                     &ldquo;{truncate(annotation.anchor, 60)}&rdquo;
                   </span>
 

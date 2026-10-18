@@ -41,11 +41,11 @@ export default async function AccountPage() {
 
       <dl className="mt-8 space-y-5 border-t border-ink/10 pt-6">
         <div>
-          <dt className="label-mono text-ink-soft/70">Email</dt>
+          <dt className="label-mono text-ink-faint">Email</dt>
           <dd className="mt-1 text-[14.5px] text-ink">{user.email}</dd>
         </div>
         <div>
-          <dt className="label-mono text-ink-soft/70">Plan</dt>
+          <dt className="label-mono text-ink-faint">Plan</dt>
           <dd className="mt-1 text-[14.5px] text-ink">{PLAN_LABELS[plan]}</dd>
         </div>
       </dl>

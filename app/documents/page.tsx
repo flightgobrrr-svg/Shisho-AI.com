@@ -4,6 +4,7 @@ import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
 import { StageTrail } from "@/components/map/StageTrail";
+import { DocumentOfTheWeek } from "@/components/home/DocumentOfTheWeek";
 import { DOCUMENTS, documentsByStage } from "@/lib/documents";
 import { MAP_STAGES } from "@/lib/sitemap";
 
@@ -36,6 +37,8 @@ export default function DocumentsPage() {
             it, what it must contain to be competent, and the ways it actually
             fails.
           </p>
+
+          <DocumentOfTheWeek />
 
           {/* The index is the hub for stages 5 to 7, so it carries the return
               path to all three rather than to one. */}
@@ -71,7 +74,7 @@ export default function DocumentsPage() {
                         <p className="mt-2 flex-1 text-[14px] leading-relaxed text-ink-soft">
                           {doc.lede}
                         </p>
-                        <p className="label-mono mt-4 text-ink-soft/70">
+                        <p className="label-mono mt-4 text-ink-faint">
                           {doc.provision.cite.split(",")[0]}
                         </p>
                       </Link>

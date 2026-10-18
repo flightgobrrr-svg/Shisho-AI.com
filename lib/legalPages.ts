@@ -24,7 +24,7 @@ export type LegalDoc = {
 
 export const LAST_UPDATED = "18 October 2026";
 
-export const LEGAL: Record<"terms" | "privacy" | "refund" | "about", LegalDoc> = {
+export const LEGAL: Record<"terms" | "privacy" | "refund" | "about" | "how", LegalDoc> = {
   terms: {
     title: "Terms of use",
     lede: "The short version: Shisho AI helps you learn and draft. It does not replace a lawyer, and you remain responsible for what you file.",
@@ -91,6 +91,7 @@ export const LEGAL: Record<"terms" | "privacy" | "refund" | "about", LegalDoc> =
           "Account: your email address and your plan. Your password is handled by our authentication provider, not stored by us in readable form.",
           "Usage: a count of how many assistant reviews you have used, so monthly limits work.",
           "Google Drive, only if you connect it: a token that lets Shisho read the folder you choose, the folder's name, and a list of the file names in it.",
+          "Notify-me sign-ups, only if you use one: your email address and the audience page you signed up from, so we can write to you once when that tool opens.",
         ],
       },
       {
@@ -160,6 +161,40 @@ export const LEGAL: Record<"terms" | "privacy" | "refund" | "about", LegalDoc> =
           "Indian law only — the CPC, the Bharatiya Sakshya Adhiniyam and the Bar Council of India's rules, across the courts of the country.",
           "Every citation is checked against a real source before it is published.",
           "Where something is planned and not built, we say so, and we do not claim customers or results we do not have. Shisho AI is pre-launch.",
+        ],
+      },
+    ],
+  },
+  how: {
+    title: "How Shisho works",
+    lede: "What happens to your words, what is checked against a source, and what is not.",
+    updated: LAST_UPDATED,
+    sections: [
+      {
+        heading: "What happens when you ask for a draft or a review",
+        body: [
+          "Your text, and any file you attach, are sent to an AI model provider — Google (Gemini) or Anthropic (Claude), depending on how the service is set up — which writes the draft or the notes.",
+          "If no model is connected, Shisho runs in demo mode and says so on screen. Demo notes come from a small set of sample patterns, not from reading your draft.",
+        ],
+      },
+      {
+        heading: "What is saved",
+        body: [
+          "Your account email and plan, a count of reviews used this month, and, if you connect Google Drive, a token for the folder you chose. The text of your drafts and uploads is not saved in Shisho's own database.",
+        ],
+      },
+      {
+        heading: "What is checked against a source",
+        body: [
+          "Every citation in the Legal Library was checked against a real published copy before it was added. Case digests are written from the judgment's own text, not from memory.",
+          "The provisions on the document pages, the limitation periods in the checker and the IPC to BNS mappings were each checked against published text. Each shows its source.",
+        ],
+      },
+      {
+        heading: "What is not checked",
+        body: [
+          "A draft or a note written by the model is not verified automatically. It can be wrong or incomplete. Shisho is told never to invent a case or a section, and to leave a gap rather than guess, but you must still read the draft and check every authority before you file.",
+          "A \"Why this matters\" note appears under a review note only when its authority matches one of our document pages exactly. If it does not match, nothing is shown rather than a guess.",
         ],
       },
     ],

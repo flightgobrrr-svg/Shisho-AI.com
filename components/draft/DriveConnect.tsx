@@ -148,7 +148,7 @@ export function DriveConnect({
   if (!connected) {
     return (
       <div className="rounded-seal border border-ink/45 bg-paper-raised p-4">
-        <p className="label-mono text-ink-soft/70">Default template</p>
+        <p className="label-mono text-ink-faint">Default template</p>
         <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">
           Connect Google Drive and point at the one document you want every
           draft to follow — Shisho only ever sees that one file, nothing
@@ -173,7 +173,7 @@ export function DriveConnect({
     <div className="rounded-seal border border-ink/45 bg-paper-raised p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="label-mono text-ink-soft/70">Default template</p>
+          <p className="label-mono text-ink-faint">Default template</p>
           <p className="mt-1.5 truncate text-[13.5px] text-ink">
             {templateName ?? "Connected — no template chosen yet."}
           </p>

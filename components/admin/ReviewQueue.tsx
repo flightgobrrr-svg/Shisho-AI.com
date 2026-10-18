@@ -198,7 +198,7 @@ export function ReviewQueue({
                   onChange={(e) => updateDraft(c.id, { topic: e.target.value })}
                   rows={2}
                   placeholder="Not filled by the scraper — write what this case is actually about."
-                  className="mt-1.5 w-full border border-ink/30 bg-paper px-3 py-2 text-[14px] text-ink placeholder:text-ink-soft/50"
+                  className="mt-1.5 w-full border border-ink/30 bg-paper px-3 py-2 text-[14px] text-ink placeholder:text-ink-faint"
                 />
               </label>
             </div>
@@ -226,7 +226,7 @@ export function ReviewQueue({
                 Reject
               </Button>
               {!canApprove && (
-                <span className="text-[12.5px] text-ink-soft/60">
+                <span className="text-[12.5px] text-ink-faint">
                   Fill in title, citation, court, topic, and category to approve.
                 </span>
               )}

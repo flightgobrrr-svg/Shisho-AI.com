@@ -60,7 +60,7 @@ export default async function LookupPage({
           type="search"
           defaultValue={query}
           placeholder="e.g. Rangappa vs Sri Mohan"
-          className="h-11 min-w-0 flex-1 border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-soft/60"
+          className="h-11 min-w-0 flex-1 border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-faint"
         />
         <button
           type="submit"

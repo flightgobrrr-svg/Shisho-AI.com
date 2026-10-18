@@ -244,6 +244,12 @@ export const EXTRAS: Record<"advocates" | "clerks" | "students", AudienceItem[]>
       href: "/internship",
     },
     {
+      label: "Revision",
+      note: "Saved briefs come back after 1, 7 and 30 days.",
+      status: "live",
+      href: "/courses/revision",
+    },
+    {
       label: "Moot kit",
       note: "A memorial outline, an oral-round checklist and a timer.",
       status: "live",

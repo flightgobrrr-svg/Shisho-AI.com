@@ -86,14 +86,14 @@ export function SocialProof() {
           {TESTIMONIALS.map((testimonial, i) => (
             <li key={i} className="min-w-0">
               <figure>
-                <blockquote className="text-[15px] leading-relaxed text-ink-soft/70 italic">
+                <blockquote className="text-[15px] leading-relaxed text-ink-faint italic">
                   {testimonial.quote}
                 </blockquote>
-                <figcaption className="mt-4 text-[13px] text-ink-soft/70">
+                <figcaption className="mt-4 text-[13px] text-ink-faint">
                   <span className="block font-medium text-ink/60">
                     {testimonial.name}
                   </span>
-                  <span className="label-mono mt-1 block text-ink-soft/50">
+                  <span className="label-mono mt-1 block text-ink-faint">
                     {testimonial.detail}
                   </span>
                 </figcaption>
@@ -103,7 +103,7 @@ export function SocialProof() {
         </ul>
 
         <div className="mt-16 border-t border-ink/10 pt-12">
-          <p className="label-mono text-center text-ink-soft/50">
+          <p className="label-mono text-center text-ink-faint">
             Taught and used at
           </p>
           <ul className="mx-auto mt-8 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3">
@@ -112,7 +112,7 @@ export function SocialProof() {
                 key={i}
                 className="flex min-w-0 items-center justify-center rounded-seal border border-dashed border-ink/15 px-3 py-4"
               >
-                <span className="label-mono text-center text-ink-soft/40">
+                <span className="label-mono text-center text-ink-faint">
                   {name}
                 </span>
               </li>

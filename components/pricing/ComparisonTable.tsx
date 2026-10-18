@@ -56,7 +56,7 @@ export function ComparisonTable() {
                     key={tier.id}
                     className={cn(
                       "py-4 pr-4 text-[14px]",
-                      typeof value === "string" ? "text-ink" : "text-ink-soft/50",
+                      typeof value === "string" ? "text-ink" : "text-ink-faint",
                     )}
                   >
                     {value === true ? (

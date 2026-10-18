@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
-import { Emphasis } from "@/components/ui/Emphasis";
 import { Button } from "@/components/ui/Button";
 import { StepMark } from "@/components/ui/StepMark";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { PrintButton } from "@/components/ui/PrintButton";
 import { DOCUMENTS, getDocument } from "@/lib/documents";
 import { MAP_STAGES } from "@/lib/sitemap";
 
@@ -48,6 +49,15 @@ export default async function DocumentPage({
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: doc.name,
+          description: doc.lede,
+          about: doc.provision.cite,
+        }}
+      />
       <Section className="!pb-12">
         <Container>
           <div className="flex items-center gap-3">
@@ -59,7 +69,7 @@ export default async function DocumentPage({
             </Link>
             {stage && (
               <>
-                <span aria-hidden="true" className="text-ink-soft/40">
+                <span aria-hidden="true" className="text-ink-faint">
                   /
                 </span>
                 <Link
@@ -70,6 +80,10 @@ export default async function DocumentPage({
                 </Link>
               </>
             )}
+          </div>
+
+          <div className="mt-3">
+            <PrintButton label="Print this guide" />
           </div>
 
           <h1 className="mt-5 max-w-3xl font-display text-title font-semibold">
@@ -99,7 +113,7 @@ export default async function DocumentPage({
               <ol className="mt-6 space-y-4">
                 {doc.mustContain.map((item, i) => (
                   <li key={item} className="flex gap-4">
-                    <span className="label-mono mt-1 shrink-0 text-ink-soft/60">
+                    <span className="label-mono mt-1 shrink-0 text-ink-faint">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span className="text-[15px] leading-relaxed text-ink">

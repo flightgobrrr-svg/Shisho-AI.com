@@ -47,6 +47,8 @@
      --------------------------------------------------------------------- */
   --color-ink: #1e2127; /* body text, headings                            */
   --color-ink-soft: #3a3f49; /* secondary text, small print, hairlines    */
+  --color-ink-faint: #5b5f66; /* tertiary labels: 5.2:1 on paper, 5.5:1 raised. Use instead of
+                                 text-ink-soft/NN, which dropped below 4.5:1 */
   --color-paper: #eae8e1; /* page ground                                  */
   --color-paper-raised: #f2f1ec; /* cards, sticky nav, lifted surfaces    */
   --color-seal: #a32e1f; /* CTA + annotation ONLY                         */
@@ -143,6 +145,7 @@
   :root:not([data-theme="light"]) {
     --color-ink: #ece9e2;
     --color-ink-soft: #b3aea4;
+    --color-ink-faint: #99948b;
     --color-paper: #1c1a17;
     --color-paper-raised: #262320;
     --color-seal: #ec5d42;
@@ -155,6 +158,7 @@
 :root[data-theme="dark"] {
   --color-ink: #ece9e2;
   --color-ink-soft: #b3aea4;
+  --color-ink-faint: #99948b;
   --color-paper: #1c1a17;
   --color-paper-raised: #262320;
   --color-seal: #ec5d42;
@@ -1057,4 +1061,33 @@
 :root[data-theme="dark"] .logo-plate {
   background: #f4efe6;
   padding: 0.75rem;
+}
+
+/* Print: reference pages (documents, how it works) become a clean one-pager —
+   no site chrome, black on white whatever the theme. */
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  * {
+    color: #000 !important;
+    border-color: #999 !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+  section {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    background: #fff !important;
+  }
+  a {
+    text-decoration: none !important;
+  }
 }

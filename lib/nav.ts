@@ -78,6 +78,11 @@ export const PRIMARY_NAV: NavLink[] = [
         blurb: "The last day to file, under the Limitation Act",
       },
       {
+        href: "/ipc-bns",
+        label: "IPC to BNS",
+        blurb: "Find the new section for an old one",
+      },
+      {
         href: "/for/scholars",
         label: "Scholars",
         blurb: "Trace a doctrine across decades",
@@ -237,6 +242,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { href: "/library", label: "Legal Library" },
       { href: "/library/acts", label: "Bare Acts" },
       { href: "/limitation", label: "Limitation checker" },
+      { href: "/ipc-bns", label: "IPC to BNS" },
       { href: "/courses", label: "Courses" },
       { href: "/map", label: "The Map" },
       { href: "/documents", label: "Documents" },
@@ -244,6 +250,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { href: "/#audiences", label: "Who it's for" },
       { href: "/pricing", label: "Pricing" },
       { href: "/status", label: "What works today" },
+      { href: "/how-it-works", label: "How Shisho works" },
+      { href: "/corrections", label: "Corrections and gaps" },
     ],
   },
   {

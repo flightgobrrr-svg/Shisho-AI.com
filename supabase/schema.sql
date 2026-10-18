@@ -313,3 +313,22 @@ create table case_briefs (
 alter table case_briefs enable row level security;
 -- No policies: service_role only, same trust model as usage_counters and
 -- google_drive_connections above — the browser never reads this directly.
+
+-- ============================================================================
+-- INTEREST SIGN-UPS: "tell me when this opens" for the audiences that are
+-- planned but not built (/for/[slug]). One row per (email, audience).
+-- Same trust model as usage_counters: RLS enabled, no policies, service_role
+-- only. The browser never reads or writes this directly; app/api/interest
+-- does, after validating the audience against lib/audiences.ts.
+--
+-- NOT YET APPLIED to any project. Until this is run, /api/interest answers
+-- 503 and the form says sign-up is not open yet.
+-- ============================================================================
+create table if not exists interest_signups (
+  email text not null,
+  audience text not null,
+  created_at timestamptz not null default now(),
+  primary key (email, audience)
+);
+
+alter table interest_signups enable row level security;

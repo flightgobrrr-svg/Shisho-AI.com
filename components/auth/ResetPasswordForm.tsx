@@ -82,7 +82,7 @@ export function ResetPasswordForm() {
           onChange={(e) => setPassword(e.target.value)}
           className={INPUT_CLASS}
         />
-        <p className="mt-2 text-[12.5px] text-ink-soft/70">At least 8 characters.</p>
+        <p className="mt-2 text-[12.5px] text-ink-faint">At least 8 characters.</p>
 
         {error ? (
           <p role="alert" className="mt-3 text-[13.5px] text-seal">

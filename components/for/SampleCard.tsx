@@ -14,7 +14,7 @@ export function SampleCard({
     >
       <div className="flex items-baseline justify-between gap-4">
         <p className="label-mono text-indigo">{sample.label}</p>
-        <p className="label-mono text-ink-soft/70">Sample</p>
+        <p className="label-mono text-ink-faint">Sample</p>
       </div>
       <dl className="mt-5 divide-y divide-ink/10">
         {sample.rows.map((row) => (

@@ -97,38 +97,38 @@ export function DigestView({
 
       <dl className="mt-14 grid gap-x-10 gap-y-6 border-y border-ink/10 py-8 sm:grid-cols-2">
         <div>
-          <dt className="label-mono text-ink-soft/70">Case Number</dt>
+          <dt className="label-mono text-ink-faint">Case Number</dt>
           <dd className="mt-1.5 text-[15px] text-ink">{digest.caseNumber}</dd>
         </div>
         <div>
-          <dt className="label-mono text-ink-soft/70">Court</dt>
+          <dt className="label-mono text-ink-faint">Court</dt>
           <dd className="mt-1.5 text-[15px] text-ink">{court}</dd>
         </div>
         <div className="sm:col-span-2">
-          <dt className="label-mono text-ink-soft/70">Bench</dt>
+          <dt className="label-mono text-ink-faint">Bench</dt>
           <dd className="mt-1.5 text-[15px] text-ink">{digest.bench}</dd>
         </div>
         <div>
-          <dt className="label-mono text-ink-soft/70">Date of Judgment</dt>
+          <dt className="label-mono text-ink-faint">Date of Judgment</dt>
           <dd className="mt-1.5 text-[15px] text-ink">{digest.dateOfJudgment}</dd>
         </div>
         <div>
-          <dt className="label-mono text-ink-soft/70">Nature of Proceedings</dt>
+          <dt className="label-mono text-ink-faint">Nature of Proceedings</dt>
           <dd className="mt-1.5 text-[15px] text-ink">{digest.natureOfProceedings}</dd>
         </div>
         <div className="sm:col-span-2">
-          <dt className="label-mono text-ink-soft/70">Result</dt>
+          <dt className="label-mono text-ink-faint">Result</dt>
           <dd className="mt-1.5 text-[15px] text-ink">{digest.result}</dd>
         </div>
       </dl>
 
       {citations.length > 0 && (
         <div className="mt-8 border-b border-ink/10 pb-8">
-          <p className="label-mono text-ink-soft/70">Equivalent Citations</p>
+          <p className="label-mono text-ink-faint">Equivalent Citations</p>
           <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
             {citations.map(([key, value]) => (
               <div key={key} className="flex items-baseline gap-2">
-                <dt className="label-mono text-ink-soft/70">{CITATION_LABELS[key]}</dt>
+                <dt className="label-mono text-ink-faint">{CITATION_LABELS[key]}</dt>
                 <dd className="text-[14.5px] text-ink">{value}</dd>
               </div>
             ))}
@@ -144,8 +144,8 @@ export function DigestView({
         ))}
       </div>
 
-      <p className="mt-10 border-t border-ink/10 pt-6 text-[13px] leading-relaxed text-ink-soft/70">
-        This digest is prepared by Shisho from the primary judgment text — original
+      <p className="mt-10 border-t border-ink/10 pt-6 text-[13px] leading-relaxed text-ink-faint">
+        This digest is prepared by Shisho from the primary judgment text{digest.generatedAt ? ` on ${new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(digest.generatedAt))}` : ""} — original
         analysis, not a reproduction of any published headnote or digest. Read the
         judgment itself below before relying on it.
       </p>
@@ -158,6 +158,19 @@ export function DigestView({
           {backLabel}
         </Button>
       </div>
+
+      {process.env.NEXT_PUBLIC_CONTACT_EMAIL ? (
+        <p className="mt-6 text-[13px] text-ink-soft">
+          Spotted a wrong citation or detail?{" "}
+          <a
+            href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}?subject=${encodeURIComponent(`Citation report: ${title}`)}`}
+            className="underline-draw text-ink"
+          >
+            Tell us
+          </a>
+          .
+        </p>
+      ) : null}
     </div>
   );
 }

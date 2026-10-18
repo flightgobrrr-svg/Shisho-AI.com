@@ -74,7 +74,7 @@ export default function ClerksPage() {
                   {group.entries.map((entry) => (
                     <div key={entry.sno} className="min-w-0">
                       <dt className="flex items-baseline gap-2.5 font-display text-[15.5px] font-semibold text-ink">
-                        <span className="label-mono shrink-0 font-sans text-ink-soft/70">
+                        <span className="label-mono shrink-0 font-sans text-ink-faint">
                           {entry.sno}.
                         </span>
                         {entry.name}
@@ -113,7 +113,7 @@ export default function ClerksPage() {
                   ))}
                 </ul>
                 {format.note ? (
-                  <p className="mt-3 whitespace-pre-line text-[12.5px] leading-relaxed text-ink-soft/80">
+                  <p className="mt-3 whitespace-pre-line text-[12.5px] leading-relaxed text-ink-faint">
                     {format.note}
                   </p>
                 ) : null}

@@ -113,7 +113,7 @@ export default function InternshipPage() {
                 key={r.label}
                 className="border border-ink/45 bg-paper p-6"
               >
-                <p className="label-mono text-ink-soft/70">{r.label}</p>
+                <p className="label-mono text-ink-faint">{r.label}</p>
                 <p className="mt-3 font-display text-[2rem] leading-none font-semibold text-ink">
                   {r.value}
                 </p>

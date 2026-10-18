@@ -25,7 +25,7 @@ export function ClosingSection() {
             </li>
           ))}
         </ul>
-        <p className="label-mono mt-8 text-ink-soft/70">
+        <p className="label-mono mt-8 text-ink-faint">
           Wisdom · Guidance · Intelligence
         </p>
       </Container>

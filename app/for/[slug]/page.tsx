@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AudienceHeadline } from "@/components/for/AudienceHeadline";
+import { InterestSignup } from "@/components/for/InterestSignup";
 import { StatusList } from "@/components/for/StatusList";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
@@ -52,7 +53,7 @@ export default async function AudiencePage({
 
           <div className="mt-6 flex items-baseline gap-4">
             <Eyebrow>{audience.eyebrow}</Eyebrow>
-            <span className="label-mono text-ink-soft/70">Planned</span>
+            <span className="label-mono text-ink-faint">Planned</span>
           </div>
           <h1 className="mt-4 max-w-3xl font-display text-title font-semibold">
             <AudienceHeadline text={audience.headline} />
@@ -80,7 +81,7 @@ export default async function AudiencePage({
             <div className="max-w-xl rounded-seal border border-ink/20 bg-paper p-6 md:p-7">
               <div className="flex items-baseline justify-between gap-4">
                 <p className="label-mono text-indigo">{audience.sample.label}</p>
-                <p className="label-mono text-ink-soft/70">Sample</p>
+                <p className="label-mono text-ink-faint">Sample</p>
               </div>
               <dl className="mt-5 divide-y divide-ink/10">
                 {audience.sample.rows.map((row) => (
@@ -112,12 +113,15 @@ export default async function AudiencePage({
       {today.length > 0 ? (
         <Section className="!py-14 md:!py-16">
           <Container>
-            <Eyebrow>Available today</Eyebrow>
+            <Eyebrow>Start here</Eyebrow>
             <h2 className="mt-4 max-w-xl font-display text-[1.5rem] font-semibold text-ink">
-              What on the site already helps.
+              Three places to begin, in this order.
             </h2>
             <div className="mt-6 max-w-3xl">
-              <StatusList items={today} />
+              <StatusList items={today.slice(0, 3)} numbered />
+            </div>
+            <div className="mt-12 border-t border-ink/10 pt-8">
+              <InterestSignup audience={audience.slug} name={audience.name} />
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button href="/draft-bot">Try Shisho</Button>

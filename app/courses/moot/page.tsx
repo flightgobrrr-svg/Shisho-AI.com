@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MootRulesChecklist } from "@/components/tools/MootRulesChecklist";
 import { MootTimer } from "@/components/tools/MootTimer";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
@@ -53,7 +54,7 @@ export default function MootPage() {
           <ol className="mt-6 grid gap-x-12 gap-y-5 md:grid-cols-2">
             {MEMORIAL.map(([name, note], i) => (
               <li key={name} className="flex gap-4">
-                <span className="label-mono mt-1 shrink-0 text-ink-soft/60">
+                <span className="label-mono mt-1 shrink-0 text-ink-faint">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span>
@@ -84,6 +85,18 @@ export default function MootPage() {
               </ul>
             </div>
             <MootTimer />
+          </div>
+        </Container>
+      </Section>
+
+      <Section tone="raised" className="border-t border-ink/10 !py-14">
+        <Container>
+          <Eyebrow>Your moot&rsquo;s own rules</Eyebrow>
+          <h2 className="mt-4 max-w-xl font-display text-[1.5rem] font-semibold text-ink">
+            Tick them off before you submit.
+          </h2>
+          <div className="mt-6">
+            <MootRulesChecklist />
           </div>
         </Container>
       </Section>

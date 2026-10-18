@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { DOCUMENTS } from "@/lib/documents";
 import { PLANNED_AUDIENCES } from "@/lib/audiences";
+import { LIMITATION_ENTRIES } from "@/lib/limitation";
+import { IPC_BNS } from "@/lib/ipcBns";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -23,6 +25,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/status`, lastModified: updated, priority: 0.5 },
     { url: `${SITE_URL}/courses/moot`, lastModified: updated, priority: 0.5 },
     { url: `${SITE_URL}/courses/case-brief`, lastModified: updated, priority: 0.5 },
+    { url: `${SITE_URL}/ipc-bns`, lastModified: updated, priority: 0.4 },
+    { url: `${SITE_URL}/how-it-works`, lastModified: updated, priority: 0.4 },
+    { url: `${SITE_URL}/courses/revision`, lastModified: updated, priority: 0.4 },
+    { url: `${SITE_URL}/corrections`, lastModified: updated, priority: 0.3 },
+    ...LIMITATION_ENTRIES.map((e) => ({
+      url: `${SITE_URL}/limitation/${e.id}`,
+      lastModified: updated,
+      priority: 0.5,
+    })),
+    ...IPC_BNS.map((r) => ({
+      url: `${SITE_URL}/ipc-bns/${r.ipc.toLowerCase()}`,
+      lastModified: updated,
+      priority: 0.4,
+    })),
     ...PLANNED_AUDIENCES.map((a) => ({
       url: `${SITE_URL}/for/${a.slug}`,
       lastModified: updated,

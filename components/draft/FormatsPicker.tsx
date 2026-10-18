@@ -121,7 +121,7 @@ export function FormatsPicker() {
                     : "border-transparent hover:border-ink/30 hover:bg-paper-raised",
                 )}
               >
-                <span className="label-mono shrink-0 text-ink-soft/70">
+                <span className="label-mono shrink-0 text-ink-faint">
                   {format.sno}
                 </span>
                 <span className="min-w-0 text-[14.5px] text-ink">{format.name}</span>
@@ -152,7 +152,7 @@ export function FormatsPicker() {
                 onChange={(e) => setFacts(e.target.value)}
                 placeholder="Parties, dates, what happened, what you want done about it…"
                 rows={8}
-                className="mt-2 block w-full resize-y rounded-seal border border-ink/45 bg-paper p-3 font-sans text-[14px] leading-relaxed text-ink placeholder:text-ink-soft/50"
+                className="mt-2 block w-full resize-y rounded-seal border border-ink/45 bg-paper p-3 font-sans text-[14px] leading-relaxed text-ink placeholder:text-ink-faint"
               />
 
               <Button

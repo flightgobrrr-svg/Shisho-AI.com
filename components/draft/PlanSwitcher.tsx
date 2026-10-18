@@ -34,7 +34,7 @@ export function PlanSwitcher({ plan }: { plan: Plan }) {
 
   return (
     <div className="mb-8 rounded-seal border border-dashed border-ink/25 bg-paper-raised p-4">
-      <p className="label-mono text-ink-soft/70">
+      <p className="label-mono text-ink-faint">
         Dev only · mock plan state
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-2">

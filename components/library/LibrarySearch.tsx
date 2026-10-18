@@ -67,9 +67,9 @@ export function LibrarySearch({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Case name, citation, subject, or category…"
-          className="h-11 min-w-0 flex-1 border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-soft/60 sm:max-w-sm"
+          className="h-11 min-w-0 flex-1 border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-faint sm:max-w-sm"
         />
-        <p className="label-mono text-ink-soft/70" aria-live="polite">
+        <p className="label-mono text-ink-faint" aria-live="polite">
           {capped
             ? `Top ${MAX_SEARCH_RESULTS} of ${allMatches.length} matches`
             : `Showing ${results.length} of ${cases.length}`}
@@ -126,7 +126,7 @@ export function LibrarySearch({
                     </span>
                   </div>
                   <div className="min-w-0 sm:max-w-xs sm:text-right">
-                    <p className="label-mono text-ink-soft/70">
+                    <p className="label-mono text-ink-faint">
                       {item.court} · {item.category}
                     </p>
                     <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">

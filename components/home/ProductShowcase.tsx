@@ -61,7 +61,7 @@ function DraftBotMiniature({ notes }: { notes: string[] }) {
       {/* Right on desktop, stacked underneath on mobile — the margin only
           exists once there is width to spare for one. */}
       <div className="space-y-2.5 border-t border-ink/10 bg-paper/40 p-4 sm:border-t-0 sm:border-l sm:p-5">
-        <span className="label-mono block text-[7px] text-ink-soft/50">
+        <span className="label-mono block text-[7px] text-ink-faint">
           Shisho notes
         </span>
         {notes.map((note) => (

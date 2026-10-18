@@ -103,7 +103,7 @@ export function DocumentMockup({ className }: { className?: string }) {
             </p>
 
             <p className="mt-3 text-center">
-              W.P. (C) No. <span className="text-ink-soft/50">____</span> of 2026
+              W.P. (C) No. <span className="text-ink-faint">____</span> of 2026
             </p>
 
             <div className="mt-3 border-t border-ink/10 pt-3">
@@ -115,7 +115,7 @@ export function DocumentMockup({ className }: { className?: string }) {
 
             <div className="mt-3 space-y-0.5">
               <p>Ramesh Kumar Sharma ..... Petitioner</p>
-              <p className="text-center text-ink-soft/60">versus</p>
+              <p className="text-center text-ink-faint">versus</p>
               <p>Union of India &amp; Ors. ..... Respondents</p>
             </div>
 
@@ -157,7 +157,7 @@ export function DocumentMockup({ className }: { className?: string }) {
 
           {/* ---- The notes: a margin on desktop, a list on mobile ------- */}
           <div className="border-t border-ink/10 p-4 sm:border-t-0 sm:border-l sm:p-5">
-            <p className="label-mono text-[8px] text-ink-soft/50">
+            <p className="label-mono text-[8px] text-ink-faint">
               Shisho notes
             </p>
 

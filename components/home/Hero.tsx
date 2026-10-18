@@ -206,7 +206,7 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
           {/* ---- Copy ------------------------------------------------- */}
           <div>
             <p
-              className="rise label-mono text-ink-soft/80"
+              className="rise label-mono text-ink-faint"
               style={{ animationDelay: `${HERO_TIMING.rise.eyebrow}ms` }}
             >
               {t.eyebrow}

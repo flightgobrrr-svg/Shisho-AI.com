@@ -25,7 +25,7 @@ export function AudienceSections() {
                 <div className={flip ? "lg:order-2" : undefined}>
                   <div className="flex items-baseline gap-4">
                     <Eyebrow>{a.eyebrow}</Eyebrow>
-                    <span className="label-mono text-ink-soft/70">Planned</span>
+                    <span className="label-mono text-ink-faint">Planned</span>
                   </div>
                   <h2 className="mt-4 max-w-xl font-display text-[2rem] font-semibold leading-[1.12] text-ink md:text-[2.4rem]">
                     <AudienceHeadline text={a.headline} />
@@ -60,7 +60,7 @@ export function AudienceSections() {
                   >
                     <div className="flex items-baseline justify-between gap-4">
                       <p className="label-mono text-indigo">{a.sample.label}</p>
-                      <p className="label-mono text-ink-soft/70">Sample</p>
+                      <p className="label-mono text-ink-faint">Sample</p>
                     </div>
                     <dl className="mt-5 divide-y divide-ink/10">
                       {a.sample.rows.map((row) => (

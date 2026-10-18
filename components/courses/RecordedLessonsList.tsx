@@ -48,7 +48,7 @@ export function RecordedLessonsList({ lessons }: { lessons: Lesson[] }) {
           </div>
           <div className="mt-5 flex items-baseline justify-between gap-3">
             <h3 className="font-display text-[18px] font-semibold text-ink">{lesson.title}</h3>
-            <span className="label-mono shrink-0 text-ink-soft/70">{lesson.duration}</span>
+            <span className="label-mono shrink-0 text-ink-faint">{lesson.duration}</span>
           </div>
           <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-soft">
             {lesson.description}

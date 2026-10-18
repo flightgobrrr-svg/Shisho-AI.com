@@ -1,4 +1,5 @@
 import { Hero } from "@/components/home/Hero";
+import { RevisionDueBand } from "@/components/home/RevisionDueBand";
 import { LookupBand } from "@/components/home/LookupBand";
 import { MatterFlow } from "@/components/home/MatterFlow";
 import { FeatureStrip } from "@/components/home/FeatureStrip";
@@ -15,6 +16,7 @@ import { FinalCta } from "@/components/home/FinalCta";
 export default function HomePage() {
   return (
     <>
+      <RevisionDueBand />
       <Hero />
       <LookupBand />
       {/* Who you are is now asked once, in the mandatory entry gate

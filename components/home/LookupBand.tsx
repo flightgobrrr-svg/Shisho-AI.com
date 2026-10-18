@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Container } from "@/components/ui/Section";
 
 /**
@@ -38,7 +39,7 @@ export function LookupBand() {
               required
               maxLength={200}
               placeholder="Party A vs Party B"
-              className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-4 text-[15px] text-ink placeholder:text-ink-soft/60 focus:border-ink/80 focus:outline-none"
+              className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80 focus:outline-none"
             />
             <button
               type="submit"
@@ -48,6 +49,45 @@ export function LookupBand() {
             </button>
           </div>
         </form>
+
+        <form
+          method="GET"
+          action="/library"
+          className="mt-6 flex flex-col gap-4 border-t border-ink/10 pt-6 md:flex-row md:items-center md:gap-8"
+        >
+          <input type="hidden" name="collection" value="acts" />
+          <div className="md:w-[22rem] md:shrink-0">
+            <label htmlFor="home-provision" className="font-display text-[19px] font-semibold text-ink">
+              Find a provision
+            </label>
+            <p className="mt-1 text-[13.5px] leading-relaxed text-ink-soft">
+              Search the Bare Acts section by section, for example &ldquo;Order VII Rule 11&rdquo;.
+            </p>
+          </div>
+          <div className="flex min-w-0 flex-1 gap-3">
+            <input
+              id="home-provision"
+              name="q"
+              type="search"
+              required
+              maxLength={100}
+              placeholder="Section, Order or Article"
+              className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="inline-flex h-11 shrink-0 items-center rounded-seal border border-ink/45 px-5 text-[14.5px] font-medium text-ink transition-colors hover:bg-ink/[0.04]"
+            >
+              Find
+            </button>
+          </div>
+        </form>
+        <p className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] text-ink-soft">
+          <span className="label-mono text-ink-faint">Or try</span>
+          <Link href="/limitation" className="underline-draw text-ink">Check a limitation date</Link>
+          <Link href="/ipc-bns" className="underline-draw text-ink">IPC to BNS</Link>
+          <Link href="/draft-bot?mode=review#review" className="underline-draw text-ink">Mark my draft</Link>
+        </p>
       </Container>
     </section>
   );

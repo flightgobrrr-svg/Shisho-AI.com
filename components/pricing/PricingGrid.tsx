@@ -60,9 +60,9 @@ export function PricingGrid() {
                 </span>
               ) : null}
 
-              <h3 className="font-display text-[20px] font-semibold text-ink">
+              <h2 className="font-display text-[20px] font-semibold text-ink">
                 {tier.name}
-              </h3>
+              </h2>
 
               <Price amount={tier.price} />
 
@@ -76,7 +76,7 @@ export function PricingGrid() {
                     key={feature}
                     className="flex gap-2.5 text-[14px] leading-relaxed text-ink-soft"
                   >
-                    <span aria-hidden="true" className="mt-px text-ink-soft/60">
+                    <span aria-hidden="true" className="mt-px text-ink-faint">
                       &#10003;
                     </span>
                     <span className="min-w-0">{feature}</span>
@@ -101,8 +101,8 @@ export function PricingGrid() {
       <div className="mt-8 rounded-seal border border-ink/45 bg-paper-raised p-7">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0 md:max-w-xl">
-            <p className="label-mono text-ink-soft/70">Standalone add-on</p>
-            <h3 className="mt-3 font-display text-[20px] font-semibold text-ink">
+            <p className="label-mono text-ink-faint">Standalone add-on</p>
+            <h2 className="mt-3 font-display text-[20px] font-semibold text-ink">
               {ADD_ON.name} —{" "}
               <span className="whitespace-nowrap tabular-nums">
                 {formatINR(ADD_ON.price)}
@@ -111,7 +111,7 @@ export function PricingGrid() {
                 {" "}
                 / month
               </span>
-            </h3>
+            </h2>
             <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
               {ADD_ON.description}
             </p>

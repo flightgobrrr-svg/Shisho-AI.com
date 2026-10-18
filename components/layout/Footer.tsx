@@ -23,7 +23,7 @@ export function Footer() {
 
           {FOOTER_COLUMNS.map((column) => (
             <nav key={column.heading} aria-label={column.heading}>
-              <h2 className="label-mono font-sans text-ink-soft/70">
+              <h2 className="label-mono font-sans text-ink-faint">
                 {column.heading}
               </h2>
               <ul className="mt-4 space-y-2.5">
@@ -49,7 +49,7 @@ export function Footer() {
             use. Shisho assists a lawyer; it does not replace one, and is not
             a substitute for a licensed, practising advocate.
           </p>
-          <p className="label-mono mt-6 text-ink-soft/70">
+          <p className="label-mono mt-6 text-ink-faint">
             © {year} Shisho AI · Made in India
           </p>
         </div>

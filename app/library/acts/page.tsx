@@ -36,7 +36,7 @@ export default function BareActsPage() {
           <ol className="mt-6 grid list-none gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
             {CENTRAL_ACTS.map((act) => (
               <li key={act.sno} className="flex items-baseline gap-2.5">
-                <span className="label-mono shrink-0 text-ink-soft/70">
+                <span className="label-mono shrink-0 text-ink-faint">
                   {act.sno}.
                 </span>
                 <span className="text-[14.5px] leading-relaxed text-ink">
@@ -65,7 +65,7 @@ export default function BareActsPage() {
                   <ol className="mt-4 list-none space-y-1.5">
                     {group.acts.map((act) => (
                       <li key={act.sno} className="flex items-baseline gap-2.5">
-                        <span className="label-mono shrink-0 text-ink-soft/70">
+                        <span className="label-mono shrink-0 text-ink-faint">
                           {act.sno}.
                         </span>
                         <span className="text-[14.5px] leading-relaxed text-ink">

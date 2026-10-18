@@ -307,7 +307,7 @@ export function DraftingAgent({
   return (
     <div className="min-w-0">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="label-mono text-ink-soft/70">Ask Shisho</h2>
+        <h2 className="label-mono text-ink-faint">Ask Shisho</h2>
         {mode === "demo" ? (
           <span className="label-mono rounded-seal border border-ink/45 px-1.5 py-0.5 text-ink-soft">
             Demo
@@ -363,7 +363,7 @@ export function DraftingAgent({
         <div aria-live="polite" className="mt-5 space-y-4">
           {messages.map((message, i) => (
             <div key={i} className="min-w-0">
-              <span className="label-mono block text-ink-soft/70">
+              <span className="label-mono block text-ink-faint">
                 {message.role === "user" ? "You" : "Shisho"}
               </span>
               <p
@@ -377,7 +377,7 @@ export function DraftingAgent({
                 {message.content}
               </p>
               {message.draftSent ? (
-                <p className="mt-1.5 label-mono text-ink-soft/50">
+                <p className="mt-1.5 label-mono text-ink-faint">
                   Draft sent to the workspace below.
                 </p>
               ) : null}
@@ -419,7 +419,7 @@ export function DraftingAgent({
                   if (pendingAttachment.kind === "drive") setDefaultDismissed(true);
                   setPendingAttachment(null);
                 }}
-                className="shrink-0 text-ink-soft/70 underline underline-offset-2 hover:text-ink"
+                className="shrink-0 text-ink-faint underline underline-offset-2 hover:text-ink"
               >
                 Remove
               </button>
@@ -450,7 +450,7 @@ export function DraftingAgent({
               rows={2}
               className={cn(
                 "block h-[4.5rem] w-full resize-y rounded-seal border border-ink/45 bg-paper-raised p-3",
-                "font-sans text-[14px] leading-relaxed text-ink placeholder:text-ink-soft/50",
+                "font-sans text-[14px] leading-relaxed text-ink placeholder:text-ink-faint",
               )}
             />
 

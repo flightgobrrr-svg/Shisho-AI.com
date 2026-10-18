@@ -31,9 +31,15 @@ const LIVE: AudienceItem[] = [
   },
   {
     label: "Limitation checker",
-    note: "Last day to file for seven common Articles of the Limitation Act, 1963.",
+    note: "Last day to file under twelve Articles of the Limitation Act, 1963, plus the written-statement period.",
     status: "live",
     href: "/limitation",
+  },
+  {
+    label: "IPC to BNS",
+    note: "Find the new section for a common IPC section. A short list of mappings two published tables agree on.",
+    status: "live",
+    href: "/ipc-bns",
   },
   {
     label: "Courses",
@@ -54,8 +60,8 @@ const LIVE: AudienceItem[] = [
     href: "/clerks",
   },
   {
-    label: "Moot kit and case-brief practice",
-    note: "A memorial outline, an oral-round timer, and a brief-then-compare exercise.",
+    label: "Moot kit, case-brief practice and revision",
+    note: "A memorial outline, an oral-round timer, a brief-then-compare exercise, and saved briefs that return after 1, 7 and 30 days.",
     status: "live",
     href: "/courses/moot",
   },
