@@ -5,6 +5,9 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { StageTrail } from "@/components/map/StageTrail";
+import { SampleCard } from "@/components/for/SampleCard";
+import { StatusList } from "@/components/for/StatusList";
+import { EXTRAS } from "@/lib/audiencePages";
 import { COURSES } from "@/lib/courses";
 
 export const metadata: Metadata = {
@@ -20,7 +23,7 @@ const FAQS = [
   },
   {
     q: "Is this a substitute for legal advice?",
-    a: "No. Shisho AI is an educational and drafting tool. It does not provide legal advice and is not a substitute for an advocate enrolled with a State Bar Council.",
+    a: "No. Shisho AI is an educational and drafting tool. It does not provide legal advice and is not a substitute for a licensed, practising advocate.",
   },
 ];
 
@@ -69,6 +72,65 @@ export default function CoursesPage() {
             <Button href="/pricing" size="lg" className="shrink-0">
               See plans &amp; pricing
             </Button>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <div className="flex flex-col items-start gap-6 rounded-seal border border-ink/45 bg-paper-raised p-8">
+              <div className="min-w-0">
+                <Eyebrow>Recorded classes</Eyebrow>
+                <h2 className="mt-4 font-display text-[22px] font-semibold text-ink">
+                  Legal English — reading and{" "}
+                  <Emphasis>writing</Emphasis>.
+                </h2>
+                <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+                  Reading a judgment, writing a pleading — a separate,
+                  ungraded track. Watch in any order.
+                </p>
+              </div>
+              <Button href="/courses/english" variant="ghost" size="lg" className="shrink-0">
+                Watch the classes
+              </Button>
+            </div>
+
+            <div className="flex flex-col items-start gap-6 rounded-seal border border-ink/45 bg-paper-raised p-8">
+              <div className="min-w-0">
+                <Eyebrow>Recorded classes</Eyebrow>
+                <h2 className="mt-4 font-display text-[22px] font-semibold text-ink">
+                  Spoken English — arguing in{" "}
+                  <Emphasis>court</Emphasis>.
+                </h2>
+                <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+                  Oral argument and courtroom submissions — its own
+                  ungraded track. Watch in any order.
+                </p>
+              </div>
+              <Button href="/courses/spoken-english" variant="ghost" size="lg" className="shrink-0">
+                Watch the classes
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="!py-14 md:!py-16">
+        <Container>
+          <Eyebrow>For law students</Eyebrow>
+          <h2 className="mt-4 max-w-xl font-display text-[1.5rem] font-semibold text-ink">
+            Learn the law. Then learn to <Emphasis>apply</Emphasis> it.
+          </h2>
+          <div className="mt-6 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-16">
+            <StatusList items={EXTRAS.students} />
+            <SampleCard
+              sample={{
+                label: "Case brief",
+                rows: [
+                  { term: "Facts", detail: "What happened, in order" },
+                  { term: "Issue", detail: "The question for the court" },
+                  { term: "Held", detail: "What the court decided" },
+                  { term: "Ratio", detail: "The rule it rests on" },
+                ],
+              }}
+            />
           </div>
         </Container>
       </Section>

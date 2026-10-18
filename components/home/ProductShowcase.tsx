@@ -3,6 +3,7 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { Button } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 /**
  * Adapted from the supplied Tailark `hero-section-1` block.
@@ -35,13 +36,7 @@ const DRAFT_LINES = [
   { w: "w-[57%]" },
 ];
 
-const MINI_NOTES = [
-  "Art. 226 — plead territorial jurisdiction.",
-  "Interim relief: plead all three limbs.",
-  "No verification clause — Order VI R. 15.",
-];
-
-function DraftBotMiniature() {
+function DraftBotMiniature({ notes }: { notes: string[] }) {
   return (
     <div
       aria-hidden="true"
@@ -69,7 +64,7 @@ function DraftBotMiniature() {
         <span className="label-mono block text-[7px] text-ink-soft/50">
           Shisho notes
         </span>
-        {MINI_NOTES.map((note) => (
+        {notes.map((note) => (
           <div
             key={note}
             className="rounded-[2px] border-l-2 border-seal/50 bg-paper-raised py-1.5 pl-2"
@@ -84,7 +79,9 @@ function DraftBotMiniature() {
   );
 }
 
-export function ProductShowcase() {
+export function ProductShowcase({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).productShowcase;
+
   return (
     <Section>
       <Container>
@@ -95,9 +92,7 @@ export function ProductShowcase() {
             href="/draft-bot"
             className="group mx-auto inline-flex w-fit items-center gap-3 rounded-seal border border-ink/45 bg-paper-raised py-1 pr-3 pl-4 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75"
           >
-            <span className="label-mono text-ink-soft">
-              Shisho · demo mode
-            </span>
+            <span className="label-mono text-ink-soft">{t.pill}</span>
             <span aria-hidden="true" className="h-3.5 w-px bg-ink/15" />
             <span
               aria-hidden="true"
@@ -108,23 +103,23 @@ export function ProductShowcase() {
           </Link>
 
           <h2 className="mx-auto mt-8 max-w-2xl font-display text-title font-semibold text-balance">
-            See what a marked-up <Emphasis>draft</Emphasis> looks like.
+            {t.heading.map((seg, i) =>
+              seg.em ? <Emphasis key={i}>{seg.text}</Emphasis> : <span key={i}>{seg.text}</span>,
+            )}
           </h2>
 
           <p className="mx-auto mt-5 max-w-[48ch] text-[16px] leading-relaxed text-ink-soft">
-            Paste a plaint or a contract on the left. Notes come back in the
-            margin, each tied to the clause it marks and the Indian authority it
-            rests on.
+            {t.body}
           </p>
 
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Magnetic>
               <Button href="/draft-bot" size="lg">
-                Open Shisho
+                {t.ctaPrimary}
               </Button>
             </Magnetic>
             <Button href="/pricing" variant="ghost" size="lg">
-              See pricing
+              {t.ctaSecondary}
             </Button>
           </div>
         </div>
@@ -135,7 +130,7 @@ export function ProductShowcase() {
         <figure className="reveal relative mx-auto mt-14 max-w-4xl">
           <div className="overflow-hidden rounded-seal border border-ink/45 bg-paper-raised p-1.5 shadow-[0_1px_2px_rgba(34,37,43,0.04),0_18px_44px_-16px_rgba(34,37,43,0.18)]">
             <div className="overflow-hidden rounded-[2px] border border-ink/8 bg-paper-raised">
-              <DraftBotMiniature />
+              <DraftBotMiniature notes={t.miniNotes} />
             </div>
           </div>
 
@@ -144,13 +139,7 @@ export function ProductShowcase() {
             className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-paper"
           />
 
-          <figcaption className="sr-only">
-            A preview of the Shisho workspace: the draft on the left, and
-            three Shisho notes in the right margin covering territorial
-            jurisdiction under Article 226, the three limbs required for interim
-            relief, and a missing verification clause under Order VI Rule 15 of
-            the Code of Civil Procedure.
-          </figcaption>
+          <figcaption className="sr-only">{t.figcaption}</figcaption>
         </figure>
       </Container>
     </Section>

@@ -2,7 +2,9 @@ import { AmbientDrift } from "@/components/home/AmbientDrift";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { PhotoBackdrop } from "@/components/ui/PhotoBackdrop";
 import { Button } from "@/components/ui/Button";
+import { StateSelect } from "@/components/map/StateSelect";
 import { HERO_TIMING } from "@/lib/motion";
+import { getDictionary, type Locale, type Segment } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/cn";
 
 /**
@@ -19,30 +21,17 @@ import { cn } from "@/lib/cn";
  * layout shift.
  */
 
-type Segment = { text: string; em?: boolean };
-
-const LINE_ONE: Segment[] = [
-  { text: "Every great lawyer had a " },
-  { text: "shisho", em: true },
-  { text: "." },
-];
-
-const LINE_TWO: Segment[] = [
-  { text: "Now yours is AI — built for Indian law." },
-];
-
-const LINE_ONE_LENGTH = LINE_ONE.reduce((n, s) => n + [...s.text].length, 0);
-
-const LINE_TWO_START =
-  HERO_TIMING.type.start +
-  LINE_ONE_LENGTH * HERO_TIMING.type.charMs +
-  HERO_TIMING.type.lineGap;
+/** Character count of a line's text, ignoring the `em` split — used to time
+ *  when the next line's typewriter should start. */
+function lineLength(segments: Segment[]) {
+  return segments.reduce((n, s) => n + [...s.text].length, 0);
+}
 
 /** Joined with a space between the two lines so a screen reader reads
  *  "…had a shisho. Now yours is AI…" rather than "shisho.Now". */
-const FULL_HEADLINE = [LINE_ONE, LINE_TWO]
-  .map((line) => line.map((s) => s.text).join(""))
-  .join(" ");
+function fullHeadline(line1: Segment[], line2: Segment[]) {
+  return [line1, line2].map((line) => line.map((s) => s.text).join("")).join(" ");
+}
 
 /**
  * Reveals a word at a time, not a character at a time.
@@ -104,9 +93,6 @@ function prepare(segments: Segment[], startAt: number): PreparedSegment[] {
   ).out;
 }
 
-const PREPARED_LINE_ONE = prepare(LINE_ONE, HERO_TIMING.type.start);
-const PREPARED_LINE_TWO = prepare(LINE_TWO, LINE_TWO_START);
-
 function TypedLine({
   segments,
   className,
@@ -150,7 +136,16 @@ function TypedLine({
   );
 }
 
-export function Hero() {
+export function Hero({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).hero;
+  const line2Start =
+    HERO_TIMING.type.start +
+    lineLength(t.line1) * HERO_TIMING.type.charMs +
+    HERO_TIMING.type.lineGap;
+  const preparedLine1 = prepare(t.line1, HERO_TIMING.type.start);
+  const preparedLine2 = prepare(t.line2, line2Start);
+  const fullHeadlineText = fullHeadline(t.line1, t.line2);
+
   return (
     /* Full viewport minus the 4rem sticky nav, so the hero is the whole
        first screen and the fold lands exactly at its foot. `svh` rather
@@ -214,7 +209,7 @@ export function Hero() {
               className="rise label-mono text-ink-soft/80"
               style={{ animationDelay: `${HERO_TIMING.rise.eyebrow}ms` }}
             >
-              For Indian law · SC &amp; High Courts
+              {t.eyebrow}
             </p>
 
             <h1
@@ -224,10 +219,10 @@ export function Hero() {
               )}
               style={{ animationDelay: `${HERO_TIMING.rise.headline}ms` }}
             >
-              <span className="sr-only">{FULL_HEADLINE}</span>
+              <span className="sr-only">{fullHeadlineText}</span>
               <span aria-hidden="true">
-                <TypedLine segments={PREPARED_LINE_ONE} className="text-ink" />
-                <TypedLine segments={PREPARED_LINE_TWO} className="text-seal" />
+                <TypedLine segments={preparedLine1} className="text-ink" />
+                <TypedLine segments={preparedLine2} className="text-seal" />
               </span>
             </h1>
 
@@ -235,8 +230,7 @@ export function Hero() {
               className="rise mt-6 max-w-[46ch] text-[16.5px] leading-relaxed text-ink-soft md:text-[17.5px]"
               style={{ animationDelay: `${HERO_TIMING.rise.subhead}ms` }}
             >
-              Courses and an AI drafting assistant for Indian law — for law
-              students, aspiring lawyers, and practising advocates.
+              {t.subhead}
             </p>
 
             <div
@@ -246,16 +240,26 @@ export function Hero() {
               <div className="flex flex-wrap items-center gap-3">
                 <Magnetic>
                   <Button href="/draft-bot" size="lg">
-                    Try Shisho
+                    {t.ctaPrimary}
                   </Button>
                 </Magnetic>
                 <Button href="/courses" variant="ghost" size="lg">
-                  Browse courses
+                  {t.ctaSecondary}
                 </Button>
               </div>
-              <p className="mt-3.5 text-[13.5px] text-ink-soft">
-                No card required.
-              </p>
+              <p className="mt-3.5 text-[13.5px] text-ink-soft">{t.ctaNote}</p>
+
+              {/* Same picker /map uses to answer "which High Court hears
+                  this" — reused as-is (no translation of its own; it stays
+                  English even on /hi, since it's shared with /map, a page
+                  outside this pass's scope), just without the ml-9.5 that
+                  aligns it under a StepMark there — the hero has no
+                  StepMark to align under. The question itself is swapped:
+                  /map asks where the *matter* is (it decides jurisdiction);
+                  a first-time visitor here isn't mid-filing, so the hero
+                  asks about them instead — same derived High Court answer,
+                  a question that actually fits who's reading it. */}
+              <StateSelect className="mt-6 ml-0 max-w-xs" label="Where are you from" />
             </div>
           </div>
         </div>

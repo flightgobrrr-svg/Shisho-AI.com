@@ -26,12 +26,12 @@ export const PRIMARY_NAV: NavLink[] = [
     blurb: "Plaints, notices and contracts, drafted under Indian law",
     children: [
       {
-        href: "/draft-bot#ask",
+        href: "/draft-bot?mode=ask#ask",
         label: "Ask Shisho",
         blurb: "Describe the facts and get a first draft",
       },
       {
-        href: "/draft-bot#review",
+        href: "/draft-bot?mode=review#review",
         label: "Review a draft",
         blurb: "Paste a document for clause-level notes",
       },
@@ -39,6 +39,16 @@ export const PRIMARY_NAV: NavLink[] = [
         href: "/draft-bot#drafts",
         label: "What it drafts",
         blurb: "Pleadings, applications, notices, appeals",
+      },
+      {
+        href: "/draft-bot/formats",
+        label: "Formats",
+        blurb: "99 civil and criminal formats to draft from",
+      },
+      {
+        href: "/for/corporate",
+        label: "Corporate lawyers",
+        blurb: "Contract review, compliance, due diligence",
       },
     ],
   },
@@ -57,6 +67,26 @@ export const PRIMARY_NAV: NavLink[] = [
         label: "Landmark judgments",
         blurb: "The cases every student is expected to know",
       },
+      {
+        href: "/library/acts",
+        label: "Bare Acts",
+        blurb: "Central Acts, and state Acts state-wise",
+      },
+      {
+        href: "/limitation",
+        label: "Limitation checker",
+        blurb: "The last day to file, under the Limitation Act",
+      },
+      {
+        href: "/for/scholars",
+        label: "Scholars",
+        blurb: "Trace a doctrine across decades",
+      },
+      {
+        href: "/for/judges",
+        label: "Judges",
+        blurb: "A clear record, close at hand",
+      },
     ],
   },
   {
@@ -73,6 +103,36 @@ export const PRIMARY_NAV: NavLink[] = [
         href: "/courses#proficient",
         label: "Proficient",
         blurb: "Interim relief, commercial drafting, litigation strategy",
+      },
+      {
+        href: "/courses/english",
+        label: "Legal English",
+        blurb: "Reading a judgment, writing a pleading — recorded & live",
+      },
+      {
+        href: "/courses/spoken-english",
+        label: "Spoken English",
+        blurb: "Oral argument and courtroom submissions — recorded & live",
+      },
+      {
+        href: "/for/lecturers",
+        label: "Lecturers",
+        blurb: "Lesson plans and case materials",
+      },
+      {
+        href: "/for/clat",
+        label: "CLAT",
+        blurb: "Mock tests and legal reasoning",
+      },
+      {
+        href: "/for/judicial-exams",
+        label: "Judicial exams",
+        blurb: "JCJ, District Judge and APP",
+      },
+      {
+        href: "/for/court-staff",
+        label: "Court staff exams",
+        blurb: "Mock papers and a study plan",
       },
     ],
   },
@@ -111,6 +171,38 @@ export const PRIMARY_NAV: NavLink[] = [
         label: "Citations",
         blurb: "Authorities that actually bind",
       },
+      {
+        href: "/for/citizens",
+        label: "Citizens",
+        blurb: "Know your rights, in plain language",
+      },
+      {
+        href: "/for/advice",
+        label: "Legal advice",
+        blurb: "Clear guidance, one conversation at a time",
+      },
+    ],
+  },
+  {
+    href: "/clerks",
+    label: "Advocate Clerks",
+    blurb: "The practice manual — registration, filing, scrutiny, A to Z",
+    children: [
+      {
+        href: "/clerks#routine",
+        label: "Daily routine",
+        blurb: "Before, during and after court",
+      },
+      {
+        href: "/clerks#manual",
+        label: "The manual",
+        blurb: "99 entries, A to Z",
+      },
+      {
+        href: "/clerks#formats",
+        label: "Practical formats",
+        blurb: "Working formats for daily office use",
+      },
     ],
   },
   {
@@ -143,10 +235,15 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { href: "/draft-bot", label: "Shisho" },
       { href: "/library", label: "Legal Library" },
+      { href: "/library/acts", label: "Bare Acts" },
+      { href: "/limitation", label: "Limitation checker" },
       { href: "/courses", label: "Courses" },
       { href: "/map", label: "The Map" },
       { href: "/documents", label: "Documents" },
+      { href: "/clerks", label: "Advocate Clerks" },
+      { href: "/#audiences", label: "Who it's for" },
       { href: "/pricing", label: "Pricing" },
+      { href: "/status", label: "What works today" },
     ],
   },
   {
@@ -161,17 +258,16 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: "Company",
     links: [
-      { href: "/", label: "About" },
-      { href: "/", label: "Careers" },
-      { href: "/", label: "Contact" },
+      { href: "/about", label: "About" },
+      { href: "/contact", label: "Contact" },
     ],
   },
   {
     heading: "Legal",
     links: [
-      { href: "/", label: "Terms of use" },
-      { href: "/", label: "Privacy policy" },
-      { href: "/", label: "Refund policy" },
+      { href: "/terms", label: "Terms of use" },
+      { href: "/privacy", label: "Privacy policy" },
+      { href: "/refund", label: "Refund policy" },
     ],
   },
 ];

@@ -33,6 +33,14 @@ export type UploadedFile = {
 export type AssistantContext = {
   docType?: string;
   draftExcerpt?: string;
+  /** True when `file` on this turn is the visitor's connected Google Drive
+   *  default template (components/draft/DraftingAgent.tsx's sticky
+   *  attachment), not a one-off manual upload. Attaching it happens
+   *  silently — there's no chat message saying "this is my template" for
+   *  the model to infer intent from — so this makes the "mirror this
+   *  file's style" instruction unconditional instead of guessed from
+   *  wording. See app/api/assistant/route.ts's system prompt. */
+  isDefaultTemplate?: boolean;
 };
 
 /**

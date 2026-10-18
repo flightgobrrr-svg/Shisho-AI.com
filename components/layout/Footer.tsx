@@ -47,7 +47,7 @@ export function Footer() {
             Shisho AI is an educational and drafting tool. It does not provide
             legal advice, and no advocate–client relationship arises from its
             use. Shisho assists a lawyer; it does not replace one, and is not
-            a substitute for an advocate enrolled with a State Bar Council.
+            a substitute for a licensed, practising advocate.
           </p>
           <p className="label-mono mt-6 text-ink-soft/70">
             © {year} Shisho AI · Made in India

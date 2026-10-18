@@ -50,7 +50,7 @@ const TESTIMONIALS = [
     quote:
       "[Quote goes here — ideally from a practising advocate, naming the kind of drafting it helped with.]",
     name: "[Name]",
-    detail: "[Advocate, Bar Council of ____]",
+    detail: "[Advocate, City]",
   },
   {
     quote:

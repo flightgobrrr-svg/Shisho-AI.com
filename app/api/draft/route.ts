@@ -12,7 +12,17 @@ import {
   readPlan,
   readUsage,
   USAGE_COOKIE,
+  type Plan,
 } from "@/lib/entitlements";
+import {
+  incrementUsageCount,
+  isSupabaseConfigured,
+  readUsageCount,
+  readVisitorId,
+  VISITOR_COOKIE,
+} from "@/lib/usageCounters";
+import { getSessionUser } from "@/lib/authSession";
+import { getUserPlan } from "@/lib/profile";
 
 /**
  * POST /api/draft
@@ -130,21 +140,45 @@ export async function POST(request: Request) {
 
   /* ---- Entitlement: enforced HERE, on the server --------------------
      The client also renders a locked state, but that is presentation. This
-     check is the one that actually withholds the output. Do not move it. */
-  const cookiePlan = request.headers
-    .get("cookie")
-    ?.split(";")
-    .map((c) => c.trim().split("="))
-    .find(([name]) => name === PLAN_COOKIE)?.[1];
+     check is the one that actually withholds the output. Do not move it.
 
-  const cookieUsage = request.headers
-    .get("cookie")
-    ?.split(";")
-    .map((c) => c.trim().split("="))
-    .find(([name]) => name === USAGE_COOKIE)?.[1];
+     Usage comes from Supabase once it's configured (see lib/usageCounters.ts
+     for why: a visitor can no longer edit the count directly, only a cookie
+     they can't read the value of). Falls back to the original cookie-count
+     behaviour, unchanged, until SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY exist —
+     same convention as ANTHROPIC_API_KEY's demo-mode fallback below.
 
-  const plan = readPlan(cookiePlan);
-  const used = readUsage(cookieUsage);
+     A logged-in visitor (lib/authSession.ts) is a THIRD, higher-priority
+     source: their plan comes from the profiles table (lib/profile.ts) and
+     their usage row is keyed by their real account id instead of the
+     anonymous cookie-random one — see supabase/schema.sql's updated
+     USAGE COUNTERS header for why the same column/table works for both. A
+     visitor who never registers sees no change at all. */
+  const cookieHeader = request.headers.get("cookie");
+  const findCookie = (name: string) =>
+    cookieHeader
+      ?.split(";")
+      .map((c) => c.trim().split("="))
+      .find(([n]) => n === name)?.[1];
+
+  const { user: authUser, applyPendingCookies } = await getSessionUser(cookieHeader);
+  const useSupabase = isSupabaseConfigured();
+
+  let plan: Plan;
+  let visitorId: string | null;
+
+  if (authUser && useSupabase) {
+    plan = await getUserPlan(authUser.id);
+    visitorId = authUser.id;
+  } else {
+    plan = readPlan(findCookie(PLAN_COOKIE));
+    visitorId = useSupabase ? readVisitorId(findCookie(VISITOR_COOKIE)) : null;
+  }
+
+  const used = useSupabase
+    ? await readUsageCount(visitorId!, "review")
+    : readUsage(findCookie(USAGE_COOKIE));
+
   const entitlement = entitlementFor(plan, used);
 
   if (!entitlement.allowed) {
@@ -183,17 +217,33 @@ export async function POST(request: Request) {
   }
 
   const response = NextResponse.json(payload);
+  applyPendingCookies(response);
 
   /* Count the review against a free user's monthly trial.
-     MOCK — a cookie counter resets when the visitor clears site data. Real
-     metering has to live in your account store, keyed to the user. */
+     Supabase-backed once configured — see lib/usageCounters.ts. Until then,
+     MOCK: a cookie counter resets when the visitor clears site data. */
   if (entitlement.quota !== null) {
-    response.cookies.set(USAGE_COOKIE, String(used + 1), {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-    });
+    if (useSupabase) {
+      await incrementUsageCount(visitorId!, "review");
+      // Only an anonymous visitor needs this cookie — a logged-in one is
+      // already identified by their session, and writing visitorId (their
+      // real user id) here too would just be a pointless duplicate.
+      if (!authUser) {
+        response.cookies.set(VISITOR_COOKIE, visitorId!, {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30,
+        });
+      }
+    } else {
+      response.cookies.set(USAGE_COOKIE, String(used + 1), {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
   }
 
   return response;

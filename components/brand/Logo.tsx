@@ -86,7 +86,7 @@ export function LogoLockup({ className }: { className?: string }) {
       alt="Shisho AI — wisdom, guidance, intelligence"
       width={500}
       height={500}
-      className={cn("h-auto w-44", className)}
+      className={cn("logo-plate h-auto w-44", className)}
     />
   );
 }

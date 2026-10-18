@@ -347,3 +347,36 @@ export function documentsByStage() {
     documents: DOCUMENTS.filter((d) => d.stage === stage),
   }));
 }
+
+/**
+ * Find the document reference page that covers a note's authority, so the
+ * review notes can say why a provision matters using text that has already
+ * been checked. Deliberately strict: it matches on an Order number plus a Rule
+ * (or a document whose cite names the Order with no Rule), and returns nothing
+ * when more than one document fits. A free-text authority from a model that
+ * does not match cleanly gets no explainer rather than a wrong one.
+ */
+export function findDocumentForAuthority(authority: string): LegalDocument | undefined {
+  const order = authority.match(/\border\s+([ivxlc]+)\b/i)?.[1];
+  if (!order) return undefined;
+  const rule = authority.match(/(?:rules?|rr?\.?)\s*(\d+[a-z]?(?:\(\d+[a-z]?\))?)/i)?.[1];
+
+  const wordsOf = (text: string) => text.toLowerCase().split(/[^a-z0-9()]+/);
+  const namesOrder = (cite: string) => {
+    const w = wordsOf(cite);
+    return w.some((word, n) => word === "order" && w[n + 1] === order.toLowerCase());
+  };
+  const sameOrder = DOCUMENTS.filter((d) => namesOrder(d.provision.cite));
+
+  const hasRule = (cite: string) => /\brules?\b/i.test(cite);
+  const wanted = rule?.toLowerCase();
+  const exact = wanted
+    ? sameOrder.filter((d) => {
+        const cite = d.provision.cite.toLowerCase();
+        return cite.includes("rule " + wanted) || cite.includes("rules " + wanted);
+      })
+    : [];
+  const matches = exact.length > 0 ? exact : sameOrder.filter((d) => !hasRule(d.provision.cite));
+
+  return matches.length === 1 ? matches[0] : undefined;
+}

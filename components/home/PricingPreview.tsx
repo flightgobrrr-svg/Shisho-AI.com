@@ -3,6 +3,7 @@ import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { CountUp } from "@/components/motion/CountUp";
 import { TIERS } from "@/lib/pricing";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/cn";
 
 /**
@@ -24,24 +25,27 @@ import { cn } from "@/lib/cn";
  *
  * Every figure comes from lib/pricing.ts. No price is written here.
  */
-export function PricingPreview() {
+export function PricingPreview({ locale = "en" }: { locale?: Locale }) {
   const preview = TIERS;
+  const t = getDictionary(locale).pricingPreview;
 
   return (
     <Section tone="raised" className="border-y border-ink/10">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow>Pricing</Eyebrow>
+            <Eyebrow>{t.eyebrow}</Eyebrow>
             <h2 className="mt-4 max-w-xl font-display text-title font-semibold">
-              Priced for a student <Emphasis>budget</Emphasis>.
+              {t.heading.map((seg, i) =>
+                seg.em ? <Emphasis key={i}>{seg.text}</Emphasis> : <span key={i}>{seg.text}</span>,
+              )}
             </h2>
           </div>
           <Link
             href="/pricing"
             className="underline-draw text-[14px] text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]"
           >
-            See the full comparison
+            {t.seeFull}
           </Link>
         </div>
 
@@ -65,7 +69,7 @@ export function PricingPreview() {
                 </h3>
                 {tier.popular ? (
                   <span className="label-mono shrink-0 text-seal">
-                    Most popular
+                    {t.mostPopular}
                   </span>
                 ) : null}
               </div>
@@ -76,12 +80,12 @@ export function PricingPreview() {
                   className="font-display text-[2.1rem] leading-none font-semibold whitespace-nowrap text-ink"
                 />
                 <span className="mt-1.5 block text-[13px] text-ink-soft">
-                  {tier.price === 0 ? "forever" : "per month"}
+                  {tier.price === 0 ? t.forever : t.perMonth}
                 </span>
               </p>
 
               <p className="mt-5 flex-1 text-[14.5px] leading-relaxed text-ink-soft">
-                {tier.tagline}
+                {t.taglines[tier.id]}
               </p>
             </li>
           ))}

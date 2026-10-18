@@ -5,6 +5,8 @@ import { EntryGate } from "@/components/motion/EntryGate";
 import { Analytics } from "@vercel/analytics/next";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
+import { ChromeGate } from "@/components/layout/ChromeGate";
+import { HtmlLangSync } from "@/components/layout/HtmlLangSync";
 import "./globals.css";
 
 /**
@@ -82,19 +84,37 @@ export default function RootLayout({
       className={`${garamond.variable} ${instrument.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Applies a stored theme override (see components/layout/
+            ThemeToggle.tsx) before first paint, so a visitor who chose dark
+            doesn't see a flash of the system/light default on their next
+            visit. Runs synchronously, before anything below is painted — an
+            unset preference is left alone entirely and the CSS
+            `prefers-color-scheme` rule in app/globals.css handles that case
+            with no JS at all. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){try{var t=localStorage.getItem("shisho-theme");if(t==="light"||t==="dark"){document.documentElement.dataset.theme=t;}}catch(e){}})();',
+          }}
+        />
+        <HtmlLangSync />
         <a
           href="#main"
           className="sr-only rounded-seal focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[100] focus:bg-ink focus:px-4 focus:py-2 focus:text-[14px] focus:text-paper"
         >
           Skip to content
         </a>
-        <EntryGate />
-        <CustomCursor />
-        <Nav />
+        <ChromeGate>
+          <EntryGate />
+          <CustomCursor />
+          <Nav />
+        </ChromeGate>
         <main id="main" className="flex-1">
           {children}
         </main>
-        <Footer />
+        <ChromeGate>
+          <Footer />
+        </ChromeGate>
         <Analytics />
       </body>
     </html>

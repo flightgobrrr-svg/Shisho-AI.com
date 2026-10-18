@@ -3,6 +3,7 @@ import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { StepMark } from "@/components/ui/StepMark";
 import { MAP_STAGES, PRODUCT_META } from "@/lib/sitemap";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 /**
  * The homepage's primary way in, organised around the matter itself rather
@@ -27,22 +28,26 @@ import { MAP_STAGES, PRODUCT_META } from "@/lib/sitemap";
  * on the map but nothing on the site answers it yet, and that is worth showing
  * honestly rather than inventing a destination for.
  */
-export function MatterFlow() {
+export function MatterFlow({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).matterFlow;
+
   return (
     <Section>
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow>Where to start</Eyebrow>
+            <Eyebrow>{t.eyebrow}</Eyebrow>
             <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">
-              Find the stage you are <Emphasis>at</Emphasis>.
+              {t.heading.map((seg, i) =>
+                seg.em ? <Emphasis key={i}>{seg.text}</Emphasis> : <span key={i}>{seg.text}</span>,
+              )}
             </h2>
           </div>
           <Link
             href="/map"
             className="underline-draw text-[14px] text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]"
           >
-            See the whole map
+            {t.seeMap}
           </Link>
         </div>
 
@@ -70,10 +75,10 @@ export function MatterFlow() {
                 <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-8 gap-y-3 pt-0.5">
                   <div className="min-w-0 max-w-[52ch]">
                     <h3 className="font-display text-[19px] leading-snug font-semibold text-ink">
-                      {stage.title}
+                      {t.stages[stage.n]?.title ?? stage.title}
                     </h3>
                     <p className="mt-1 text-[14.5px] leading-relaxed text-ink-soft">
-                      {stage.summary}
+                      {t.stages[stage.n]?.summary ?? stage.summary}
                     </p>
                   </div>
 
@@ -87,7 +92,7 @@ export function MatterFlow() {
                               href={meta.href}
                               className="label-mono inline-flex items-center border border-ink/45 px-2.5 py-1.5 text-ink-soft transition-[color,border-color,background-color] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75 hover:bg-paper-raised hover:text-ink"
                             >
-                              {meta.label}
+                              {t.products[product] ?? meta.label}
                             </Link>
                           </li>
                         );

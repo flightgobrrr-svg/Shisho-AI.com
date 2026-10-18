@@ -33,7 +33,7 @@ export function ComparisonTable() {
                 {tier.name}
                 {tier.popular ? (
                   <span className="label-mono ml-2 align-middle text-[10px] text-seal">
-                    Most popular
+                    Recommended for students
                   </span>
                 ) : null}
               </th>

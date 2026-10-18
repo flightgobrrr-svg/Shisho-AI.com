@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { DraftWorkspace } from "@/components/draft/DraftWorkspace";
 import { PlanSwitcher } from "@/components/draft/PlanSwitcher";
+import { SampleCard } from "@/components/for/SampleCard";
+import { StatusList } from "@/components/for/StatusList";
 import { Emphasis } from "@/components/ui/Emphasis";
+import { EXTRAS } from "@/lib/audiencePages";
 import { PhotoBackdrop } from "@/components/ui/PhotoBackdrop";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { StageTrail } from "@/components/map/StageTrail";
@@ -19,6 +23,8 @@ import {
   ASSISTANT_USAGE_COOKIE,
   readAssistantUsage,
 } from "@/lib/assistantEntitlements";
+import { readVisitorId, VISITOR_COOKIE, isSupabaseConfigured } from "@/lib/usageCounters";
+import { getConnection } from "@/lib/driveConnection";
 
 export const metadata: Metadata = {
   title: "Shisho",
@@ -54,6 +60,16 @@ export default async function DraftBotPage({
     ? { docType: requested.draftsAs, name: requested.name }
     : null;
 
+  /* ?mode=review arrives from the nav's "Review a draft" dropdown item
+     (lib/nav.ts). Resolved here rather than read from the URL hash on the
+     client: a hash is never sent to the server at all, so deciding the
+     workspace's initial tab from one meant guessing on the first client
+     render and then correcting it — which is exactly the server/client
+     mismatch a hard reload of /draft-bot#review hit. A query string doesn't
+     have that problem; it's just as available during SSR as during
+     hydration, so the right tab renders correct the first time. */
+  const initialMode = params.mode === "review" ? "review" : "new";
+
   const plan = readPlan(cookieStore.get(PLAN_COOKIE)?.value);
   const used = readUsage(cookieStore.get(USAGE_COOKIE)?.value);
   const entitlement = entitlementFor(plan, used);
@@ -62,6 +78,26 @@ export default async function DraftBotPage({
     cookieStore.get(ASSISTANT_USAGE_COOKIE)?.value,
   );
   const assistantEntitlement = assistantEntitlementFor(plan, assistantUsed);
+
+  /* Google Drive connection state — resolved here, same discipline as
+     entitlement/assistantEntitlement above: the server reads what it can
+     from the visitor_id cookie and passes plain values down, the client
+     seeds local state from them once. Deliberately does NOT mint a fresh
+     visitor_id when the cookie is absent — cookies() is read-only in a
+     Server Component, minting one here would need a .set() this page has
+     no way to perform, and a visitor with no cookie yet has no connection
+     to look up regardless. */
+  const visitorCookieValue = cookieStore.get(VISITOR_COOKIE)?.value;
+  const driveConnection =
+    isSupabaseConfigured() && visitorCookieValue
+      ? await getConnection(readVisitorId(visitorCookieValue))
+      : null;
+
+  const driveConnected = !!driveConnection;
+  const driveTemplateName = driveConnection?.templateName ?? null;
+  const driveFiles = driveConnection?.files ?? [];
+  const driveJustConnected = params.driveConnected === "1";
+  const driveConnectError = typeof params.driveError === "string" ? params.driveError : null;
 
   const isDev = process.env.NODE_ENV !== "production";
 
@@ -118,7 +154,22 @@ export default async function DraftBotPage({
             entitlement={entitlement}
             assistantEntitlement={assistantEntitlement}
             initialDocType={target?.docType}
+            initialMode={initialMode}
+            driveConnected={driveConnected}
+            driveTemplateName={driveTemplateName}
+            driveFiles={driveFiles}
+            driveJustConnected={driveJustConnected}
+            driveConnectError={driveConnectError}
           />
+          <p className="mt-6 max-w-[62ch] text-[13px] leading-relaxed text-ink-soft">
+            What you type and attach is sent to an AI model provider to produce
+            the response, and Shisho does not save it in its own database. Share
+            only what you are authorised to, and leave out client names where
+            you can.{" "}
+            <Link href="/privacy" className="underline-draw text-ink">
+              Privacy policy
+            </Link>
+          </p>
         </div>
       </Container>
     </Section>
@@ -132,6 +183,27 @@ export default async function DraftBotPage({
             </li>
           ))}
         </ul>
+      </Container>
+    </Section>
+    <Section className="border-t border-ink/10 !py-14 md:!py-16">
+      <Container>
+        <Eyebrow>For advocates</Eyebrow>
+        <h2 className="mt-4 max-w-xl font-display text-[1.5rem] font-semibold text-ink">
+          Draft with precision. Argue with <Emphasis>authority</Emphasis>.
+        </h2>
+        <div className="mt-6 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-16">
+          <StatusList items={EXTRAS.advocates} />
+          <SampleCard
+            sample={{
+              label: "Memorandum of grounds",
+              rows: [
+                { term: "Ground 1", detail: "Authority beside it" },
+                { term: "Ground 2", detail: "Authority beside it" },
+                { term: "Ground 3", detail: "Authority beside it" },
+              ],
+            }}
+          />
+        </div>
       </Container>
     </Section>
     </>

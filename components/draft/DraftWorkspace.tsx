@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
+import { findDocumentForAuthority } from "@/lib/documents";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { DraftingAgent } from "@/components/draft/DraftingAgent";
+import { DriveConnect } from "@/components/draft/DriveConnect";
 import { cn } from "@/lib/cn";
 import {
   DOC_TYPES,
@@ -17,6 +20,7 @@ import {
 } from "@/lib/draft";
 import type { Entitlement } from "@/lib/entitlements";
 import type { AssistantEntitlement } from "@/lib/assistantEntitlements";
+import type { DriveTemplateFile } from "@/lib/driveTemplate";
 
 const SAMPLE = `IN THE HIGH COURT OF DELHI AT NEW DELHI
 CIVIL WRIT JURISDICTION
@@ -51,12 +55,34 @@ export function DraftWorkspace({
   entitlement,
   assistantEntitlement,
   initialDocType = "plaint",
+  initialMode = "new",
+  driveConnected = false,
+  driveTemplateName: initialDriveTemplateName = null,
+  driveFiles: initialDriveFiles = [],
+  driveJustConnected = false,
+  driveConnectError = null,
 }: {
   entitlement: Entitlement;
   assistantEntitlement: AssistantEntitlement;
   /** Pre-selected when the reader arrived from a document page via ?doc=.
    *  Already resolved and validated on the server; defaults to the plaint. */
   initialDocType?: DocType;
+  /** Pre-selected when the reader arrived via the nav's "Review a draft" —
+   *  resolved server-side from ?mode= in app/draft-bot/page.tsx. */
+  initialMode?: "new" | "review";
+  /** All five driveX props are resolved server-side (app/draft-bot/page.tsx,
+   *  from the visitor_id cookie) — same pattern as entitlement/initialMode
+   *  above: the server decides, the client seeds local state from it once
+   *  and owns it from there. Lifted to this level (rather than living
+   *  inside DraftingAgent) because both DriveConnect (writes it, once a
+   *  default template is chosen) and DraftingAgent (reads it, to
+   *  auto-apply that template) need the same value. */
+  driveConnected?: boolean;
+  driveTemplateName?: string | null;
+  driveFiles?: DriveTemplateFile[];
+  /** True right after Google's consent redirect lands back on this page. */
+  driveJustConnected?: boolean;
+  driveConnectError?: string | null;
 }) {
   const [draft, setDraft] = useState("");
   const [docType, setDocType] = useState<DocType>(initialDocType);
@@ -67,6 +93,24 @@ export function DraftWorkspace({
   const [locked, setLocked] = useState(!entitlement.allowed);
   const [remaining, setRemaining] = useState(entitlement.remaining);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  /* Two modes, not two pages — the chat and the reviewer keep the same
+     backend calls and the same state they always had, only one is visible
+     at a time. Both stay mounted throughout (toggled with `hidden`, never
+     conditionally rendered) so switching tabs never drops a chat transcript
+     or a pasted draft.
+
+     `initialMode` is resolved server-side (app/draft-bot/page.tsx, from
+     ?mode=) rather than read from window.location.hash on the client — a
+     hash is never sent to the server, so deciding the tab from one would
+     mean the server always guessing "new" and the client correcting itself
+     after mount, which is a real hydration mismatch on a hard reload of
+     /draft-bot#review, not just a theoretical one. Threading it through as
+     a prop means the server gets it right the first time. */
+  const [activeMode, setActiveMode] = useState<"new" | "review">(initialMode);
+
+  const [driveFiles, setDriveFiles] = useState<DriveTemplateFile[]>(initialDriveFiles);
+  const [driveTemplateName, setDriveTemplateName] = useState(initialDriveTemplateName);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -122,22 +166,101 @@ export function DraftWorkspace({
 
   return (
     <div>
-      {/* The agent is the page's opening move now — describe the facts,
-          attach a file, and a draft lands in the workspace below via
-          `onDraft`. The workspace's own mechanics (review, highlighting,
-          the 402 lock) are untouched; this is the only new wire into them. */}
-      <div id="ask">
-        <DraftingAgent
-          entitlement={assistantEntitlement}
-          contextDocType={docType}
-          onDraft={(text, dt) => {
-            setDraft(text);
-            if (dt && isDocType(dt)) setDocType(dt);
-          }}
-        />
+      {/* Two modes, not two panels stacked one after the other — drafting
+          from facts and reviewing an existing draft are different jobs a
+          reader arrives wanting to do, and showing both at once (the old
+          layout) buried whichever one they didn't come for below a screen
+          of the other. Picking "Draft a new document" and getting an
+          answer switches you here automatically, since that's the one
+          moment the two are actually the same errand. */}
+      <div role="tablist" aria-label="What do you want to do" className="flex flex-col gap-2.5 sm:flex-row">
+        <button
+          type="button"
+          role="tab"
+          id="tab-ask"
+          aria-selected={activeMode === "new"}
+          aria-controls="ask"
+          onClick={() => setActiveMode("new")}
+          className={cn(
+            "min-h-14 flex-1 rounded-seal border px-5 py-3 text-left transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+            activeMode === "new"
+              ? "border-ink bg-ink text-paper-raised"
+              : "border-ink/45 text-ink-soft hover:border-ink/75 hover:text-ink",
+          )}
+        >
+          <span className="label-mono block">Draft a new document</span>
+          <span
+            className={cn(
+              "mt-1 block text-[12.5px] leading-snug",
+              activeMode === "new" ? "text-paper-raised/70" : "text-ink-soft/70",
+            )}
+          >
+            Describe the facts to Shisho
+          </span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          id="tab-review"
+          aria-selected={activeMode === "review"}
+          aria-controls="review"
+          onClick={() => setActiveMode("review")}
+          className={cn(
+            "min-h-14 flex-1 rounded-seal border px-5 py-3 text-left transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+            activeMode === "review"
+              ? "border-ink bg-ink text-paper-raised"
+              : "border-ink/45 text-ink-soft hover:border-ink/75 hover:text-ink",
+          )}
+        >
+          <span className="label-mono block">Review my draft</span>
+          <span
+            className={cn(
+              "mt-1 block text-[12.5px] leading-snug",
+              activeMode === "review" ? "text-paper-raised/70" : "text-ink-soft/70",
+            )}
+          >
+            Paste a document for clause-level notes
+          </span>
+        </button>
       </div>
 
-      <div id="review" className="mt-12 grid gap-8 border-t border-ink/10 pt-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
+      {/* The agent — describe the facts, attach a file, and a draft lands
+          in the reviewer below via `onDraft`. Its own mechanics (the 402
+          lock, the chat transcript) are untouched; this is the only new
+          wire into them. */}
+      <div id="ask" role="tabpanel" aria-labelledby="tab-ask" hidden={activeMode !== "new"} className="mt-10">
+        <DriveConnect
+          connected={driveConnected}
+          templateName={driveTemplateName}
+          autoOpenPicker={driveJustConnected}
+          connectError={driveConnectError}
+          onTemplateChange={(files, templateName) => {
+            setDriveFiles(files);
+            setDriveTemplateName(templateName);
+          }}
+        />
+        <div className="mt-6">
+          <DraftingAgent
+            entitlement={assistantEntitlement}
+            contextDocType={docType}
+            driveFiles={driveFiles}
+            onDraft={(text, dt) => {
+              setDraft(text);
+              if (dt && isDocType(dt)) setDocType(dt);
+              setActiveMode("review");
+            }}
+          />
+        </div>
+      </div>
+
+      <div
+        id="review"
+        role="tabpanel"
+        aria-labelledby="tab-review"
+        hidden={activeMode !== "review"}
+        className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10"
+      >
       {/* ================= Draft ================= */}
       <div className="min-w-0">
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -267,9 +390,13 @@ export function DraftWorkspace({
             ) : null}
 
             {status === "idle" &&
-              annotations?.map((annotation, i) => (
+              annotations?.map((annotation, i) => {
+                const doc = annotation.authority
+                  ? findDocumentForAuthority(annotation.authority)
+                  : undefined;
+                return (
+                <div key={annotation.id}>
                 <button
-                  key={annotation.id}
                   type="button"
                   onClick={() => highlight(annotation)}
                   className={cn(
@@ -306,7 +433,25 @@ export function DraftWorkspace({
                     </span>
                   ) : null}
                 </button>
-              ))}
+                {doc ? (
+                  <details className="group border-x border-b border-ink/25 px-4 py-2.5">
+                    <summary className="cursor-pointer text-[12.5px] text-ink-soft hover:text-ink">
+                      Why this matters
+                    </summary>
+                    <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">
+                      {doc.provision.gist}
+                    </p>
+                    <Link
+                      href={`/documents/${doc.slug}`}
+                      className="underline-draw mt-2 inline-block text-[13px] text-ink"
+                    >
+                      Read: {doc.name}
+                    </Link>
+                  </details>
+                ) : null}
+                </div>
+                );
+              })}
           </div>
         )}
       </aside>

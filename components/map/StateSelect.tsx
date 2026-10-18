@@ -7,6 +7,7 @@ import {
   UNION_TERRITORIES,
   type StateName,
 } from "@/lib/states";
+import { cn } from "@/lib/cn";
 
 /**
  * Picks the state or union territory a matter belongs to, at stage 3 of the
@@ -25,15 +26,25 @@ import {
  * no open/close state. <optgroup> carries the constitutional distinction
  * between a state and a union territory, which a flat list would flatten away.
  */
-export function StateSelect() {
+export function StateSelect({
+  className,
+  label = "Where is the matter",
+}: {
+  className?: string;
+  /** /map asks about the matter's location (it decides jurisdiction); the
+   *  homepage hero asks about the visitor instead — same picker, same
+   *  derived High Court, a question that actually fits a first-time
+   *  visitor rather than someone mid-filing. */
+  label?: string;
+}) {
   const id = useId();
   const [selected, setSelected] = useState<StateName | "">("");
   const court = selected ? HIGH_COURT_BY_STATE[selected] : null;
 
   return (
-    <div className="mt-5 ml-9.5 max-w-md">
+    <div className={cn("mt-5 ml-9.5 max-w-md", className)}>
       <label htmlFor={id} className="label-mono block text-ink-soft">
-        Where is the matter
+        {label}
       </label>
 
       <select

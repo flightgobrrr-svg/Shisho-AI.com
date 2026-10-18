@@ -12,14 +12,23 @@ import {
   type ChatMessage,
   type UploadedFile,
 } from "@/lib/assistant";
-import { fileToContentBlock } from "@/lib/assistantFiles";
+import { fileToContentBlock, fileToGeminiPart } from "@/lib/assistantFiles";
 import {
   assistantEntitlementFor,
   ASSISTANT_USAGE_COOKIE,
   readAssistantUsage,
 } from "@/lib/assistantEntitlements";
 import { DOC_TYPES, isDocType, type DocType } from "@/lib/draft";
-import { PLAN_COOKIE, readPlan } from "@/lib/entitlements";
+import { PLAN_COOKIE, readPlan, type Plan } from "@/lib/entitlements";
+import {
+  incrementUsageCount,
+  isSupabaseConfigured,
+  readUsageCount,
+  readVisitorId,
+  VISITOR_COOKIE,
+} from "@/lib/usageCounters";
+import { getSessionUser } from "@/lib/authSession";
+import { getUserPlan } from "@/lib/profile";
 
 /**
  * POST /api/assistant
@@ -37,14 +46,19 @@ import { PLAN_COOKIE, readPlan } from "@/lib/entitlements";
  *
  * ── Modes ────────────────────────────────────────────────────────────────
  *   demo  — hand-written keyword matching from lib/assistant.ts. Used when
- *           SHISHO_ASSISTANT_MODE=demo, or whenever ANTHROPIC_API_KEY is
- *           absent. Independent of SHISHO_DRAFT_MODE — the reviewer and the
- *           agent can each be demo'd without affecting the other.
- *   live  — a real Claude call. See INTEGRATION POINT below.
+ *           SHISHO_ASSISTANT_MODE=demo, or whenever neither GEMINI_API_KEY
+ *           nor ANTHROPIC_API_KEY is set. Independent of SHISHO_DRAFT_MODE —
+ *           the reviewer and the agent can each be demo'd without affecting
+ *           the other.
+ *   live  — a real model call: Gemini if GEMINI_API_KEY is set (Google AI
+ *           Studio's free tier — the default path, since it costs nothing to
+ *           turn on), otherwise Claude if ANTHROPIC_API_KEY is set instead.
+ *           See INTEGRATION POINT below for both.
  *
  * ── Security ─────────────────────────────────────────────────────────────
- *   • ANTHROPIC_API_KEY is shared with app/api/draft/route.ts but read
- *     independently here; it must never be prefixed NEXT_PUBLIC_.
+ *   • GEMINI_API_KEY / ANTHROPIC_API_KEY are read independently of
+ *     app/api/draft/route.ts's own copy; neither must ever be prefixed
+ *     NEXT_PUBLIC_.
  *   • The entitlement check runs BEFORE any model call, exactly like the
  *     reviewer's — a request that isn't entitled costs nothing.
  *   • Conversation length/size and attachment size are all capped, so a
@@ -59,7 +73,24 @@ import { PLAN_COOKIE, readPlan } from "@/lib/entitlements";
 
 export const runtime = "nodejs";
 
-const MODEL = "claude-opus-5";
+const CLAUDE_MODEL = "claude-opus-5";
+
+/** Google AI Studio's free tier, live-tested this session against the real
+ *  API — twice now. `gemini-3.7-flash` (the newest Flash model) returned
+ *  503 "high demand" on every attempt; `gemini-2.5-flash` 404s outright —
+ *  Google's own error for it says it's retired for new API keys and points
+ *  at 3.6. `gemini-3.6-flash` DID complete real drafting requests, but its
+ *  free-tier daily quota turned out to be only 20 requests/day on this
+ *  project — confirmed via a real 429 ("GenerateRequestsPerDayPerProjectPer
+ *  Model-FreeTier", limit: 20), nowhere documented in advance since Google
+ *  doesn't publish per-model free-tier numbers (only shows them in your own
+ *  AI Studio dashboard). `gemini-3.5-flash` is a separate quota bucket,
+ *  confirmed still available when 3.6's was exhausted. Swap this one
+ *  constant again if 3.5's own daily quota turns out to be similarly tight
+ *  under real traffic, or once 3.7 stops being overloaded — check current
+ *  availability AND quota before assuming any of these is still right,
+ *  same lesson twice now. */
+const GEMINI_MODEL = "gemini-3.5-flash";
 
 const DRAFTING_SYSTEM_PROMPT = `You are Shisho, a senior Indian advocate helping a junior draft a document from the facts they give you — in conversation, not a formal clause-by-clause review.
 
@@ -72,9 +103,10 @@ CITATIONS — this is absolute:
 - Never invent a case name, citation, section number, or reported reference.
 - If a point needs authority but you are not certain of the correct one, say so and leave it out. An honest gap is correct; a fabricated citation is a serious error.
 
-GATHERING FACTS:
-- Before drafting, get what you actually need: the parties, the forum/court, the key dates, the cause of action, and the relief sought. Ask for whatever is still missing rather than drafting on too little — leave "draft" null and use "reply" to say what you still need.
-- If a file is attached, read it as source material (a prior notice, correspondence, evidence) and say in "reply" what you took from it. Never ignore an attachment silently.
+GATHERING FACTS — treat this as a checklist, not a suggestion:
+- Full names of every party (not just their role), the forum/court, the complete chronology of key dates, the cause of action, and the relief sought. Ask for whatever is still missing rather than drafting on too little — leave "draft" null and use "reply" to say what you still need.
+- Always establish the limitation position before drafting anything time-sensitive (a plaint, a notice, an appeal, an application with a deadline): when the cause of action arose, and when the limitation period runs from. If the facts given don't fix this, ask before drafting — never silently assume a safe date.
+- If a file is attached, work out what it's for before using it. It may be factual source material (a prior notice, correspondence, evidence) — or it may be a template: an example of the user's own house style, clause ordering, or formatting that the new draft should follow. When the user's message calls it a template, format, or precedent (or the message is otherwise clearly about matching a style rather than establishing facts), mirror its structure, section headings, and formatting conventions in "draft", not just its facts. Say in "reply" what you took from it either way. Never ignore an attachment silently.
 - Once you have enough, draft. Don't hold out for perfection — a reasonable first draft the user can correct is more useful than an endless intake.
 
 DRAFTING:
@@ -82,9 +114,19 @@ DRAFTING:
 - Put the ENTIRE drafted document, and nothing else, in "draft". Do not repeat it in "reply" — "reply" is the short conversational message that goes with it (e.g. what you drafted and why, or what you're still missing).
 - Choose "docType" from: plaint, notice, application, contract — whichever the document actually is. Leave both "draft" and "docType" null while still gathering facts.
 
-TONE:
+FLAGS — raise these plainly in "reply" rather than drafting past them:
+- If the facts as given suggest the limitation period may already have run, say so before drafting — this is exactly the kind of thing a senior stops a junior on before it goes anywhere near filing, not something to draft around quietly.
+- Where a provision you'd otherwise cite (IPC, CrPC, Indian Evidence Act) was replaced effective 1 July 2024 by the Bharatiya Nyaya Sanhita / Bharatiya Nagarik Suraksha Sanhita / Bharatiya Sakshya Adhiniyam, cite the current provision and note the correspondence — e.g. "Section 103 BNS (formerly Section 302 IPC)" — rather than citing only the repealed one.
+
+HEARING PREP — when the user asks you to prepare them for a hearing, argument or cross-examination rather than to draft a document:
+- Leave "draft" and "docType" null and put the whole preparation note in "reply". This is the one case where "reply" may run long; keep it structured with plain headings, no emoji.
+- Use these headings: Issues; Points to establish; Likely questions from the bench; Provisions to check; Authorities.
+- Under "Authorities", list a case ONLY if the user supplied it or you are certain of the name and citation. Otherwise write "Authority to be verified" beside the point it would support. Never fill the gap with a plausible-sounding case.
+- Ask for the facts, stage of the case and the forum first if they are missing, as you would before drafting.
+
+TONE — formal throughout, not a casual chat assistant:
 - This is drafting assistance, not legal advice, and you should say so if the user seems to be relying on you as a substitute for one.
-- Keep "reply" conversational and concise — a few sentences. It is not the place to restate the draft.`;
+- Write "reply" the way a senior advocate would address a junior in professional correspondence: formal register, no emoji, no exclamation marks, no chatty filler ("Great!", "Sure thing!", "Happy to help!"). Concise is still correct — a few sentences — but every sentence should read as legal correspondence, not a chat app. It is not the place to restate the draft.`;
 
 const ASSISTANT_SCHEMA = {
   type: "object",
@@ -106,6 +148,37 @@ const ASSISTANT_SCHEMA = {
   },
   required: ["reply", "draft", "docType"],
   additionalProperties: false,
+} as const;
+
+/** Gemini's `responseSchema` is proto-backed, not full JSON Schema — it
+ *  rejects ASSISTANT_SCHEMA's `"type": ["string", "null"]` outright ("Proto
+ *  field is not repeating, cannot start list", confirmed against the real
+ *  API this session, contrary to what Google's own docs describe). A single
+ *  `type` plus a separate `nullable: true` is what it actually accepts, and
+ *  `additionalProperties` isn't a recognized field either. Kept in sync with
+ *  ASSISTANT_SCHEMA by hand since the two schema dialects can't share one
+ *  object. */
+const GEMINI_RESPONSE_SCHEMA = {
+  type: "object",
+  properties: {
+    reply: {
+      type: "string",
+      description: "The conversational message shown in the chat.",
+    },
+    draft: {
+      type: "string",
+      nullable: true,
+      description:
+        "The full drafted document, and nothing else. Null while still gathering facts.",
+    },
+    docType: {
+      type: "string",
+      nullable: true,
+      enum: [...DOC_TYPES],
+      description: "The kind of document drafted. Null while still gathering facts.",
+    },
+  },
+  required: ["reply", "draft", "docType"],
 } as const;
 
 export async function POST(request: Request) {
@@ -228,25 +301,50 @@ export async function POST(request: Request) {
       typeof rawContext.draftExcerpt === "string"
         ? rawContext.draftExcerpt.slice(0, MAX_CONTEXT_DRAFT_CHARS)
         : undefined,
+    // Only meaningful alongside an actual `file` this turn — ignored below
+    // (draftWithClaude) when uploadedFile is absent, so a client sending
+    // this without a file can't inject the instruction without anything to
+    // apply it to.
+    isDefaultTemplate: rawContext.isDefaultTemplate === true,
   };
 
   /* ---- Entitlement: enforced HERE, on the server ------------------------
      Same discipline as app/api/draft/route.ts: the client also renders a
-     locked state, but this check is what actually withholds the output. */
-  const cookiePlan = request.headers
-    .get("cookie")
-    ?.split(";")
-    .map((c) => c.trim().split("="))
-    .find(([name]) => name === PLAN_COOKIE)?.[1];
+     locked state, but this check is what actually withholds the output.
+     Usage comes from Supabase once configured, cookie count otherwise —
+     see lib/usageCounters.ts. This quota ("assistant") and the reviewer's
+     ("review") are separate rows, same visitor id — mirrors the two
+     cookies staying independent today. */
+  const cookieHeader = request.headers.get("cookie");
+  const findCookie = (name: string) =>
+    cookieHeader
+      ?.split(";")
+      .map((c) => c.trim().split("="))
+      .find(([n]) => n === name)?.[1];
 
-  const cookieUsage = request.headers
-    .get("cookie")
-    ?.split(";")
-    .map((c) => c.trim().split("="))
-    .find(([name]) => name === ASSISTANT_USAGE_COOKIE)?.[1];
+  /* A logged-in visitor (lib/authSession.ts) is a third, higher-priority
+     source, same as app/api/draft/route.ts: plan comes from the profiles
+     table (lib/profile.ts), usage is keyed by their real account id instead
+     of the anonymous cookie-random one. A visitor who never registers sees
+     no change at all. */
+  const { user: authUser, applyPendingCookies } = await getSessionUser(cookieHeader);
+  const useSupabase = isSupabaseConfigured();
 
-  const plan = readPlan(cookiePlan);
-  const used = readAssistantUsage(cookieUsage);
+  let plan: Plan;
+  let visitorId: string | null;
+
+  if (authUser && useSupabase) {
+    plan = await getUserPlan(authUser.id);
+    visitorId = authUser.id;
+  } else {
+    plan = readPlan(findCookie(PLAN_COOKIE));
+    visitorId = useSupabase ? readVisitorId(findCookie(VISITOR_COOKIE)) : null;
+  }
+
+  const used = useSupabase
+    ? await readUsageCount(visitorId!, "assistant")
+    : readAssistantUsage(findCookie(ASSISTANT_USAGE_COOKIE));
+
   const entitlement = assistantEntitlementFor(plan, used);
 
   if (!entitlement.allowed) {
@@ -261,10 +359,13 @@ export async function POST(request: Request) {
 
   /* ---- Mode selection ----------------------------------------------------
      Independent of SHISHO_DRAFT_MODE — the reviewer and the agent can each
-     be forced to demo without affecting the other. */
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+     be forced to demo without affecting the other. Gemini is tried first
+     when both keys are present, since it's the free path — set only
+     ANTHROPIC_API_KEY to keep using Claude instead. */
+  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
   const forceDemo = process.env.SHISHO_ASSISTANT_MODE === "demo";
-  const useDemo = forceDemo || !apiKey;
+  const useDemo = forceDemo || (!geminiApiKey && !anthropicApiKey);
 
   let payload: AssistantResponse;
 
@@ -272,7 +373,9 @@ export async function POST(request: Request) {
     payload = demoReply(lastMessage.content, cleanContext, !!uploadedFile);
   } else {
     try {
-      payload = await draftWithClaude(chatMessages, cleanContext, uploadedFile, apiKey!);
+      payload = geminiApiKey
+        ? await draftWithGemini(chatMessages, cleanContext, uploadedFile, geminiApiKey)
+        : await draftWithClaude(chatMessages, cleanContext, uploadedFile, anthropicApiKey!);
     } catch (error) {
       // Logged server-side only — never returned to the client.
       console.error("[api/assistant] model call failed:", error);
@@ -284,27 +387,91 @@ export async function POST(request: Request) {
   }
 
   const response = NextResponse.json(payload);
+  applyPendingCookies(response);
 
   /* Count the turn against a free user's monthly trial.
-     MOCK — a cookie counter resets when the visitor clears site data. Real
-     metering has to live in your account store, keyed to the user. */
+     Supabase-backed once configured — see lib/usageCounters.ts. Until then,
+     MOCK: a cookie counter resets when the visitor clears site data. */
   if (entitlement.quota !== null) {
-    response.cookies.set(ASSISTANT_USAGE_COOKIE, String(used + 1), {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-    });
+    if (useSupabase) {
+      await incrementUsageCount(visitorId!, "assistant");
+      // Only an anonymous visitor needs this cookie — a logged-in one is
+      // already identified by their session.
+      if (!authUser) {
+        response.cookies.set(VISITOR_COOKIE, visitorId!, {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30,
+        });
+      }
+    } else {
+      response.cookies.set(ASSISTANT_USAGE_COOKIE, String(used + 1), {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
   }
 
   return response;
 }
 
-/* ==========================================================================
-   INTEGRATION POINT — the live model call.
+/** The default-template instruction and workspace context, prefixed onto the
+ *  latest message's text — shared by both providers below so the two calls
+ *  can't silently drift apart on what the model is told. */
+function withContextPrefix(
+  messageText: string,
+  context: AssistantContext,
+  hasFile: boolean,
+): string {
+  let contextPrefix = "";
+  if (context.docType) {
+    contextPrefix += `[Context: the workspace's document type is currently set to "${context.docType}".]\n`;
+  }
+  if (context.draftExcerpt) {
+    contextPrefix += `[Context: the current draft in the workspace reads —\n${context.draftExcerpt}\n]\n`;
+  }
+  // Unconditional, not inferred from the message's wording: the attachment
+  // was applied silently by the client (the visitor never typed "use this
+  // as a template" this turn), so the system prompt's own "figure out what
+  // the file is for" language has nothing to go on unless told directly.
+  if (hasFile && context.isDefaultTemplate) {
+    contextPrefix +=
+      "[Context: the attached file is the user's DEFAULT TEMPLATE — a real document from their own practice, connected once and reused for every draft. It is NOT source material for facts. Every document you draft this turn must mirror its structure, section headings, paragraph numbering, and formatting conventions, adapted to the facts given in this conversation.]\n";
+  }
 
-   Requires ANTHROPIC_API_KEY in .env.local (never NEXT_PUBLIC_). Without it
-   the route stays in demo mode and never reaches this function.
+  return contextPrefix ? `${contextPrefix}\n${messageText}` : messageText;
+}
+
+/** Shared by both providers: pulls the model's reply/draft/docType fields
+ *  out of its parsed JSON response, with the same defensive fallbacks. */
+function toAssistantResponse(parsed: {
+  reply?: string;
+  draft?: string | null;
+  docType?: string | null;
+}): AssistantResponse {
+  const docType: DocType | null =
+    typeof parsed.docType === "string" && isDocType(parsed.docType)
+      ? parsed.docType
+      : null;
+
+  return {
+    mode: "live",
+    reply: typeof parsed.reply === "string" ? parsed.reply : "",
+    draft: typeof parsed.draft === "string" ? parsed.draft : null,
+    docType,
+  };
+}
+
+/* ==========================================================================
+   INTEGRATION POINT — the live model calls, one per provider.
+
+   Gemini requires GEMINI_API_KEY in .env.local; Claude requires
+   ANTHROPIC_API_KEY. Neither should ever be prefixed NEXT_PUBLIC_. With
+   neither set, the route stays in demo mode and never reaches either
+   function.
    ========================================================================== */
 async function draftWithClaude(
   messages: ChatMessage[],
@@ -321,18 +488,7 @@ async function draftWithClaude(
   }));
 
   const lastMessage = messages[messages.length - 1];
-
-  let contextPrefix = "";
-  if (context.docType) {
-    contextPrefix += `[Context: the workspace's document type is currently set to "${context.docType}".]\n`;
-  }
-  if (context.draftExcerpt) {
-    contextPrefix += `[Context: the current draft in the workspace reads —\n${context.draftExcerpt}\n]\n`;
-  }
-
-  const lastMessageText = contextPrefix
-    ? `${contextPrefix}\n${lastMessage.content}`
-    : lastMessage.content;
+  const lastMessageText = withContextPrefix(lastMessage.content, context, !!file);
 
   let lastContent: string | Array<{ type: "text"; text: string } | Awaited<ReturnType<typeof fileToContentBlock>>> =
     lastMessageText;
@@ -343,7 +499,7 @@ async function draftWithClaude(
   }
 
   const response = await client.messages.create({
-    model: MODEL,
+    model: CLAUDE_MODEL,
     // A full drafted pleading is comparably long to the reviewer's
     // annotation set — same headroom, same reason (adaptive thinking is on
     // by default for this model and shares this budget with the response).
@@ -362,21 +518,70 @@ async function draftWithClaude(
     throw new Error("Model returned no text block.");
   }
 
-  const parsed = JSON.parse(textBlock.text) as {
-    reply?: string;
-    draft?: string | null;
-    docType?: string | null;
+  return toAssistantResponse(JSON.parse(textBlock.text));
+}
+
+/** Gemini's `generateContent` — REST, not the SDK, so this feature adds zero
+ *  new dependencies (mirrors how lib/assistantFiles.ts already avoids one
+ *  for everything but .docx). Same system prompt, same JSON schema, same
+ *  context-prefix convention as the Claude path above; only the request/
+ *  response shape differs. */
+async function draftWithGemini(
+  messages: ChatMessage[],
+  context: AssistantContext,
+  file: UploadedFile | undefined,
+  apiKey: string,
+): Promise<AssistantResponse> {
+  const history = messages.slice(0, -1).map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+
+  const lastMessage = messages[messages.length - 1];
+  const lastMessageText = withContextPrefix(lastMessage.content, context, !!file);
+
+  const lastParts: Array<{ text: string } | Awaited<ReturnType<typeof fileToGeminiPart>>> = [];
+  if (file) {
+    lastParts.push(await fileToGeminiPart(file));
+  }
+  lastParts.push({ text: lastMessageText });
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: DRAFTING_SYSTEM_PROMPT }] },
+        contents: [...history, { role: "user", parts: lastParts }],
+        generationConfig: {
+          maxOutputTokens: 8000,
+          responseMimeType: "application/json",
+          responseSchema: GEMINI_RESPONSE_SCHEMA,
+        },
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error ${response.status}: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    promptFeedback?: { blockReason?: string };
   };
 
-  const docType: DocType | null =
-    typeof parsed.docType === "string" && isDocType(parsed.docType)
-      ? parsed.docType
-      : null;
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    const blocked = data.promptFeedback?.blockReason;
+    throw new Error(
+      blocked ? `Gemini blocked the request: ${blocked}` : "Gemini returned no text.",
+    );
+  }
 
-  return {
-    mode: "live",
-    reply: typeof parsed.reply === "string" ? parsed.reply : "",
-    draft: typeof parsed.draft === "string" ? parsed.draft : null,
-    docType,
-  };
+  return toAssistantResponse(JSON.parse(text));
 }

@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { ThinkingSequence } from "@/components/draft/ThinkingSequence";
+import { MicButton } from "@/components/draft/MicButton";
+import { useSpeechToText } from "@/components/draft/useSpeechToText";
 import { cn } from "@/lib/cn";
 import {
   ACCEPTED_MIME_TYPES,
@@ -11,6 +14,7 @@ import {
 } from "@/lib/assistant";
 import type { AssistantEntitlement } from "@/lib/assistantEntitlements";
 import type { DocType } from "@/lib/draft";
+import type { DriveTemplateFile } from "@/lib/driveTemplate";
 
 /** A chat message plus one client-only flag, used to annotate the transcript
  *  when a reply was accompanied by a draft — never sent back to the server
@@ -18,6 +22,41 @@ import type { DocType } from "@/lib/draft";
 type DisplayMessage = ChatMessage & { draftSent?: boolean };
 
 const ACCEPT_ATTRIBUTE = ".txt,.pdf,.docx,image/*";
+
+/** Written by app/draft-bot/formats (the 99-format picker) right before it
+ *  navigates here, and consumed once on mount below. A sessionStorage
+ *  handoff rather than a query string deliberately — the payload includes
+ *  whatever facts the visitor typed about their own matter, and those can
+ *  be personal or sensitive; they don't belong in a URL. */
+const FORMAT_SEED_KEY = "shisho-draft-seed";
+
+type FormatSeed = { formatName: string; description: string; facts: string };
+
+/** Starting prompts shown only before the first message — each just
+ *  populates the compose box (never auto-sends) so a visitor can still add
+ *  or adjust facts before sending. */
+const STARTER_SUGGESTIONS = [
+  "Draft a Section 138 cheque-bounce notice",
+  "Draft a bail application for a first-time accused",
+  "Draft a plaint for recovery of money due under a contract",
+  "Review my draft for a missing verification clause",
+  "Prepare me for tomorrow's hearing on an interim injunction",
+];
+
+/**
+ * The turn's one attachment slot — a manual upload or a Drive template,
+ * never both, since /api/assistant's `body.file` only has room for one.
+ *
+ * A manual upload is one-shot, same as always: cleared the moment `send()`
+ * fires. A Drive template is sticky instead — it stays selected across
+ * turns until the user removes it, since "follow my template" is a
+ * property of the whole drafting session, not one message. Its bytes are
+ * fetched once (selectDriveTemplate) and cached right here in state, so a
+ * sticky template never re-hits /api/drive/file on later turns.
+ */
+type PendingAttachment =
+  | { kind: "upload"; file: File }
+  | { kind: "drive"; fileId: string; filename: string; mimeType: string; dataBase64: string };
 
 /**
  * The drafting agent's chat panel — describe your facts, optionally attach a
@@ -33,6 +72,7 @@ const ACCEPT_ATTRIBUTE = ".txt,.pdf,.docx,image/*";
 export function DraftingAgent({
   entitlement,
   contextDocType,
+  driveFiles = [],
   onDraft,
 }: {
   entitlement: AssistantEntitlement;
@@ -41,17 +81,48 @@ export function DraftingAgent({
    *  default. Advisory only — the route re-validates it with isDocType, and
    *  in live mode the model still decides. */
   contextDocType?: DocType;
+  /** The visitor's single default template, if one is connected — resolved
+   *  server-side (app/draft-bot/page.tsx) and threaded down through
+   *  DraftWorkspace as a one-element array (see lib/driveConnection.ts for
+   *  why it's still shaped as an array). Empty when Drive isn't connected
+   *  or no default template has been chosen yet, in which case nothing
+   *  auto-attaches and the chat behaves exactly as it did before this
+   *  feature existed. */
+  driveFiles?: DriveTemplateFile[];
   onDraft: (draft: string, docType: DocType | null) => void;
 }) {
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [input, setInput] = useState("");
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingAttachment, setPendingAttachment] = useState<PendingAttachment | null>(null);
+  /** Set only by the "Remove" button — distinguishes "never auto-applied
+   *  yet" from "the visitor explicitly opted out for this conversation",
+   *  so the auto-apply effect below doesn't just re-attach the default the
+   *  instant someone removes it. */
+  const [defaultDismissed, setDefaultDismissed] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [templateStatus, setTemplateStatus] = useState<"idle" | "loading">("idle");
   const [status, setStatus] = useState<"idle" | "pending">("idle");
   const [error, setError] = useState<string | null>(null);
   const [locked, setLocked] = useState(!entitlement.allowed);
   const [remaining, setRemaining] = useState(entitlement.remaining);
   const [mode, setMode] = useState<AssistantResponse["mode"] | null>(null);
+  const speech = useSpeechToText();
+
+  /** Each FINAL chunk (not the live interim preview — see
+   *  useSpeechToText's own doc comment) is appended to whatever's already
+   *  typed, space-separated, so dictating partway through a typed message
+   *  continues it rather than overwriting it. */
+  function toggleDictation() {
+    if (speech.listening) {
+      speech.stop();
+      return;
+    }
+    speech.start((finalText) => {
+      const trimmed = finalText.trim();
+      if (!trimmed) return;
+      setInput((prev) => (prev ? `${prev} ${trimmed}` : trimmed));
+    });
+  }
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -68,8 +139,73 @@ export function DraftingAgent({
     }
 
     setFileError(null);
-    setPendingFile(file);
+    setPendingAttachment({ kind: "upload", file });
   }
+
+  /** Fetches the default template's content once and caches it in
+   *  pendingAttachment — see that type's own doc comment for why this
+   *  doesn't re-fetch on every subsequent send() while it stays active. */
+  async function loadDefaultTemplate(fileId: string) {
+    setTemplateStatus("loading");
+    setFileError(null);
+
+    try {
+      const res = await fetch("/api/drive/file", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ fileId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Could not load your default template.");
+
+      setPendingAttachment({
+        kind: "drive",
+        fileId,
+        filename: data.filename,
+        mimeType: data.mimeType,
+        dataBase64: data.dataBase64,
+      });
+    } catch (err) {
+      setFileError(err instanceof Error ? err.message : "Could not load your default template.");
+    } finally {
+      setTemplateStatus("idle");
+    }
+  }
+
+  /* Auto-applies the visitor's default template the moment the attachment
+   * slot is empty — this used to be a manual per-message dropdown, but the
+   * point of "a default template" is that it's the ordinary state of every
+   * conversation, not something to pick each time. `pendingAttachment` is a
+   * dependency so this also restores the default after a one-shot manual
+   * upload clears back to null (send() only clears "upload" kind, never
+   * "drive" kind, so this never fights that). `defaultDismissed` is what
+   * actually stops it from reappearing right after "Remove". */
+  useEffect(() => {
+    if (driveFiles.length > 0 && !pendingAttachment && !defaultDismissed) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing to an external default (see block comment above)
+      void loadDefaultTemplate(driveFiles[0].id);
+    }
+  }, [driveFiles, defaultDismissed, pendingAttachment]);
+
+  /* Runs once on mount: picks up a seed left by app/draft-bot/formats (the
+     99-format picker), assembles it into the opening message, and sends it
+     immediately — then clears the key so a later reload of /draft-bot
+     doesn't resend it. Empty-string guard on `raw` covers both "no seed"
+     and "already consumed", so this is safe to leave unconditional. */
+  useEffect(() => {
+    const raw = sessionStorage.getItem(FORMAT_SEED_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(FORMAT_SEED_KEY);
+    try {
+      const seed = JSON.parse(raw) as FormatSeed;
+      const text = `I need to draft: ${seed.formatName}\n\n${seed.description}\n\nFacts of the matter:\n${seed.facts}`;
+      void send(text);
+    } catch {
+      // Malformed seed — ignore rather than surface an error for a
+      // handoff the visitor never directly interacted with.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally mount-only
+  }, []);
 
   async function fileToBase64(file: File): Promise<string> {
     const buffer = await file.arrayBuffer();
@@ -79,13 +215,19 @@ export function DraftingAgent({
     return btoa(binary);
   }
 
-  async function send() {
-    const text = input.trim();
+  /** `overrideText`, when given, is used instead of the compose box — the
+   *  formats-page handoff below sends its assembled seed straight through
+   *  this way, since setInput() then immediately calling send() would race
+   *  React's state batching and send the box's stale (empty) value. */
+  async function send(overrideText?: string) {
+    const text = (overrideText ?? input).trim();
     if (!text || status === "pending") return;
 
-    const file = pendingFile;
-    setInput("");
-    setPendingFile(null);
+    const attachment = pendingAttachment;
+    if (overrideText === undefined) setInput("");
+    // Only the upload kind is one-shot — a Drive template stays selected
+    // (see PendingAttachment's doc comment) until the user removes it.
+    if (attachment?.kind === "upload") setPendingAttachment(null);
     setFileError(null);
     setStatus("pending");
     setError(null);
@@ -96,7 +238,7 @@ export function DraftingAgent({
     try {
       const body: {
         messages: ChatMessage[];
-        context?: { docType: DocType };
+        context?: { docType?: DocType; isDefaultTemplate?: boolean };
         file?: { filename: string; mimeType: string; dataBase64: string };
       } = {
         messages: nextMessages.map(({ role, content }) => ({ role, content })),
@@ -106,12 +248,23 @@ export function DraftingAgent({
         body.context = { docType: contextDocType };
       }
 
-      if (file) {
+      if (attachment?.kind === "upload") {
         body.file = {
-          filename: file.name,
-          mimeType: file.type,
-          dataBase64: await fileToBase64(file),
+          filename: attachment.file.name,
+          mimeType: attachment.file.type,
+          dataBase64: await fileToBase64(attachment.file),
         };
+      } else if (attachment?.kind === "drive") {
+        body.file = {
+          filename: attachment.filename,
+          mimeType: attachment.mimeType,
+          dataBase64: attachment.dataBase64,
+        };
+        // Unconditional signal, not left for the model to infer — the
+        // attachment happened silently (no chat message says "this is my
+        // template"), so app/api/assistant/route.ts needs this to know for
+        // certain it's style to mirror, not facts to draw from.
+        body.context = { ...body.context, isDefaultTemplate: true };
       }
 
       const res = await fetch("/api/assistant", {
@@ -174,12 +327,38 @@ export function DraftingAgent({
       ) : null}
 
       {messages.length === 0 ? (
-        <p className="mt-5 text-[14px] leading-relaxed text-ink-soft">
-          Tell Shisho the facts — the parties, what happened, what you want
-          done about it — and attach a file if you have one. A first draft
-          will appear in the workspace below once there&rsquo;s enough to
-          work with.
-        </p>
+        <div className="mt-5">
+          <p className="text-[14px] leading-relaxed text-ink-soft">
+            Tell Shisho the facts — the parties, what happened, what you want
+            done about it — and attach a file if you have one. A first draft
+            will appear in the workspace below once there&rsquo;s enough to
+            work with.
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {STARTER_SUGGESTIONS.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => setInput(suggestion)}
+                className={cn(
+                  "rounded-seal border border-ink/45 px-3 py-1.5 text-left text-[13px] text-ink-soft",
+                  "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75 hover:text-ink",
+                )}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-4 text-[13px] text-ink-soft">
+            Not sure what to draft?{" "}
+            <a href="/draft-bot/formats" className="text-ink underline underline-offset-2">
+              Browse all 99 civil and criminal formats
+            </a>
+            .
+          </p>
+        </div>
       ) : (
         <div aria-live="polite" className="mt-5 space-y-4">
           {messages.map((message, i) => (
@@ -207,11 +386,7 @@ export function DraftingAgent({
         </div>
       )}
 
-      {status === "pending" ? (
-        <p aria-live="polite" aria-busy="true" className="mt-4 text-[14px] text-ink-soft">
-          Shisho is thinking…
-        </p>
-      ) : null}
+      {status === "pending" ? <ThinkingSequence /> : null}
 
       {error ? (
         <p role="alert" className="mt-4 text-[14px] text-seal">
@@ -223,13 +398,28 @@ export function DraftingAgent({
         <LockedChat quota={entitlement.quota ?? 5} />
       ) : (
         <div className="mt-5">
-          {pendingFile ? (
+          {/* No manual picker here — driveFiles' own doc comment explains
+              why: a default template auto-attaches via the effect above the
+              moment one is connected, so there's nothing to choose each
+              message. This just reports status/lets the visitor opt out. */}
+          {templateStatus === "loading" && !pendingAttachment ? (
+            <p className="mb-2.5 text-[13px] text-ink-soft">Loading your default template…</p>
+          ) : null}
+
+          {pendingAttachment ? (
             <div className="mb-2.5 flex items-center gap-2 text-[13px] text-ink-soft">
-              <span className="min-w-0 truncate">{pendingFile.name}</span>
+              <span className="min-w-0 truncate">
+                {pendingAttachment.kind === "upload"
+                  ? pendingAttachment.file.name
+                  : `${pendingAttachment.filename} (your default template — applies to every draft until removed)`}
+              </span>
               <button
                 type="button"
-                onClick={() => setPendingFile(null)}
-                className="text-ink-soft/70 underline underline-offset-2 hover:text-ink"
+                onClick={() => {
+                  if (pendingAttachment.kind === "drive") setDefaultDismissed(true);
+                  setPendingAttachment(null);
+                }}
+                className="shrink-0 text-ink-soft/70 underline underline-offset-2 hover:text-ink"
               >
                 Remove
               </button>
@@ -265,22 +455,27 @@ export function DraftingAgent({
             />
 
             <div className="flex shrink-0 flex-col items-stretch gap-2">
-              <label
-                className={cn(
-                  "cursor-pointer rounded-seal border border-ink/45 px-3 py-1.5 text-center text-[13px] text-ink-soft",
-                  "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/40",
-                )}
-              >
-                Attach
-                <input
-                  type="file"
-                  accept={ACCEPT_ATTRIBUTE}
-                  onChange={onFileChange}
-                  className="sr-only"
-                />
-              </label>
+              <div className="flex gap-2">
+                <label
+                  className={cn(
+                    "flex-1 cursor-pointer rounded-seal border border-ink/45 px-3 py-1.5 text-center text-[13px] text-ink-soft",
+                    "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/40",
+                  )}
+                >
+                  Attach
+                  <input
+                    type="file"
+                    accept={ACCEPT_ATTRIBUTE}
+                    onChange={onFileChange}
+                    className="sr-only"
+                  />
+                </label>
+                {speech.supported ? (
+                  <MicButton listening={speech.listening} onClick={toggleDictation} />
+                ) : null}
+              </div>
               <Button
-                onClick={send}
+                onClick={() => send()}
                 disabled={!input.trim() || status === "pending"}
                 aria-disabled={!input.trim() || status === "pending"}
                 size="sm"
@@ -289,6 +484,18 @@ export function DraftingAgent({
               </Button>
             </div>
           </div>
+
+          {speech.listening ? (
+            <p aria-live="polite" className="mt-2.5 text-[13px] text-ink-soft">
+              Listening…{speech.interimTranscript ? ` "${speech.interimTranscript}"` : ""}
+            </p>
+          ) : null}
+
+          {speech.error ? (
+            <p role="alert" className="mt-2.5 text-[13px] text-seal">
+              {speech.error}
+            </p>
+          ) : null}
 
           {remaining !== null ? (
             <p className="mt-2.5 text-[13px] text-ink-soft">

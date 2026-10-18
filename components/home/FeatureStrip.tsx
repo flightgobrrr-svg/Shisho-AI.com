@@ -1,25 +1,13 @@
 import Link from "next/link";
 import { Container, Section } from "@/components/ui/Section";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
-const FEATURES = [
-  {
-    href: "/draft-bot",
-    name: "Shisho",
-    body: "Paste a plaint, notice, application, or contract. Get clause-level notes in the margin, procedure checked before the registry does it for you — the same way a senior would hand it back.",
-  },
-  {
-    href: "/library",
-    name: "Legal Library",
-    body: "Supreme Court and High Court judgments, bare acts, and commentary. Cited in SCC form, explained in plain language.",
-  },
-  {
-    href: "/courses",
-    name: "Courses",
-    body: "Two tracks — Starter for foundations, Proficient for interim relief, commercial drafting, and litigation strategy. Every module ends in a filing, not a quiz.",
-  },
-];
+const HREFS = ["/draft-bot", "/library", "/courses"] as const;
 
-export function FeatureStrip() {
+export function FeatureStrip({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).featureStrip;
+  const FEATURES = t.features.map((f, i) => ({ ...f, href: HREFS[i] }));
+
   return (
     <Section tone="raised" className="border-y border-ink/10">
       <Container>
@@ -52,7 +40,7 @@ export function FeatureStrip() {
                 href={feature.href}
                 className="underline-draw mt-5 inline-block text-[14px] text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]"
               >
-                Explore {feature.name}
+                {t.exploreLabel(feature.name)}
               </Link>
             </li>
           ))}

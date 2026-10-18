@@ -20,57 +20,49 @@
 
 @theme {
   /* --- Colour ------------------------------------------------------------
-     Replaced wholesale on explicit instruction. The paper/ink/seal warm
-     identity was a standing decision — HANDOFF.md records that a green
-     direction was proposed once before and deliberately NOT adopted — so
-     this reopens that call knowingly, not by accident.
+     Restored, on request, after a round trip through a green palette that
+     didn't hold up. For the full history: this is the THIRD direction this
+     project has been through. A bronze/cream + Bodoni Moda/Jost redesign
+     was tried and reverted before this file's git history even starts. A
+     4-stop green ramp replaced this identity for one session — every value
+     in it had to be derived by blending toward black/white to clear
+     accessibility contrast at all, `seal` cleared AA by less than a point,
+     and `indigo` had no cool hue available in an all-green source, so it
+     collapsed into `ink`. That palette was judged "not up to the mark" and
+     this is the answer: not a fourth invented palette, but recognising that
+     this one was never actually beaten on its own terms — it was replaced,
+     then found worse, then restored.
 
-     Source: a 4-stop Material-style green ramp handed over as hex
-     (#E8F5E9 / #A5D6A7 / #66BB6A / #1B5E20). Only two of the four survive
-     unmixed: the lightest is the only one pale enough for a page ground,
-     the darkest the only one dark enough to pass text contrast. `seal` and
-     `seal-dark` are therefore DERIVED from the given mid-green (#66BB6A,
-     itself only 2.10:1 on paper — well under AA on its own) by blending it
-     toward black just enough to clear AA as both a fill and standalone
-     text; `ink-soft` is `ink` blended toward `paper` the same way. None of
-     these four colors were invented — they are computed from the two ends
-     of the given ramp, in the ratios noted below.
+     `paper` is cooler and greyer than the AI-default cream/terracotta —
+     Indian court paper, not California cream — and `seal` is a hotter,
+     deeper vermilion: lac sealing wax and a registrar's stamp, not
+     editorial terracotta. `seal` is the mentor's red pen specifically
+     because red-ink correction is the real, recognisable convention this
+     product is naming itself after — a color the brand's whole positioning
+     depends on, not a swap-able accent.
 
-     `indigo` — the cool counter-tone a previous session added specifically
-     to fix a real AA failure (the `slate` it replaced was 4.45, failing) —
-     has no equivalent here: a 4-stop green ramp has no cool hue to give it,
-     and manufacturing one would mean inventing a color nobody handed over.
-     It is set equal to `ink` rather than left broken. The practical cost:
-     mono labels and citations now read in the same dark green as body
-     text, so the warm/cool split is gone — but the distinction that
-     actually matters (citations set apart from `seal`-colored annotations,
-     see DraftWorkspace) still holds, since indigo and seal remain two
-     different colors.
-
-     `accent-soft` is the one stop that never carries text, so it is the
-     only remaining given color that could slot in unmixed regardless of
-     its own contrast — same restriction as the palette it replaced.
+     `indigo` is a genuine cool tone held in tension against a wholly warm
+     palette — the thing the green palette had no way to reproduce. It
+     replaced an even older `slate`, deleted for failing AA at body size.
      --------------------------------------------------------------------- */
-  --color-ink: #1b5e20; /* body text, headings — given, unmixed           */
-  --color-ink-soft: #3c7640; /* ink, 16% blended toward paper             */
-  --color-paper: #e8f5e9; /* page ground — given, unmixed                 */
-  --color-paper-raised: #f5faf5; /* paper, 55% blended toward white       */
-  --color-seal: #427a45; /* CTA + annotation — given mid-green, 35% toward black */
-  --color-seal-dark: #335e35; /* CTA hover/active — same parent, 50% toward black */
-  --color-indigo: #1b5e20; /* = ink; no cool stop in this palette, see above */
-  --color-accent-soft: #a5d6a7; /* decorative rules/washes — NEVER text, given, unmixed */
+  --color-ink: #1e2127; /* body text, headings                            */
+  --color-ink-soft: #3a3f49; /* secondary text, small print, hairlines    */
+  --color-paper: #eae8e1; /* page ground                                  */
+  --color-paper-raised: #f2f1ec; /* cards, sticky nav, lifted surfaces    */
+  --color-seal: #a32e1f; /* CTA + annotation ONLY                         */
+  --color-seal-dark: #85251a; /* CTA hover/active only                    */
+  --color-indigo: #2c3a57; /* cool counter-tone: mono labels, citations   */
+  --color-accent-soft: #d9a99a; /* decorative rules/washes — NEVER text   */
 
-  /* Contrast, measured against --color-paper (#E8F5E9):
-       ink            7.00:1  ✓ AAA, any size
-       ink-soft       4.84:1  ✓ AA normal text
-       indigo (=ink)  7.00:1  ✓ AAA, any size
-       seal           4.55:1  ✓ AA normal text   (white ON seal: 5.12:1; white ON seal-dark: 7.52:1)
-       accent-soft    1.46:1  ✗ decorative only, never carries text
+  /* Contrast, measured against --color-paper (#EAE8E1):
+       ink          13.15:1  ✓ AAA, any size
+       ink-soft      8.62:1  ✓ AAA, any size
+       indigo        9.26:1  ✓ AAA, any size — safe for body copy
+       seal          5.77:1  ✓ AA normal text   (paper-raised ON seal: 6.26:1)
+       accent-soft   1.9:1   ✗ decorative only, never carries text
 
-     ink-soft and seal are both derived, not given — the source ramp had
-     exactly one stop dark enough to read as text and one light enough for
-     a ground; everything else here is computed from those two, not picked
-     by eye. Re-derive computationally before nudging any of these. */
+     Every pairing here comfortably clears AA, several clear AAA — the
+     margin the green palette never had (seal there cleared AA by 0.05). */
 
   /* --- Type --------------------------------------------------------------
      Sizes are ~8% up on the previous scale. EB Garamond runs small and
@@ -109,6 +101,66 @@
   --font-display: var(--font-garamond), ui-serif, Georgia, serif;
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
+}
+
+/* ============================================================================
+   DARK MODE
+   ----------------------------------------------------------------------------
+   Not a naive invert — each value was re-derived and contrast-checked
+   against the same bar the light palette documents above (WCAG relative
+   luminance, computed by hand against the ACTUAL dark-mode pairing, not
+   assumed from the light-mode number).
+
+     ink on paper           14.32:1  ✓ AAA
+     ink-soft on paper        7.86:1  ✓ AAA (normal text)
+     indigo on paper          7.23:1  ✓ AAA
+     seal on paper             5.14:1  ✓ AA normal text
+     paper-raised text on seal fill   4.64:1  ✓ AA normal text
+     paper-raised text on ink fill   12.88:1  ✓ AAA
+
+   `seal` specifically is NOT the light-mode value carried over — at the
+   light-mode vermilion's own luminance, a dark background gives it almost
+   no separation from paper (2.45:1, would fail). It's a genuinely brighter
+   red here, chosen by solving for AA against both paper and the button-text
+   pairing above, not just eyeballed. `accent-soft` needs no such check —
+   it stays decorative-only, never text, in both palettes.
+
+   Two mechanisms set the theme, deliberately layered:
+     1. `@media (prefers-color-scheme: dark)`, scoped to :not([data-theme=
+        "light"]) — the system default, works with zero JS (and so is
+        correct on first paint even if a script is blocked).
+     2. `:root[data-theme="dark"|"light"]` — an explicit override, set by
+        components/layout/ThemeToggle.tsx and persisted to localStorage. The
+        inline script at the top of <body> in app/layout.tsx applies a
+        stored override before first paint so switching themes doesn't leave
+        a flash of the other one on the next visit.
+
+   Known gap: photography (PhotoBackdrop images) is not dimmed or treated
+   for dark mode — left as full-brightness in both themes. Re-treating
+   photographic assets for a dark canvas is a separate, larger pass.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-ink: #ece9e2;
+    --color-ink-soft: #b3aea4;
+    --color-paper: #1c1a17;
+    --color-paper-raised: #262320;
+    --color-seal: #ec5d42;
+    --color-seal-dark: #cf4a30;
+    --color-indigo: #93a8cf;
+    --color-accent-soft: #5c4038;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-ink: #ece9e2;
+  --color-ink-soft: #b3aea4;
+  --color-paper: #1c1a17;
+  --color-paper-raised: #262320;
+  --color-seal: #ec5d42;
+  --color-seal-dark: #cf4a30;
+  --color-indigo: #93a8cf;
+  --color-accent-soft: #5c4038;
 }
 
 /* ============================================================================
@@ -312,6 +364,28 @@
   to {
     width: 100%;
   }
+}
+
+/* --- Thinking-stage swap ----------------------------------------------------
+   DraftingAgent's live-mode wait state (components/draft/ThinkingSequence.tsx)
+   swaps its icon and label forward through four stages. A plain opacity fade
+   is enough — this is a small inline status change, not a page entrance, so
+   `rise`'s 12px travel would read as bouncy rather than precise at this size.
+   Collapses under the reduced-motion backstop below like everything else
+   here; the stage still advances (that's information, not motion), it just
+   arrives without a fade.
+   ------------------------------------------------------------------------- */
+@keyframes shisho-thinking-swap {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility thinking-swap {
+  animation: shisho-thinking-swap 220ms var(--ease-precise) both;
 }
 
 /* --- Scroll reveal ---------------------------------------------------------
@@ -968,4 +1042,19 @@
 
 .answer-in {
   animation: shisho-answer-in 200ms var(--ease-precise) both;
+}
+
+/* The full logo lockup carries a navy wordmark and a tagline baked into the
+   raster, which nearly vanish on the dark paper. In dark mode it sits on a
+   light plate instead — same two selectors as the theme tokens above, so the
+   OS preference and the explicit toggle agree. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-plate {
+    background: #f4efe6;
+    padding: 0.75rem;
+  }
+}
+:root[data-theme="dark"] .logo-plate {
+  background: #f4efe6;
+  padding: 0.75rem;
 }

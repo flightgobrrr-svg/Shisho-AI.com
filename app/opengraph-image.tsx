@@ -42,7 +42,7 @@ export default async function OpenGraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#E8F5E9",
+          background: "#EAE8E1",
           padding: "72px 80px",
           fontFamily: "Georgia, serif",
         }}
@@ -61,7 +61,7 @@ export default async function OpenGraphImage() {
               fontSize: 22,
               letterSpacing: "0.16em",
               textTransform: "uppercase",
-              color: "#3C7640",
+              color: "#3A3F49",
               fontFamily: "monospace",
             }}
           >
@@ -70,10 +70,10 @@ export default async function OpenGraphImage() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 62, color: "#1B5E20", lineHeight: 1.1 }}>
+          <div style={{ fontSize: 62, color: "#1E2127", lineHeight: 1.1 }}>
             Every great lawyer had a shisho.
           </div>
-          <div style={{ fontSize: 62, color: "#427A45", lineHeight: 1.1 }}>
+          <div style={{ fontSize: 62, color: "#A32E1F", lineHeight: 1.1 }}>
             Now yours is AI — built for Indian law.
           </div>
         </div>
@@ -84,7 +84,7 @@ export default async function OpenGraphImage() {
             justifyContent: "space-between",
             fontSize: 20,
             color: "#3A3F49",
-            borderTop: "1px solid rgba(27,94,32,0.15)",
+            borderTop: "1px solid rgba(30,33,39,0.15)",
             paddingTop: 24,
           }}
         >

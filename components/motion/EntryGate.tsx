@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LogoLockup } from "@/components/brand/Logo";
 import { Eyebrow } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
@@ -9,48 +9,33 @@ import { StepMark } from "@/components/ui/StepMark";
 import { cn } from "@/lib/cn";
 
 /**
- * The mandatory front door: a five-second hold on the mark, then the
- * audience picker, before the site underneath is ever seen. Both stages
- * live in one component and one session flag because they are one
- * sequence, not two independent overlays that happen to run back to back —
- * this replaces the splash-only IntroSplash and the homepage's
- * AudiencePicker section, both now folded in here (see git history for
- * either's own reasoning, most of which still applies).
+ * The front door: a short hold on the mark, then the audience picker, shown
+ * once per browser session and only on the homepage. Both stages live in one
+ * component and one session flag because they are one sequence.
  *
- * Once per browser session — deciding client-side via `sessionStorage`
- * rather than server-side via a cookie is the same trade as before: reading
- * a cookie in the root layout would take every route off static generation,
- * which is too high a cost for a cosmetic gate. The accepted imperfection is
- * unchanged too — a manual reload later in the session can flash the
- * overlay for a single frame before the layout effect removes it.
+ * Only on `/`. A visitor who followed a shared link to a document, a
+ * judgment or a pricing page sees that page, never this overlay, so deep
+ * links and search results land where they point. (An earlier version ran on
+ * every route and redirected deep links to the chosen audience's page.)
  *
- * Choosing an audience is not decorative here — it navigates. A visitor who
- * followed a direct link to, say, a specific document page is still routed
- * to their audience's destination on first entry this session, not to the
- * page they actually clicked through for. That trade was made on an
- * explicit "make it mandatory" instruction, not by accident; worth
- * revisiting if it costs more in lost deep-link traffic than it gains in
- * self-directed routing.
+ * Skippable: a Skip button and Escape both dismiss it straight to the
+ * homepage, and the hold is under a second — a returning litigator should
+ * not sit through a splash. While it is up the page behind is `inert`, so
+ * keyboard focus cannot wander into the nav under the overlay.
  *
- * FOUR audiences now, not the three PRODUCT.md confirms as owner-selected
- * and equally weighted. "Advocates" collapses what used to be two separate
- * points on one continuous career arc (junior / practising) into a single
- * generic card, and "General public" and "Clerks" are not audiences
- * PRODUCT.md names anywhere — both were added on an explicit later
- * instruction that knowingly reopened that framing, not because the product
- * spec changed to match. If PRODUCT.md's own audience section is ever
- * updated, reconcile it against this list rather than assuming either one
- * is current.
+ * Once per browser session, decided client-side via `sessionStorage` rather
+ * than a server cookie: reading a cookie in the root layout would take every
+ * route off static generation, too high a cost for a cosmetic gate. The
+ * accepted imperfection: a reload later in the session can flash the overlay
+ * for a single frame before the layout effect removes it.
  *
- * No full focus trap. Matches the level of rigor the splash-only version
- * already shipped with: it covers the page visually and blocks scroll, and
- * moves focus onto the first card when the picker appears, but a keyboard
- * user tabbing far enough can still reach the nav behind it. Flagged, not
- * silently assumed solved.
+ * FOUR audiences, kept deliberately — General public is intentional, as the
+ * owner confirmed. PRODUCT.md lists three; if its audience section is ever
+ * updated, reconcile it against this list.
  */
 
 const SESSION_KEY = "shisho-entry-complete";
-const HOLD_MS = 5000;
+const HOLD_MS = 900;
 const FADE_MS = 420;
 
 const useIsomorphicLayoutEffect =
@@ -59,31 +44,31 @@ const useIsomorphicLayoutEffect =
 const AUDIENCES = [
   {
     n: 1,
+    name: "Advocates",
+    detail: "In practice — drafting, advice and opinions, checking citations against the Acts.",
+    cta: "Try Shisho",
+    href: "/draft-bot",
+  },
+  {
+    n: 2,
+    name: "Advocate Clerks",
+    detail: "Handling filings and paperwork — see what each document needs.",
+    cta: "Open the practice manual",
+    href: "/clerks",
+  },
+  {
+    n: 3,
     name: "Law students",
     detail: "Learning to read law and put a first document on paper.",
     cta: "Start with courses",
     href: "/courses",
   },
   {
-    n: 2,
-    name: "Advocates",
-    detail: "In practice — drafting, checking citations, moving fast.",
-    cta: "Try Shisho",
-    href: "/draft-bot",
-  },
-  {
-    n: 3,
+    n: 4,
     name: "General public",
     detail: "Curious how a case actually moves through the system.",
     cta: "See the map",
     href: "/map",
-  },
-  {
-    n: 4,
-    name: "Clerks",
-    detail: "Handling filings and paperwork — see what each document needs.",
-    cta: "Browse the documents",
-    href: "/documents",
   },
 ] as const;
 
@@ -105,16 +90,30 @@ const CONFIRM_MS = 260;
 
 export function EntryGate() {
   const router = useRouter();
+  const pathname = usePathname();
   const [phase, setPhase] = useState<Phase>("splash");
   const [chosen, setChosen] = useState<string | null>(null);
   const reduceMotionRef = useRef(false);
   const firstCardRef = useRef<HTMLButtonElement>(null);
 
+  /** Dismiss the overlay and give the page back (scroll, focus, inert). */
+  function release() {
+    document.body.style.overflow = "";
+    setInert(false);
+    setPhase("done");
+  }
+
+  function skip() {
+    sessionStorage.setItem(SESSION_KEY, "1");
+    release();
+  }
+
   useIsomorphicLayoutEffect(() => {
-    if (sessionStorage.getItem(SESSION_KEY)) {
+    if (pathname !== "/" || sessionStorage.getItem(SESSION_KEY)) {
       setPhase("done");
       return;
     }
+    setInert(true);
 
     reduceMotionRef.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -139,11 +138,19 @@ export function EntryGate() {
       after(HOLD_MS + FADE_MS, () => setPhase("picker"));
     }
 
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") skip();
+    };
+    window.addEventListener("keydown", onKey);
+
     return () => {
       timers.forEach(clearTimeout);
+      window.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
+      setInert(false);
     };
-  }, []);
+    // skip() only touches stable setters and storage, so it is safe to omit.
+  }, [pathname]);
 
   useEffect(() => {
     if (phase === "picker") firstCardRef.current?.focus();
@@ -155,8 +162,7 @@ export function EntryGate() {
     sessionStorage.setItem(SESSION_KEY, "1");
 
     if (reduceMotionRef.current) {
-      document.body.style.overflow = "";
-      setPhase("done");
+      release();
       router.push(audience.href);
       return;
     }
@@ -165,8 +171,7 @@ export function EntryGate() {
     setTimeout(() => {
       setPhase("picker-exit");
       setTimeout(() => {
-        document.body.style.overflow = "";
-        setPhase("done");
+        release();
         router.push(audience.href);
       }, FADE_MS);
     }, CONFIRM_MS);
@@ -180,13 +185,26 @@ export function EntryGate() {
   const settling = phase === "picker-confirm" || phase === "picker-exit";
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-4 overflow-y-auto bg-paper px-6 py-16">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Welcome to Shisho AI"
+      className="fixed inset-0 z-[200] flex flex-col items-center gap-4 overflow-y-auto bg-paper px-6 py-16"
+    >
+      {/* Skip sits outside the stages so it is there for both. */}
+      <button
+        type="button"
+        onClick={skip}
+        className="absolute right-5 top-5 rounded-seal border border-ink/30 px-3.5 py-1.5 text-[13px] text-ink transition-colors hover:border-ink/70 hover:bg-ink/[0.04]"
+      >
+        Skip
+      </button>
       {showingSplash ? (
         <div
           role="status"
           aria-label="Loading Shisho AI"
           className={cn(
-            "flex flex-col items-center gap-5",
+            "my-auto flex flex-col items-center gap-5",
             phase === "splash-exit" && "splash-out",
           )}
         >
@@ -197,19 +215,13 @@ export function EntryGate() {
               is needed alongside it here (that label lived next to the
               plain emblem before this). Capped in px, not just vh — the
               source artwork is a 500px raster (public/shisho-logo.png, see
-              Logo.tsx), and scaling past roughly its native size on a tall
-              viewport would upscale it past the resolution it was actually
-              drawn at. */}
-          <LogoLockup className="rise h-[46vh] w-[46vh] max-h-[480px] max-w-[480px]" />
-          {/* The hold is long enough now (five seconds) that a bare mark
-              reads as stalled rather than deliberate. The track is the
-              entrance rule: fixed width, resting state fully visible, no
-              wondering whether it moved. The fill is the only thing that
-              moves, width 0 -> 100% over exactly HOLD_MS, so it finishes
-              precisely when the mark starts to fade — same inline-style
-              pattern AmbientDrift already uses for a fixed-duration
-              animation, not a new convention. Ink, not seal: this is a
-              progress indicator, not a CTA or the annotation motif. */}
+              Logo.tsx), and this is that native size exactly: any larger and
+              a tall viewport would upscale it past the resolution it was
+              actually drawn at. */}
+          <LogoLockup className="rise h-[52vh] w-[52vh] max-h-[500px] max-w-[500px]" />
+          {/* A thin track so the short hold reads as deliberate, not stalled.
+              The fill moves 0 -> 100% over exactly HOLD_MS. Ink, not seal:
+              this is a progress indicator, not a CTA. */}
           <div className="mt-1 h-px w-40 overflow-hidden bg-ink/15">
             <div
               className="h-full bg-ink"
@@ -222,7 +234,7 @@ export function EntryGate() {
       {showingPicker ? (
         <div
           className={cn(
-            "w-full max-w-5xl text-center",
+            "my-auto w-full max-w-5xl text-center",
             phase === "picker-exit" && "splash-out",
           )}
         >
@@ -295,4 +307,12 @@ export function EntryGate() {
       ) : null}
     </div>
   );
+}
+
+/** Make the page behind the overlay unreachable by keyboard and screen reader. */
+function setInert(on: boolean) {
+  document.querySelectorAll("header, main, footer").forEach((el) => {
+    if (on) el.setAttribute("inert", "");
+    else el.removeAttribute("inert");
+  });
 }

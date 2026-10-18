@@ -16,7 +16,7 @@ import { cn } from "@/lib/cn";
  *     to wrap awkwardly.
  * ₹999 is the widest value; verified at 320px.
  *
- * Seal budget on this page: the "Most popular" badge, the Core CTA, and the
+ * Seal budget on this page: the "Recommended for students" badge, the Core CTA, and the
  * Emphasis underlines. Nothing else. Feature checks are ink-soft on purpose.
  */
 
@@ -56,7 +56,7 @@ export function PricingGrid() {
             >
               {tier.popular ? (
                 <span className="label-mono absolute -top-2.5 left-7 bg-paper-raised px-2 text-seal">
-                  Most popular
+                  Recommended for students
                 </span>
               ) : null}
 

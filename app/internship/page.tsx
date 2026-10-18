@@ -8,7 +8,7 @@ import { StepMark } from "@/components/ui/StepMark";
 export const metadata: Metadata = {
   title: "The internship",
   description:
-    "What the Bar Council requires, what chambers will actually ask of you, and how to be useful in the first week.",
+    "What the rules require, what chambers will actually ask of you, and how to be useful in the first week.",
 };
 
 /**
@@ -26,7 +26,10 @@ export const metadata: Metadata = {
 
 /* Bar Council of India, Rules of Legal Education 2008 (Rule 25). Verified
    before writing: the durations, the four-week annual cap, and the permitted
-   venues are the Council's, not an approximation of them. */
+   venues are the Council's, not an approximation of them.
+   The visible copy below cites the rule (instrument + rule number) without
+   naming the issuing body — an explicit later request, not an oversight; see
+   HANDOFF.md. Don't "fix" this back without checking there first. */
 const REQUIREMENT = [
   {
     label: "Five-year course",
@@ -101,7 +104,7 @@ export default function InternshipPage() {
         <Container>
           <Eyebrow>What the rules require</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">
-            The Bar Council sets a floor.
+            The rules set a floor.
           </h2>
 
           <ul className="mt-10 grid gap-3 sm:grid-cols-3">
@@ -122,10 +125,10 @@ export default function InternshipPage() {
           </ul>
 
           <p className="mt-8 max-w-[62ch] border-l-2 border-seal/70 pl-5 text-[15px] leading-relaxed text-ink-soft">
-            Bar Council of India, Rules of Legal Education 2008 (Rule 25).
-            Internships may be served in courts, chambers, law firms, legal
-            departments, or with an NGO — and the weeks must be spread across
-            the degree rather than banked into one final summer.
+            Rules of Legal Education, 2008, Rule 25. Internships may be
+            served in courts, chambers, law firms, legal departments, or
+            with an NGO — and the weeks must be spread across the degree
+            rather than banked into one final summer.
           </p>
         </Container>
       </Section>
