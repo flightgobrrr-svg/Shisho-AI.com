@@ -28,6 +28,28 @@ All tokens and rules live as comments in `app/globals.css`. Do not casually viol
 
 **Everything below is uncommitted**, on branch `hero-refresh-motion-and-pricing`, still sitting on top of the last real commit `e5f0467`. `git status` shows 63 changed paths. Nothing has been pushed anywhere.
 
+### Session of 18 October 2026 — audiences, legal pages, verified tools, tests (read this first)
+
+**Committed** on `hero-refresh-motion-and-pricing` as `0733a9c` and `7a16a69` (plus a small follow-up). Those two commits also swept in the earlier uncommitted work described below (auth, admin, language pages, Drive, library), so the "everything below is uncommitted" note under this heading is out of date. **Nothing is pushed.** `.mcp.json` is deliberately left untracked (local tool config).
+
+What was added:
+- **Audiences.** `lib/audiences.ts` holds twelve audiences; nine without a home get a section on the homepage (`components/home/AudienceSections.tsx`) and a page at `/for/[slug]`. What is live vs planned lives in `lib/audiencePages.ts` and `app/status/page.tsx` (`/status`). Planned features are labelled Planned everywhere; keep it that way (PRODUCT.md, pre-launch honesty). "General public" in the entry gate is intentional, per the owner.
+- **Entry gate** (`components/motion/EntryGate.tsx`) now shows only on `/`, holds under a second, is skippable (button + Esc), is a real dialog, and sets `inert` on header/main/footer while open. Deep links are no longer redirected.
+- **Legal pages** (`/terms /privacy /refund /about /contact /how-it-works /corrections`), copy in `lib/legalPages.ts` and `lib/corrections.ts`, written against what the code actually stores. **They have not been reviewed by an advocate.** Re-check the privacy page whenever what is stored changes.
+- **Verified tools**, each with its source shown on the page: `/limitation` (+ `/limitation/[id]`; `lib/limitation.ts`: 12 Articles of the Limitation Act 1963 plus Order VIII Rule 1), `/ipc-bns` (+ `/ipc-bns/[ipc]`; `lib/ipcBns.ts`: 17 rows two published tables agree on; IPC 376 and 124A deliberately left out). `VERIFIED_ON` in each file is the last-checked date. Add a row only after checking it against a source, then add it to `tests/legal-data.test.mjs`.
+- **Practice tools** (browser-only storage via `lib/localStore.ts`): `/courses/moot`, `/courses/case-brief`, `/courses/revision`, next-date calendar file on `/clerks`.
+- **Review panel**: must-fix filter, downloadable review (`lib/reviewExport.ts`), and a strict "Why this matters" explainer (`findDocumentForAuthority` in `lib/documents.ts`).
+- **Quality**: `npm test` runs `tests/legal-data.test.mjs` (Node's built-in runner); `.github/workflows/ci.yml` runs typecheck, lint, tests and build; axe-core accessibility pass done in light and dark; text now uses the `--color-ink-faint` token instead of `text-ink-soft/NN` (opacity on text failed contrast); whole project lints clean; `npm run build` passes (136 pages, no warnings).
+
+**Protected files edited this session (disclose, and decide whether to keep):**
+- `app/api/assistant/route.ts`: one added system-prompt section, "HEARING PREP" (long structured reply, no uncertain citations). Requested as a feature, but the file is on the protected list and this specific edit was not separately confirmed.
+- `supabase/schema.sql`: appended an `interest_signups` table. **Not applied to any project.** `/api/interest` answers 503 and the form says sign-up is not open until it is run.
+- `lib/documents.ts` (not protected) gained `findDocumentForAuthority`; `lib/caseBrief.ts` (not protected) gained an optional `generatedAt`.
+
+**Owner to-do:** set `NEXT_PUBLIC_CONTACT_EMAIL` (contact page and the "report a wrong citation" link stay hidden/placeholder without it); run the `interest_signups` SQL if the notify-me form should work; have an advocate review Terms, Privacy and Refund; write a founders' note if wanted; decide Free vs Basic (identical five reviews today) and whether to keep all 22 languages.
+
+**Not built, on purpose:** court-fee estimator and daily practice questions (no verifiable source), before/after draft view (the model does not return corrected text), weekly email digest and saved-work page (need an email service and new tables), payments (no integration at all, so the refund page says nothing is charged), error tracking (needs an account; hook point is `app/error.tsx`).
+
 ### Legal Library — search redesigned, case count grew, but unevenly (read this carefully)
 
 - `components/library/LibrarySearch.tsx` was redesigned: typing a query now shows only the **top 5 relevance-ranked matches** (`topMatches()` in `lib/library.ts` — title match beats citation match beats topic match) instead of dumping every match down the page. Browsing via the category chips with no query is unchanged — still the full list, so nothing became less findable. Every result row (browse or search) is now the whole clickable card, redirecting straight to the judgment's `sourceUrl` — no more separate small "read the judgment" sub-link.
@@ -176,6 +198,7 @@ The user asked to "make all the important text bold and improve readability" acr
 
 ```bash
 npx tsc --noEmit
+npm test            # legal-data tests: must stay green
 npm run build   # also confirms which routes are still static (○/●) vs dynamic (ƒ)
 npx eslint <changed files>
 ```

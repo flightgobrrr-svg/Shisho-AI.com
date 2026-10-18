@@ -371,10 +371,14 @@ async function cachedOrGenerated(
   const digest = { ...(await generateDigest(identity, fallbackRatio)), generatedAt: new Date().toISOString() };
 
   if (isSupabaseConfigured()) {
-    const { mode, generatedAt: _generatedAt, ...digestFields } = digest;
+    // The row keeps `mode` and `generated_at` in their own columns, so neither
+    // belongs inside the digest JSON.
+    const digestFields: Record<string, unknown> = { ...digest };
+    delete digestFields.mode;
+    delete digestFields.generatedAt;
     const { error } = await supabase()
       .from("case_briefs")
-      .upsert({ slug, digest: digestFields, mode }, { onConflict: "slug" });
+      .upsert({ slug, digest: digestFields, mode: digest.mode }, { onConflict: "slug" });
     if (error) console.error("[caseBrief] cache write failed:", error);
   }
 

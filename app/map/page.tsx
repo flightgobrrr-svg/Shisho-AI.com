@@ -36,8 +36,8 @@ export default function MapPage() {
           <p className="mt-5 max-w-[58ch] text-[16px] leading-relaxed text-ink-soft">
             A matter in sequence — from the first client meeting through
             pleadings and trial to the citations it rests on — and what this
-            site does at each point. The first and last stages are the site's
-            own, not the court's.
+            site does at each point. The first and last stages are the site&rsquo;s
+            own, not the court&rsquo;s.
           </p>
 
           <StageIndex />
