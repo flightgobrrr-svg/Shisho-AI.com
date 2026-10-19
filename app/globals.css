@@ -282,7 +282,9 @@
 @utility label-mono {
   font-family: var(--font-mono);
   font-size: var(--text-label);
-  line-height: 1;
+  /* Not 1: a label that wraps (a long provision, a long eyebrow on a phone)
+     stacked its lines on top of each other. */
+  line-height: 1.45;
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }

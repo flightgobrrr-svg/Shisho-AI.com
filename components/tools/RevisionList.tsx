@@ -31,13 +31,19 @@ export function RevisionList() {
 
   if (cards.length === 0) {
     return (
-      <p className="max-w-[56ch] text-[15px] leading-relaxed text-ink-soft">
-        Nothing saved yet. Write a brief in{" "}
-        <Link href="/courses/case-brief" className="underline-draw text-ink">
-          case-brief practice
-        </Link>{" "}
-        and choose &ldquo;Save for revision&rdquo;.
-      </p>
+      <div className="max-w-xl rounded-seal border border-ink/20 bg-paper-raised p-6 md:p-7">
+        <p className="font-display text-[19px] font-semibold text-ink">No briefs saved yet.</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">
+          Write a brief in case-brief practice and choose &ldquo;Save for
+          revision&rdquo;. It comes back here after a day, a week and a month.
+        </p>
+        <Link
+          href="/courses/case-brief"
+          className="mt-5 inline-flex h-10 items-center rounded-seal border border-transparent bg-ink px-4 text-[14px] font-medium text-paper-raised transition-colors hover:bg-ink-soft"
+        >
+          Write a brief
+        </Link>
+      </div>
     );
   }
 

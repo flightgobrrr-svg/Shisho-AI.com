@@ -1,31 +1,67 @@
 import Link from "next/link";
 import { AudienceHeadline } from "@/components/for/AudienceHeadline";
+import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
-import { PLANNED_AUDIENCES } from "@/lib/audiences";
+import { PAGE_AUDIENCES } from "@/lib/audiences";
 
 /**
- * One section per audience, each on its own band — text on one side, a small
- * labelled sample on the other, alternating so the scroll has a rhythm.
- * These audiences are planned, and every section says so.
+ * One section per audience, text on one side and a small labelled sample on
+ * the other, alternating sides so the scroll has a rhythm.
+ *
+ * They read as one chapter, not eleven separate pages stacked up: a single
+ * opening with an index of every audience (so a visitor can jump straight to
+ * theirs), one paper tone throughout with hairlines between, and tighter
+ * spacing than a standalone section. Alternating band colours on top of
+ * alternating sides made the run read as a striped wall.
+ *
+ * Advocates (junior, senior, designated senior) are served today and say
+ * "Available now"; the rest are planned, and every section says which.
  */
 export function AudienceSections() {
   return (
-    <div id="audiences">
-      {PLANNED_AUDIENCES.map((a, i) => {
+    <div id="audiences" className="border-t border-ink/10 bg-paper-raised">
+      <Container className="pt-20 pb-6 md:pt-28 md:pb-10">
+        <Eyebrow>Who it is for</Eyebrow>
+        <h2 className="mt-4 max-w-2xl font-display text-title font-semibold text-balance">
+          Built for students and advocates. Next, for <Emphasis>everyone</Emphasis> the law touches.
+        </h2>
+        <p className="mt-5 max-w-[56ch] text-[16px] leading-relaxed text-ink-soft">
+          Advocates can use Shisho today. The rest are planned. Each section says
+          which, and each has its own page with what exists now and what is to come.
+        </p>
+        <nav aria-label="Audiences" className="mt-8">
+          <ul className="flex flex-wrap gap-2">
+            {PAGE_AUDIENCES.map((a) => (
+              <li key={a.slug}>
+                <a
+                  href={`#${a.slug}`}
+                  className="inline-flex min-h-9 items-center rounded-full border border-ink/30 px-3.5 text-[13.5px] text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/70 hover:bg-paper"
+                >
+                  {a.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </Container>
+
+      {PAGE_AUDIENCES.map((a, i) => {
         const flip = i % 2 === 1;
         return (
           <Section
             key={a.slug}
             id={a.slug}
-            tone={flip ? "raised" : "paper"}
-            className="border-t border-ink/10 !py-16 md:!py-24"
+            tone="raised"
+            className="!pt-0 !pb-12 md:!pb-16"
           >
             <Container>
-              <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
+              <div className="grid items-center gap-10 border-t border-ink/10 pt-12 md:pt-16 lg:grid-cols-2 lg:gap-20">
                 <div className={flip ? "lg:order-2" : undefined}>
-                  <div className="flex items-baseline gap-4">
+                  <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                     <Eyebrow>{a.eyebrow}</Eyebrow>
-                    <span className="label-mono text-ink-faint">Planned</span>
+                    <span className="label-mono text-ink-faint">
+                      {a.live ? "Available now" : "Planned"}
+                    </span>
                   </div>
                   <h2 className="mt-4 max-w-xl font-display text-[2rem] font-semibold leading-[1.12] text-ink md:text-[2.4rem]">
                     <AudienceHeadline text={a.headline} />
@@ -54,7 +90,7 @@ export function AudienceSections() {
                 {a.sample ? (
                   <div
                     className={
-                      "w-full max-w-md rounded-seal border border-ink/20 bg-paper-raised p-6 md:p-7 " +
+                      "w-full max-w-md rounded-seal border border-ink/20 bg-paper p-6 md:p-7 " +
                       (flip ? "lg:order-1" : "lg:justify-self-end")
                     }
                   >

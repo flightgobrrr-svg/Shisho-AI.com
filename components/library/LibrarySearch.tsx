@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { searchCases, slugify, topMatches, type PreviewCase } from "@/lib/library";
 import { useDebouncedQuerySync } from "./useDebouncedQuerySync";
 
 const MAX_SEARCH_RESULTS = 5;
+/** Browse mode shows this many at a time. All 84 at once made the page
+ *  over 20,000px tall on a phone, with the footer out of reach. */
+const BROWSE_PAGE = 20;
 
 /**
  * Live, client-side search over an already-scoped slice of ALL_CASES (court
@@ -55,6 +58,14 @@ export function LibrarySearch({
   );
   const capped = isSearching && allMatches.length > MAX_SEARCH_RESULTS;
 
+  /* How many browse rows are open. Tied to the case list it was opened for,
+     so a new court or category filter starts again from the first page
+     without a reset effect. */
+  const [opened, setOpened] = useState({ for: cases, count: BROWSE_PAGE });
+  const browseCount = opened.for === cases ? opened.count : BROWSE_PAGE;
+  const visible = isSearching ? results : results.slice(0, browseCount);
+  const remaining = results.length - visible.length;
+
   return (
     <div>
       <div className="flex flex-wrap items-center gap-4">
@@ -72,7 +83,7 @@ export function LibrarySearch({
         <p className="label-mono text-ink-faint" aria-live="polite">
           {capped
             ? `Top ${MAX_SEARCH_RESULTS} of ${allMatches.length} matches`
-            : `Showing ${results.length} of ${cases.length}`}
+            : `Showing ${visible.length} of ${cases.length}`}
         </p>
       </div>
 
@@ -110,7 +121,7 @@ export function LibrarySearch({
       ) : (
         <>
           <ul className="reveal-stagger mt-12 divide-y divide-ink/10 border-y border-ink/10">
-            {results.map((item, i) => (
+            {visible.map((item, i) => (
               <li key={item.citation} style={{ "--i": i } as React.CSSProperties}>
                 <Link
                   href={`/library/judgments/${slugify(item.title)}`}
@@ -121,7 +132,7 @@ export function LibrarySearch({
                       {item.title}
                     </p>
                     <p className="label-mono mt-1.5 text-indigo">{item.citation}</p>
-                    <span className="underline-draw mt-2 inline-block text-[13px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] group-hover:text-ink">
+                    <span className="underline-draw mt-2 hidden text-[13px] sm:inline-block text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] group-hover:text-ink">
                       Read the brief →
                     </span>
                   </div>
@@ -133,10 +144,25 @@ export function LibrarySearch({
                       {item.topic}
                     </p>
                   </div>
+                  {/* On a phone the link closes the row, after the summary,
+                      rather than sitting hard against the court label. */}
+                  <span className="text-[13px] text-ink sm:hidden">Read the brief →</span>
                 </Link>
               </li>
             ))}
           </ul>
+          {remaining > 0 ? (
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setOpened({ for: cases, count: browseCount + BROWSE_PAGE })}
+                className="inline-flex h-11 items-center border border-ink/45 bg-paper-raised px-5 text-[14px] text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75"
+              >
+                Show {Math.min(BROWSE_PAGE, remaining)} more
+              </button>
+              <p className="text-[13px] text-ink-soft">{remaining} more in this list</p>
+            </div>
+          ) : null}
           {capped && (
             <p className="mt-4 text-[13px] text-ink-soft">
               Showing the {MAX_SEARCH_RESULTS} closest matches for &ldquo;{query}&rdquo; —

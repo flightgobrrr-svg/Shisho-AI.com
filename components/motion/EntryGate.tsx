@@ -41,30 +41,46 @@ const FADE_MS = 420;
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
+/* Advocates in three, as in the "Who it's for" menu: each goes to its own
+   page, which says what serves them today and where to begin. */
 const AUDIENCES = [
   {
     n: 1,
-    name: "Advocates",
-    detail: "In practice — drafting, advice and opinions, checking citations against the Acts.",
-    cta: "Try Shisho",
-    href: "/draft-bot",
+    name: "Junior advocates",
+    detail: "The first years of practice: first drafts, research for your senior, court duty.",
+    cta: "Start here",
+    href: "/for/junior-advocates",
   },
   {
     n: 2,
+    name: "Senior advocates",
+    detail: "Running chambers: checking juniors\u2019 drafts before they reach the registry.",
+    cta: "Start here",
+    href: "/for/senior-advocates",
+  },
+  {
+    n: 3,
+    name: "Designated senior advocates",
+    detail: "Arguing the matter: hearing notes and every authority checked.",
+    cta: "Start here",
+    href: "/for/designated-senior-advocates",
+  },
+  {
+    n: 4,
     name: "Advocate Clerks",
     detail: "Handling filings and paperwork — see what each document needs.",
     cta: "Open the practice manual",
     href: "/clerks",
   },
   {
-    n: 3,
+    n: 5,
     name: "Law students",
     detail: "Learning to read law and put a first document on paper.",
     cta: "Start with courses",
     href: "/courses",
   },
   {
-    n: 4,
+    n: 6,
     name: "General public",
     detail: "Curious how a case actually moves through the system.",
     cta: "See the map",
@@ -91,7 +107,12 @@ const CONFIRM_MS = 260;
 export function EntryGate() {
   const router = useRouter();
   const pathname = usePathname();
-  const [phase, setPhase] = useState<Phase>("splash");
+  /* Only the homepage starts on the splash. Starting every page on it meant
+     the server-rendered HTML of /library, /pricing and the rest carried the
+     overlay too, and it showed until the page's JavaScript loaded and
+     dismissed it: a flash of the splash on every inner page, and a long one
+     on a slow connection. */
+  const [phase, setPhase] = useState<Phase>(() => (pathname === "/" ? "splash" : "done"));
   const [chosen, setChosen] = useState<string | null>(null);
   const reduceMotionRef = useRef(false);
   const firstCardRef = useRef<HTMLButtonElement>(null);
@@ -239,13 +260,13 @@ export function EntryGate() {
           )}
         >
           <div className="rise">
-            <Eyebrow>Four starting points</Eyebrow>
+            <Eyebrow>Six starting points</Eyebrow>
             <h2 className="mt-4 font-display text-title font-semibold">
               Which one are <Emphasis>you</Emphasis>?
             </h2>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 items-stretch gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-1 items-stretch gap-4 text-left sm:grid-cols-2 lg:grid-cols-3">
             {AUDIENCES.map((audience, i) => {
               const isChosen = chosen === audience.href;
               const receded = settling && !isChosen;
@@ -268,7 +289,7 @@ export function EntryGate() {
                        below. Removing the class cancels the animation and
                        lets the static classes take over immediately. */
                     !settling && "rise",
-                    "flex h-full flex-col rounded-seal border bg-paper-raised p-7 text-left",
+                    "flex h-full flex-col rounded-seal border bg-paper-raised p-6 text-left",
                     "transition-[transform,box-shadow,border-color,opacity] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
                     !settling &&
                       "hover:-translate-y-0.5 hover:border-ink/75 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
@@ -290,13 +311,13 @@ export function EntryGate() {
                       settling && isChosen && "border-seal/60 text-seal",
                     )}
                   />
-                  <span className="mt-5 font-display text-[19px] font-semibold text-ink">
+                  <span className="mt-4 font-display text-[19px] font-semibold text-ink">
                     {audience.name}
                   </span>
                   <span className="mt-3 flex-1 text-[14.5px] leading-relaxed text-ink-soft">
                     {audience.detail}
                   </span>
-                  <span className="mt-6 text-[14px] font-medium text-ink">
+                  <span className="mt-5 text-[14px] font-medium text-ink">
                     {audience.cta} →
                   </span>
                 </button>

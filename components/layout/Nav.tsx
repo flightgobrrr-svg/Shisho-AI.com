@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageSwitch } from "@/components/home/LanguageSwitch";
 import { LOCALES, type Locale } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/cn";
-import { PRIMARY_NAV } from "@/lib/nav";
+import { PRIMARY_NAV, type NavLink } from "@/lib/nav";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -27,6 +27,21 @@ const NON_ENGLISH_LOCALES = LOCALES.filter((l) => l !== "en");
 function localeFromPathname(pathname: string): Locale {
   const first = pathname.split("/")[1];
   return (NON_ENGLISH_LOCALES as string[]).includes(first) ? (first as Locale) : "en";
+}
+
+/** One audience in the desktop "Who it's for" panel. */
+function GroupLink({ link }: { link: NavLink }) {
+  return (
+    <Link
+      href={link.href}
+      className="block px-3 py-2 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper"
+    >
+      <span className="block text-[14px] text-ink">{link.label}</span>
+      <span className="label-mono mt-0.5 block text-ink-faint">
+        {link.planned ? "Planned" : "Available now"}
+      </span>
+    </Link>
+  );
 }
 
 export function Nav() {
@@ -112,6 +127,7 @@ export function Nav() {
   const isActive = (href: string) =>
     !href.includes("#") && pathname === href;
 
+
   return (
     <header
       className={cn(
@@ -143,7 +159,7 @@ export function Nav() {
             between trigger and panel is still inside the hover target — with
             a margin the menu closes as the pointer crosses the gap. */}
         <nav aria-label="Primary" className="hidden xl:block">
-          <ul className="flex items-center gap-9">
+          <ul className="flex items-center gap-9 whitespace-nowrap">
             {PRIMARY_NAV.map((link) => (
               <li key={link.href} className="group relative">
                 <Link
@@ -159,6 +175,33 @@ export function Nav() {
                   {link.label}
                 </Link>
 
+                {link.groups && link.groups.length > 0 && (
+                  <div
+                    className={cn(
+                      "invisible absolute top-full left-1/2 z-10 -translate-x-1/2 pt-5 opacity-0",
+                      "transition-[opacity,transform] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                      "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
+                      "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
+                      "-translate-y-1",
+                    )}
+                  >
+                    <div className="grid w-[46rem] grid-cols-4 gap-2 whitespace-normal border border-ink/45 bg-paper-raised p-4 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]">
+                      {link.groups.map((group) => (
+                        <div key={group.heading}>
+                          <p className="label-mono px-3 pt-1 pb-2 text-indigo">{group.heading}</p>
+                          <ul>
+                            {group.links.map((child) => (
+                              <li key={child.href}>
+                                <GroupLink link={child} />
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {link.children && link.children.length > 0 && (
                   <div
                     className={cn(
@@ -169,7 +212,7 @@ export function Nav() {
                       "-translate-y-1",
                     )}
                   >
-                    <ul className="w-72 border border-ink/45 bg-paper-raised p-2 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]">
+                    <ul className="w-72 whitespace-normal border border-ink/45 bg-paper-raised p-2 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]">
                       {link.children.map((child) => (
                         <li key={child.href}>
                           <Link
@@ -280,6 +323,32 @@ export function Nav() {
                     on touch, and a tap-to-expand would put a second tap
                     between someone and the thing they came for. The rule and
                     indent carry the nesting instead. */}
+                {link.groups && link.groups.length > 0 && (
+                  <div className="mb-2 ml-1 space-y-3 border-l border-ink/15 pl-4">
+                    {link.groups.map((group) => (
+                      <div key={group.heading}>
+                        <p className="label-mono pt-1 text-indigo">{group.heading}</p>
+                        <ul>
+                          {group.links.map((child) => (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                onClick={() => setOpen(false)}
+                                className="flex items-baseline gap-3 py-2 text-[14.5px] text-ink-soft"
+                              >
+                                {child.label}
+                                {child.planned ? (
+                                  <span className="label-mono text-ink-faint">Planned</span>
+                                ) : null}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {link.children && link.children.length > 0 && (
                   <ul className="mb-2 ml-1 border-l border-ink/15 pl-4">
                     {link.children.map((child) => (

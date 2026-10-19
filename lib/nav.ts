@@ -17,7 +17,59 @@ export type NavLink = {
    * position clear of the sticky bar.
    */
   children?: NavLink[];
+  /**
+   * Labelled sections, for a menu too long to read as one list. Rendered as
+   * columns in a wide panel on desktop and as headed lists on mobile.
+   */
+  groups?: NavGroup[];
+  /** Planned audiences say so in the menu, not only on their page. */
+  planned?: boolean;
 };
+
+export type NavGroup = { heading: string; links: NavLink[] };
+
+/**
+ * The twelve audiences from the promo video, sorted into four sections under
+ * one "Who it's for" menu in the main bar. Three already have a home on the
+ * site; the other nine go to their /for/ page, which says plainly that they
+ * are planned, and the menu marks them so too. Slugs follow lib/audiences.ts.
+ */
+export const AUDIENCE_GROUPS: NavGroup[] = [
+  {
+    heading: "Practice",
+    links: [
+      { href: "/for/junior-advocates", label: "Junior advocates" },
+      { href: "/for/senior-advocates", label: "Senior advocates" },
+      { href: "/for/designated-senior-advocates", label: "Designated senior advocates" },
+      { href: "/for/corporate", label: "Corporate lawyers", planned: true },
+      { href: "/clerks", label: "Advocate clerks" },
+    ],
+  },
+  {
+    heading: "Study and teaching",
+    links: [
+      { href: "/courses", label: "Law students" },
+      { href: "/for/lecturers", label: "Lecturers", planned: true },
+      { href: "/for/scholars", label: "Scholars", planned: true },
+    ],
+  },
+  {
+    heading: "Exams",
+    links: [
+      { href: "/for/clat", label: "CLAT", planned: true },
+      { href: "/for/judicial-exams", label: "Judicial exams", planned: true },
+      { href: "/for/court-staff", label: "Court staff exams", planned: true },
+    ],
+  },
+  {
+    heading: "Bench and public",
+    links: [
+      { href: "/for/judges", label: "Judges", planned: true },
+      { href: "/for/citizens", label: "Citizens", planned: true },
+      { href: "/for/advice", label: "Legal advice", planned: true },
+    ],
+  },
+];
 
 export const PRIMARY_NAV: NavLink[] = [
   {
@@ -44,11 +96,6 @@ export const PRIMARY_NAV: NavLink[] = [
         href: "/draft-bot/formats",
         label: "Formats",
         blurb: "99 civil and criminal formats to draft from",
-      },
-      {
-        href: "/for/corporate",
-        label: "Corporate lawyers",
-        blurb: "Contract review, compliance, due diligence",
       },
     ],
   },
@@ -82,16 +129,6 @@ export const PRIMARY_NAV: NavLink[] = [
         label: "IPC to BNS",
         blurb: "Find the new section for an old one",
       },
-      {
-        href: "/for/scholars",
-        label: "Scholars",
-        blurb: "Trace a doctrine across decades",
-      },
-      {
-        href: "/for/judges",
-        label: "Judges",
-        blurb: "A clear record, close at hand",
-      },
     ],
   },
   {
@@ -118,26 +155,6 @@ export const PRIMARY_NAV: NavLink[] = [
         href: "/courses/spoken-english",
         label: "Spoken English",
         blurb: "Oral argument and courtroom submissions — recorded & live",
-      },
-      {
-        href: "/for/lecturers",
-        label: "Lecturers",
-        blurb: "Lesson plans and case materials",
-      },
-      {
-        href: "/for/clat",
-        label: "CLAT",
-        blurb: "Mock tests and legal reasoning",
-      },
-      {
-        href: "/for/judicial-exams",
-        label: "Judicial exams",
-        blurb: "JCJ, District Judge and APP",
-      },
-      {
-        href: "/for/court-staff",
-        label: "Court staff exams",
-        blurb: "Mock papers and a study plan",
       },
     ],
   },
@@ -176,39 +193,16 @@ export const PRIMARY_NAV: NavLink[] = [
         label: "Citations",
         blurb: "Authorities that actually bind",
       },
-      {
-        href: "/for/citizens",
-        label: "Citizens",
-        blurb: "Know your rights, in plain language",
-      },
-      {
-        href: "/for/advice",
-        label: "Legal advice",
-        blurb: "Clear guidance, one conversation at a time",
-      },
     ],
   },
+  /* Advocate Clerks is one of the twelve audiences, so it lives in the
+     "Who it's for" panel (Practice) rather than as a top item of its own:
+     seven items did not fit the bar on one line at 1280–1440px. */
   {
-    href: "/clerks",
-    label: "Advocate Clerks",
-    blurb: "The practice manual — registration, filing, scrutiny, A to Z",
-    children: [
-      {
-        href: "/clerks#routine",
-        label: "Daily routine",
-        blurb: "Before, during and after court",
-      },
-      {
-        href: "/clerks#manual",
-        label: "The manual",
-        blurb: "99 entries, A to Z",
-      },
-      {
-        href: "/clerks#formats",
-        label: "Practical formats",
-        blurb: "Working formats for daily office use",
-      },
-    ],
+    href: "/#audiences",
+    label: "Who it's for",
+    blurb: "Advocates, students, exam takers, judges and the public",
+    groups: AUDIENCE_GROUPS,
   },
   {
     href: "/pricing",
@@ -241,17 +235,21 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { href: "/draft-bot", label: "Shisho" },
       { href: "/library", label: "Legal Library" },
       { href: "/library/acts", label: "Bare Acts" },
-      { href: "/limitation", label: "Limitation checker" },
-      { href: "/ipc-bns", label: "IPC to BNS" },
       { href: "/courses", label: "Courses" },
       { href: "/map", label: "The Map" },
       { href: "/documents", label: "Documents" },
       { href: "/clerks", label: "Advocate Clerks" },
-      { href: "/#audiences", label: "Who it's for" },
       { href: "/pricing", label: "Pricing" },
-      { href: "/status", label: "What works today" },
-      { href: "/how-it-works", label: "How Shisho works" },
-      { href: "/corrections", label: "Corrections and gaps" },
+    ],
+  },
+  {
+    heading: "Tools",
+    links: [
+      { href: "/limitation", label: "Limitation checker" },
+      { href: "/ipc-bns", label: "IPC to BNS" },
+      { href: "/courses/moot", label: "Moot kit" },
+      { href: "/courses/case-brief", label: "Case-brief practice" },
+      { href: "/courses/revision", label: "Revision" },
     ],
   },
   {
@@ -267,6 +265,10 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     heading: "Company",
     links: [
       { href: "/about", label: "About" },
+      { href: "/how-it-works", label: "How Shisho works" },
+      { href: "/status", label: "What works today" },
+      { href: "/corrections", label: "Corrections and gaps" },
+      { href: "/#audiences", label: "Who it's for" },
       { href: "/contact", label: "Contact" },
     ],
   },

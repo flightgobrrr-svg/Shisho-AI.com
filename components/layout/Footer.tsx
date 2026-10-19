@@ -9,8 +9,8 @@ export function Footer() {
   return (
     <footer className="mt-auto border-t border-ink/10 bg-paper-raised">
       <Container className="py-16 md:py-20">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_repeat(4,1fr)] md:gap-8">
-          <div className="max-w-xs">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-3 lg:grid-cols-[1.3fr_repeat(5,1fr)] lg:gap-8">
+          <div className="col-span-2 max-w-xs md:col-span-3 lg:col-span-1">
             {/* The full lockup, which has the room here that the nav bar
                 cannot give it. Its artwork already carries the tagline, so the
                 typed "Wisdom, guidance, intelligence." line that used to sit

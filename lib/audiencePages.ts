@@ -19,7 +19,74 @@ export type AudienceItem = {
   href?: string;
 };
 
+/* `prep=hearing` is ignored by the website and lets the app open Shisho
+   with a hearing-prep message already started. */
+const HEARING_PREP: AudienceItem = {
+  label: "Prepare for the hearing",
+  note: "Ask Shisho for the issues, likely questions from the bench and the provisions to check. Authorities are listed only when certain.",
+  status: "live",
+  href: "/draft-bot?mode=ask&prep=hearing#ask",
+};
+
+const COUNT_WORDS = ["", "One place", "Two places", "Three places", "Four places", "Five places"];
+
+/** "Three places to begin, in this order." — matched to how many there are. */
+export function startHereHeading(count: number): string {
+  if (count <= 1) return "Where to begin.";
+  return `${COUNT_WORDS[count] ?? `${count} places`} to begin, in this order.`;
+}
+
 export const TODAY: Record<string, AudienceItem[]> = {
+  "junior-advocates": [
+    {
+      label: "Draft with Shisho",
+      note: "Describe the facts and take a first draft to your senior.",
+      status: "live",
+      href: "/draft-bot?mode=ask#ask",
+    },
+    {
+      label: "Have your draft marked",
+      note: "Clause-level notes, each naming the provision it rests on.",
+      status: "live",
+      href: "/draft-bot?mode=review#review",
+    },
+    {
+      label: "What each document must carry",
+      note: "Eleven pleadings, with the provision for each and the ways they fail.",
+      status: "live",
+      href: "/documents",
+    },
+  ],
+  "senior-advocates": [
+    {
+      label: "Review a junior\u2019s draft",
+      note: "Clause-level notes before it reaches the registry.",
+      status: "live",
+      href: "/draft-bot?mode=review#review",
+    },
+    {
+      label: "Check limitation",
+      note: "The last day to file under twelve Articles of the Limitation Act, 1963.",
+      status: "live",
+      href: "/limitation",
+    },
+    HEARING_PREP,
+  ],
+  "designated-senior-advocates": [
+    HEARING_PREP,
+    {
+      label: "Look up a judgment",
+      note: "Type a case name and read a digest prepared from the judgment\u2019s own text.",
+      status: "live",
+      href: "/library/lookup",
+    },
+    {
+      label: "Landmark judgments",
+      note: "Supreme Court and High Court judgments, with their later history.",
+      status: "live",
+      href: "/library#landmarks",
+    },
+  ],
   corporate: [
     {
       label: "Contract drafting",

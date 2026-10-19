@@ -24,54 +24,69 @@ import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
  * reuses the annotation motif rather than sitting beside it.
  */
 
-const DRAFT_LINES = [
-  { w: "w-[62%]", strong: true },
-  { w: "w-[38%]" },
-  { w: "w-full" },
-  { w: "w-[88%]" },
-  { w: "w-[71%]" },
-  { w: "w-[44%]", strong: true },
-  { w: "w-full" },
-  { w: "w-[82%]" },
-  { w: "w-[57%]" },
+/* A readable excerpt rather than grey placeholder bars: the point of the
+   frame is to show what a marked-up draft looks like, and bars only showed
+   that something would be there. Each flagged line carries a numbered seal
+   marker that matches its note in the margin. */
+const DRAFT: { text: string; note?: number; heading?: boolean }[] = [
+  { text: "IN THE HIGH COURT OF JUDICATURE", heading: true },
+  { text: "Writ Petition (Civil) No. ____ of 2026", heading: true },
+  { text: "1. The Petitioner is a citizen of India and carries on business in the city." },
+  { text: "2. The Respondents are “State” within the meaning of Article 12.", note: 0 },
+  { text: "3. The impugned order was passed without notice to the Petitioner." },
+  { text: "PRAYER: stay the operation of the impugned order pending the petition.", note: 1 },
+  { text: "Place: ____     Date: ____     Petitioner", note: 2 },
 ];
 
 function DraftBotMiniature({ notes }: { notes: string[] }) {
   return (
     <div
       aria-hidden="true"
-      className="grid grid-cols-1 gap-0 sm:grid-cols-[minmax(0,1fr)_12rem]"
+      className="grid grid-cols-1 text-left sm:grid-cols-[minmax(0,1fr)_15rem]"
     >
       {/* Left: the draft */}
-      <div className="space-y-2.5 p-5 sm:p-7">
-        <div className="mb-4 flex gap-1.5">
-          <span className="h-1.5 w-10 rounded-full bg-ink/20" />
-          <span className="h-1.5 w-6 rounded-full bg-ink/10" />
-        </div>
-        {DRAFT_LINES.map((line, i) => (
-          <span
-            key={i}
-            className={`block h-1.5 rounded-full ${line.w} ${
-              line.strong ? "bg-ink/25" : "bg-ink/12"
-            }`}
-          />
+      <div className="space-y-3 p-5 sm:p-8">
+        {DRAFT.map((line) => (
+          <p
+            key={line.text}
+            className={
+              line.heading
+                ? "label-mono text-ink-soft"
+                : "flex gap-2 font-display text-[14px] leading-snug text-ink sm:text-[15px]"
+            }
+          >
+            {line.heading ? (
+              line.text
+            ) : (
+              <>
+                <span
+                  className={
+                    line.note === undefined
+                      ? "min-w-0"
+                      : "min-w-0 underline decoration-seal/60 decoration-1 underline-offset-4"
+                  }
+                >
+                  {line.text}
+                </span>
+                {line.note !== undefined ? (
+                  <sup className="mt-1 shrink-0 font-sans text-[10px] font-semibold text-seal">
+                    {line.note + 1}
+                  </sup>
+                ) : null}
+              </>
+            )}
+          </p>
         ))}
       </div>
 
-      {/* Right on desktop, stacked underneath on mobile — the margin only
+      {/* Right on desktop, stacked underneath on mobile: the margin only
           exists once there is width to spare for one. */}
-      <div className="space-y-2.5 border-t border-ink/10 bg-paper/40 p-4 sm:border-t-0 sm:border-l sm:p-5">
-        <span className="label-mono block text-[7px] text-ink-faint">
-          Shisho notes
-        </span>
-        {notes.map((note) => (
-          <div
-            key={note}
-            className="rounded-[2px] border-l-2 border-seal/50 bg-paper-raised py-1.5 pl-2"
-          >
-            <span className="block text-[8px] leading-snug text-seal sm:text-[9px]">
-              {note}
-            </span>
+      <div className="space-y-3 border-t border-ink/10 bg-paper/50 p-5 sm:border-t-0 sm:border-l sm:p-6">
+        <span className="label-mono block text-ink-faint">Shisho notes</span>
+        {notes.map((note, i) => (
+          <div key={note} className="flex gap-2.5 text-[13px] leading-snug text-ink">
+            <span className="mt-px font-sans text-[11px] font-semibold text-seal">{i + 1}</span>
+            <span>{note}</span>
           </div>
         ))}
       </div>
@@ -136,7 +151,7 @@ export function ProductShowcase({ locale = "en" }: { locale?: Locale }) {
 
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-paper"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-paper"
           />
 
           <figcaption className="sr-only">{t.figcaption}</figcaption>

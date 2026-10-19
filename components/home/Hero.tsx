@@ -192,16 +192,22 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
 
       <AmbientDrift />
 
-      {/* Deliberately NOT <Container>. Every other section centres its
-          content in a 72rem track, which on a wide monitor leaves the hero
-          copy stranded in the middle-left of a full-bleed photograph. Here
-          the copy hugs the page gutter instead — same `px-6 md:px-8` as the
-          rest of the site, just without the centring — so it reads as
-          anchored to the edge rather than floating.
+      {/* The drift's lowest glow and the photograph both run past the
+          section's foot, and `overflow-hidden` cut them off in a straight
+          line, so the hero ended on a visible edge. This fades every
+          background layer out to plain paper before the section ends. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-paper"
+      />
 
-          The consequence is intentional: on wide screens this text starts
-          further left than the sections below it. */}
-      <div className="w-full px-6 py-20 md:px-8 md:py-24">
+      {/* The same 72rem track as the nav and every section below, so the
+          headline starts on the line the logo starts on. Hugging the page
+          gutter instead put the copy 60px or more left of everything else
+          from 1280px up, which read as a misalignment, not an anchor. The
+          photograph is its own right-hand panel, so the copy never has to
+          compete with it for the middle. */}
+      <div className="mx-auto w-full max-w-6xl px-6 py-20 md:px-8 md:py-24">
         <div className="max-w-[38rem]">
           {/* ---- Copy ------------------------------------------------- */}
           <div>

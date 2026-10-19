@@ -34,19 +34,85 @@ export type Audience = {
   sample?: AudienceSample;
   /** Extra line for audiences that must not be mistaken for legal advice. */
   disclaimer?: string;
+  /**
+   * Has its own /for page AND is served today, so the page says "Available
+   * now" and offers no "tell me when this opens" sign-up.
+   */
+  live?: boolean;
+  /** A short factual note on the page, about the law that shapes this audience. */
+  aside?: string;
+  /** Where `aside` comes from, and when it was checked (PRODUCT.md). */
+  sources?: string;
 };
 
 export const AUDIENCES: Audience[] = [
+  /* Advocates, in three: the junior in a senior's chambers, the senior who
+     runs them, and the senior advocate designated under Section 16 of the
+     Advocates Act, 1961. "Senior advocate" in the Act means only the
+     designated kind; the middle group is the everyday sense of "my senior",
+     and its page says so. Shisho serves all three today, so each is `live`. */
   {
-    slug: "advocates",
-    name: "Advocates",
-    eyebrow: "For advocates",
-    headline: "Draft with *precision*. Argue with authority.",
+    slug: "junior-advocates",
+    name: "Junior advocates",
+    eyebrow: "For junior advocates",
+    headline: "Learn the craft on real *drafts*.",
     blurb:
-      "From first instructions to final submissions, with the right authority beside every ground.",
-    chips: ["Research", "Drafting", "Precedents", "Hearing prep"],
-    href: "/draft-bot",
-    cta: "Try Shisho",
+      "The first years of practice: first drafts, research for your senior, court duty and the listing. Shisho drafts with you and marks your work clause by clause, naming the provision behind each note.",
+    chips: ["First drafts", "Research for your senior", "Court duty"],
+    live: true,
+    sample: {
+      label: "First draft, marked",
+      rows: [
+        { term: "Cause title", detail: "Court and parties, as the registry wants them" },
+        { term: "Verification", detail: "Missing: Order VI Rule 15, CPC" },
+        { term: "Prayer", detail: "Each relief asked for separately" },
+        { term: "Limitation", detail: "Plead the date the cause of action arose" },
+      ],
+    },
+  },
+  {
+    slug: "senior-advocates",
+    name: "Senior advocates",
+    eyebrow: "For senior advocates in practice",
+    headline: "Every draft *checked* before it is filed.",
+    blurb:
+      "You run the chambers and your juniors draft the matters. Check a draft for defects before it reaches the registry, confirm the last day to file, and prepare for the hearing with the authorities in one place.",
+    chips: ["Draft review", "Limitation", "Hearing prep"],
+    live: true,
+    aside:
+      "Here \u201csenior\u201d means the advocate who runs chambers and briefs juniors. In the Advocates Act, 1961, \u201csenior advocate\u201d means one designated by the Supreme Court or a High Court; that has its own page.",
+    sample: {
+      label: "Before it goes to the registry",
+      rows: [
+        { term: "Limitation", detail: "Last day checked against the Schedule" },
+        { term: "Pleadings", detail: "Clause notes on the junior\u2019s draft" },
+        { term: "Authorities", detail: "Each one checked before it is cited" },
+        { term: "Hearing", detail: "Issues and questions to expect from the bench" },
+      ],
+    },
+  },
+  {
+    slug: "designated-senior-advocates",
+    name: "Designated senior advocates",
+    eyebrow: "For designated senior advocates",
+    headline: "Walk into court with the *authorities* ready.",
+    blurb:
+      "You argue the matter, with the advocate who briefs you beside you. Shisho prepares a hearing note and lets you check every authority in the brief before you rely on it.",
+    chips: ["Hearing notes", "Authority checks", "Judgment digests"],
+    live: true,
+    aside:
+      "Designation is under Section 16(2) of the Advocates Act, 1961. The Bar Council of India Rules (Part VI, Chapter I) bar a senior advocate from accepting instructions to draft pleadings or affidavits, though not from settling a draft with the advocate who briefs them. So Shisho\u2019s drafting is for that advocate; for you it is hearing preparation and authority checks.",
+    sources:
+      "Advocates Act, 1961, Section 16; Bar Council of India Rules, Part VI, Chapter I. Checked 19 October 2026.",
+    sample: {
+      label: "Hearing note",
+      rows: [
+        { term: "Issues", detail: "What the court must decide" },
+        { term: "Authorities", detail: "The paragraph that carries each point" },
+        { term: "From the bench", detail: "Questions to expect" },
+        { term: "Relief", detail: "What you will ask the court for" },
+      ],
+    },
   },
   {
     slug: "corporate",
@@ -254,9 +320,12 @@ export const AUDIENCES: Audience[] = [
   },
 ];
 
-/** Audiences not yet served by an existing page; each gets a homepage section. */
-export const PLANNED_AUDIENCES = AUDIENCES.filter((a) => !a.href);
+/** Audiences with a /for page of their own; each gets a homepage section. */
+export const PAGE_AUDIENCES = AUDIENCES.filter((a) => !a.href);
+
+/** Of those, the ones not built yet: these say "Planned" and take sign-ups. */
+export const PLANNED_AUDIENCES = PAGE_AUDIENCES.filter((a) => !a.live);
 
 export function getAudience(slug: string): Audience | undefined {
-  return PLANNED_AUDIENCES.find((a) => a.slug === slug);
+  return PAGE_AUDIENCES.find((a) => a.slug === slug);
 }

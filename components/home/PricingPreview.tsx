@@ -63,15 +63,20 @@ export function PricingPreview({ locale = "en" }: { locale?: Locale }) {
                   : "border-ink/45 hover:border-ink/75",
               )}
             >
-              <div className="flex items-baseline justify-between gap-3">
+              {/* The label sits above the name rather than beside it: at four
+                  columns a card is too narrow for both on one line, and the
+                  label ran out through the card's border. */}
+              <div className="flex flex-col-reverse gap-1.5">
                 <h3 className="font-display text-[19px] font-semibold text-ink">
                   {tier.name}
                 </h3>
                 {tier.popular ? (
-                  <span className="label-mono shrink-0 text-seal">
-                    {t.mostPopular}
+                  <span className="label-mono text-seal">{t.mostPopular}</span>
+                ) : (
+                  <span aria-hidden="true" className="label-mono invisible hidden lg:block">
+                    &nbsp;
                   </span>
-                ) : null}
+                )}
               </div>
 
               <p className="mt-5">

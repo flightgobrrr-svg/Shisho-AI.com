@@ -121,7 +121,10 @@ export function FormatsPicker() {
                     : "border-transparent hover:border-ink/30 hover:bg-paper-raised",
                 )}
               >
-                <span className="label-mono shrink-0 text-ink-faint">
+                {/* The format's number in the source list, so the column is
+                    not sequential once sorted by name. A fixed, right-aligned
+                    column keeps every name on the same left edge. */}
+                <span className="label-mono w-6 shrink-0 text-right tabular-nums text-ink-faint">
                   {format.sno}
                 </span>
                 <span className="min-w-0 text-[14.5px] text-ink">{format.name}</span>

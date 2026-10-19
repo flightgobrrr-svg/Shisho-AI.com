@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { DOCUMENTS } from "@/lib/documents";
-import { PLANNED_AUDIENCES } from "@/lib/audiences";
+import { PAGE_AUDIENCES } from "@/lib/audiences";
 import { LIMITATION_ENTRIES } from "@/lib/limitation";
 import { IPC_BNS } from "@/lib/ipcBns";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: updated,
       priority: 0.4,
     })),
-    ...PLANNED_AUDIENCES.map((a) => ({
+    ...PAGE_AUDIENCES.map((a) => ({
       url: `${SITE_URL}/for/${a.slug}`,
       lastModified: updated,
       priority: 0.4,
