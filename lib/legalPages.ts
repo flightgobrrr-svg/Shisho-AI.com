@@ -103,6 +103,14 @@ export const LEGAL: Record<"terms" | "privacy" | "refund" | "about" | "how", Leg
         ],
       },
       {
+        heading: "In the mobile app",
+        body: [
+          "On your phone the app keeps what you save (case briefs, your moot rules, digests you opened) and, if you sign in, your sign-in tokens in the phone's secure storage. None of that is sent to us except the sign-in itself.",
+          "The app makes up a random device ID the first time it runs. It is sent with Shisho requests only to count the free monthly messages. It is not linked to your name.",
+          "You can delete your account inside the app. That removes your account and usage record from Shisho; briefs saved on the phone stay until you clear the app's data.",
+        ],
+      },
+      {
         heading: "Cookies and browser storage",
         body: [
           "A sign-in session cookie when you log in, a cookie that remembers your plan when you are not signed in, and a browser-session flag so the welcome screen shows once.",

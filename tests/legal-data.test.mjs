@@ -107,3 +107,31 @@ test("documents: authority matching is strict", () => {
   assert.equal(slug("Art. 226(2), Constitution of India"), undefined);
   assert.equal(slug("s. 124, Indian Contract Act 1872"), undefined);
 });
+
+// --- spaced revision rules, shared by the website and the mobile app
+import { INTERVAL_DAYS, DAY_MS, newCard, reviewCard, isDue, isFinished } from "../lib/revisionCore.ts";
+
+test("revision: 1, 7, 30 day schedule", () => {
+  assert.deepEqual(INTERVAL_DAYS, [1, 7, 30]);
+  const t0 = 1_000_000_000_000;
+  const base = { title: "T", slug: "t", facts: "", issue: "", held: "", ratio: "" };
+
+  let c = newCard(base, t0);
+  assert.equal(c.stage, 0);
+  assert.equal(c.dueAt, t0 + 1 * DAY_MS);
+  assert.equal(isDue(c, t0), false);
+  assert.equal(isDue(c, t0 + DAY_MS), true);
+
+  c = reviewCard(c, t0 + DAY_MS);
+  assert.equal(c.stage, 1);
+  assert.equal(c.dueAt, t0 + DAY_MS + 7 * DAY_MS);
+
+  c = reviewCard(c, t0 + 8 * DAY_MS);
+  assert.equal(c.stage, 2);
+  assert.equal(c.dueAt, t0 + 8 * DAY_MS + 30 * DAY_MS);
+
+  c = reviewCard(c, t0 + 38 * DAY_MS);
+  assert.equal(c.stage, 3);
+  assert.equal(isFinished(c), true);
+  assert.equal(isDue(c, Number.MAX_SAFE_INTEGER - 1), false);
+});

@@ -1,0 +1,30 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/lib/*": [
+        "../lib/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "../lib/limitation.ts",
+    "../lib/ipcBns.ts",
+    "../lib/documents.ts",
+    "../lib/clerkManual.ts",
+    "../lib/sitemap.ts",
+    "../lib/legalPages.ts",
+    "../lib/corrections.ts",
+    "../lib/revisionCore.ts",
+    "../lib/draft.ts",
+    "../lib/library.ts",
+    "../lib/assistant.ts",
+    "../lib/courses.ts",
+    "../lib/recordings.ts"
+  ]
+}
