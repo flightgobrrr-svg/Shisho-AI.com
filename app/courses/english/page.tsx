@@ -40,7 +40,7 @@ export default function EnglishClassPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-t border-ink/10">
+      <Section tone="raised">
         <Container>
           <ClassesTabs
             recorded={<RecordedLessonsList lessons={LEGAL_ENGLISH_LESSONS} />}

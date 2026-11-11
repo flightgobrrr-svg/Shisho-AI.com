@@ -78,7 +78,7 @@ export function LibrarySearch({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Case name, citation, subject, or category…"
-          className="h-11 min-w-0 flex-1 border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-faint sm:max-w-sm"
+          className="h-11 min-w-0 grow basis-full border border-ink/45 bg-paper-raised px-4 text-[14.5px] text-ink placeholder:text-ink-faint sm:max-w-sm sm:basis-0"
         />
         <p className="label-mono text-ink-faint" aria-live="polite">
           {capped
@@ -125,7 +125,7 @@ export function LibrarySearch({
               <li key={item.citation} style={{ "--i": i } as React.CSSProperties}>
                 <Link
                   href={`/library/judgments/${slugify(item.title)}`}
-                  className="group flex min-w-0 flex-col gap-2 px-1 py-6 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
+                  className="group grid min-w-0 gap-2 px-1 py-6 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper sm:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] sm:items-baseline sm:gap-x-10"
                 >
                   <div className="min-w-0">
                     <p className="font-display text-[18px] font-semibold text-ink transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] group-hover:text-ink-soft">
@@ -136,7 +136,10 @@ export function LibrarySearch({
                       Read the brief →
                     </span>
                   </div>
-                  <div className="min-w-0 sm:max-w-xs sm:text-right">
+                  {/* Left-aligned, not ranged right: the summary runs to four or
+                      five lines, and a ragged left edge on that much text is
+                      hard to read down a long list. */}
+                  <div className="min-w-0">
                     <p className="label-mono text-ink-faint">
                       {item.court} · {item.category}
                     </p>

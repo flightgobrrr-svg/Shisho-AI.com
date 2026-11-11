@@ -3,19 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
-import { IPC_BNS, VERIFIED_ON } from "@/lib/ipcBns";
+import { IPC_BNS, VERIFIED_ON, findIpcRow, ipcHeadline } from "@/lib/ipcBns";
 
 export function generateStaticParams() {
   return IPC_BNS.map((r) => ({ ipc: r.ipc.toLowerCase() }));
 }
 
-function find(ipc: string) {
-  return IPC_BNS.find((r) => r.ipc.toLowerCase() === ipc.toLowerCase());
-}
-
-function headline(ipc: string, bns: string) {
-  return bns ? `IPC ${ipc} is BNS ${bns}` : `IPC ${ipc} has no BNS section`;
-}
+const find = findIpcRow;
+const headline = ipcHeadline;
 
 export async function generateMetadata({
   params,

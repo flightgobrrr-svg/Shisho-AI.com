@@ -8,13 +8,21 @@ Last reviewed: 18 October 2026.
 
 | Asset | Where it is used | Source | Status |
 |---|---|---|---|
-| Shisho emblem (`public/shisho-emblem.png`, 512px) | App icon, Android adaptive icon (foreground and monochrome), splash image, web favicon, all in `mobile/assets/` | `PRODUCT.md` lists it as the owner's | **Owner to confirm.** The artwork looks AI-generated; the ownership and copyright position of AI-generated images is uncertain and varies by place. The source is only 512px, so the 1024px icon is enlarged and slightly soft. Supply a vector or 1024px+ original before submission. |
+| Shisho logo (`public/shisho-logo.png`, 500px: the emblem with "SHISHO ai" and the tagline) | App icon, Android adaptive icon (foreground and monochrome), splash image, web favicon, all in `mobile/assets/` (changed from the emblem alone, 20 October 2026). The previous emblem icons are not in the repository. | `PRODUCT.md` lists it as the owner's | **Owner to confirm.** The artwork looks AI-generated; the ownership and copyright position of AI-generated images is uncertain and varies by place. The source is only 512px, so the 1024px icon is enlarged and slightly soft. Supply a vector or 1024px+ original before submission. |
+| Photograph of an advocate (`public/audiences/senior-advocates.webp`; app copy `mobile/assets/audiences/senior-advocates.jpg`) | Senior advocates section, on the website (page and homepage) and in the app | Supplied by the owner, 20 October 2026 | **A real advocate; the owner reports he agreed.** Keep his consent in writing, covering the website, the app and app-store screenshots. Shown with no name and no quote so it cannot read as an endorsement: the Bar Council of India's rules restrict advocates from advertising, so he should be comfortable with his image on a product's marketing page. Who took the photo, and their permission, also to confirm. |
+| Twelve audience photos from the promo video (`public/audiences/*.jpg`; app copies in `mobile/assets/audiences/`) | Beside each audience's sample on the website and in the app; clerks and law students on their own pages | Cut by us from the owner's promo video at the owner's request, 20 October 2026; enlarged 2x from 150x228 | **Likely AI-generated, with the video tool's terms to check for commercial use.** Low resolution, so kept small. No names or quotes. Replace with the originals if the owner has them. |
 | Name and brand "Shisho AI" | App name, in-app copy | Owner's | **Trademark clearance not done.** Not claimed. |
 | Text copy (legal pages, tool descriptions, document reference) | Shared from the website's `lib/*.ts` | Written for this project | The legal pages are plain-language and **not reviewed by an advocate**. |
 
+Update 22 Oct 2026:
+
+| Asset | Where it is used | Source | Status |
+|---|---|---|---|
+| Shisho logo tile (`mobile/assets/shisho-logo-tile.png`, 512px, supplied by the owner 22 Oct 2026: the framed logo with "SHISHO ai" and the tagline) and the emblem cut from it (`mobile/assets/shisho-emblem.png`: the S and face only) | Emblem: app icon (iOS and Android adaptive, themed monochrome) and favicon, because the lettering is unreadable at icon size. Full tile: splash screen, the top bar and the side menu. | Owner's | **Owner to confirm rights**, as for the earlier logo: it looks AI-generated. 512px source, so the 1024px icon is enlarged; supply a larger original before store submission. |
+
 ## Not used, on purpose
 
-- The AI-generated photographs and logo variant from the promotional video: their provenance and rights are unclear.
+- The logo variant from the promotional video: its provenance and rights are unclear. (The video's photographs are now used, at the owner's request; see above.)
 - `public/gurukul-teaching.jpg` and `gurukul-question.jpg`: not needed by the app yet. Confirm rights before adding.
 
 ## Fonts (open licence, bundled through npm)
@@ -53,7 +61,7 @@ Items that need a human look:
 - **`shisho-mobile` is `UNLICENSED`:** this is the app's own package; choose a licence or keep it private.
 - Added with the online features: `expo-secure-store`, `expo-crypto`, `expo-document-picker`, `expo-file-system` and `expo-notifications` (all MIT).
 - Key runtime packages: `expo` 58.0.14 (MIT), `react-native` 0.88.0 (MIT), `expo-router` (MIT), `react` 19.3.0 (MIT).
-- Many mobile stores ask you to show an open-source notices screen. Generate one from the licence checker before release (not built yet).
+- The open-source notices screen is built (Menu → Legal → Open-source notices), generated from package-lock.json by `npm run licences` (544 production packages on 21 Oct 2026).
 
 ## Template content
 

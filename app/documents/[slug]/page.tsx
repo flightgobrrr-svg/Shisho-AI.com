@@ -60,33 +60,34 @@ export default async function DocumentPage({
       />
       <Section className="!pb-12">
         <Container>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/documents"
-              className="underline-draw label-mono text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
-            >
-              Documents
-            </Link>
-            {stage && (
-              <>
-                <span aria-hidden="true" className="text-ink-faint">
-                  /
-                </span>
-                <Link
-                  href={`/map#stage-${stage.n}`}
-                  className="underline-draw label-mono text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
-                >
-                  {stage.title}
-                </Link>
-              </>
-            )}
-          </div>
-
-          <div className="mt-3">
+          {/* Breadcrumb left, print right: one utility row, so nothing sits
+              between the trail and the heading that reads like an eyebrow. */}
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/documents"
+                className="underline-draw label-mono text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
+              >
+                Documents
+              </Link>
+              {stage && (
+                <>
+                  <span aria-hidden="true" className="text-ink-faint">
+                    /
+                  </span>
+                  <Link
+                    href={`/map#stage-${stage.n}`}
+                    className="underline-draw label-mono text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
+                  >
+                    {stage.title}
+                  </Link>
+                </>
+              )}
+            </div>
             <PrintButton label="Print this guide" />
           </div>
 
-          <h1 className="mt-5 max-w-3xl font-display text-title font-semibold">
+          <h1 className="mt-6 max-w-3xl font-display text-title font-semibold">
             {doc.name}
           </h1>
           <p className="mt-4 max-w-[60ch] text-[17px] leading-relaxed text-ink-soft">
@@ -105,7 +106,7 @@ export default async function DocumentPage({
         </Container>
       </Section>
 
-      <Section className="border-y border-ink/10">
+      <Section>
         <Container>
           <div className="grid gap-14 lg:grid-cols-2 lg:gap-16">
             <div>

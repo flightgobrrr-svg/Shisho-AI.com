@@ -16,6 +16,8 @@ const iso = (d) => d.toISOString().slice(0, 10);
 test("limitation: periods match the Schedule", () => {
   const expected = {
     "art-19": [3, "years"],
+    "art-21": [3, "years"],
+    "art-22": [3, "years"],
     "art-54": [3, "years"],
     "art-55": [3, "years"],
     "art-58": [3, "years"],
@@ -134,4 +136,11 @@ test("revision: 1, 7, 30 day schedule", () => {
   assert.equal(c.stage, 3);
   assert.equal(isFinished(c), true);
   assert.equal(isDue(c, Number.MAX_SAFE_INTEGER - 1), false);
+});
+
+test("limitation: money lent on demand runs from the loan, a deposit on demand from the demand", () => {
+  // Articles 21 and 22 are easily confused; checked against the Schedule on 21 Oct 2026.
+  const byId = Object.fromEntries(LIMITATION_ENTRIES.map((e) => [e.id, e]));
+  assert.equal(byId["art-21"].runsFrom, "When the loan is made.");
+  assert.equal(byId["art-22"].runsFrom, "When the demand is made.");
 });

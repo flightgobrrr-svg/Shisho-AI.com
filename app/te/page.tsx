@@ -14,11 +14,7 @@ export const metadata: Metadata = {
     canonical: "/te",
     languages: {
       "en-IN": "/", "hi-IN": "/hi", "bn-IN": "/bn", "mr-IN": "/mr", "te-IN": "/te",
-      "ta-IN": "/ta", "gu-IN": "/gu", "as-IN": "/as", "brx-IN": "/brx",
-      "doi-IN": "/doi", "kn-IN": "/kn", "ks-Arab-IN": "/ks", "kok-IN": "/kok",
-      "mai-IN": "/mai", "ml-IN": "/ml", "mni-Mtei-IN": "/mni", "ne-IN": "/ne",
-      "or-IN": "/or", "pa-IN": "/pa", "sa-IN": "/sa", "sat-Olck-IN": "/sat",
-      "sd-Deva-IN": "/sd", "ur-IN": "/ur",
+      "ta-IN": "/ta", "gu-IN": "/gu", "kn-IN": "/kn", "ml-IN": "/ml",
     },
   },
 };
@@ -31,14 +27,17 @@ export const metadata: Metadata = {
  * translated yet (the entry gate, Nav, Footer) and why.
  */
 export default function HomePageTelugu() {
+  // `lang` in the server HTML, not only the client-side <html lang> fix, so
+  // the script-specific type rules in globals.css (label font, heading wrap)
+  // and screen readers have the right language from the first paint.
   return (
-    <>
+    <div lang="te-IN">
       <Hero locale="te" />
       <MatterFlow locale="te" />
       <FeatureStrip locale="te" />
       <ProductShowcase locale="te" />
       <PricingPreview locale="te" />
       <FinalCta locale="te" />
-    </>
+    </div>
   );
 }

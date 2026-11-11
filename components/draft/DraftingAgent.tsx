@@ -307,7 +307,7 @@ export function DraftingAgent({
   return (
     <div className="min-w-0">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="label-mono text-ink-faint">Ask Shisho</h2>
+        <h2 className="sr-only">Ask Shisho</h2>
         {mode === "demo" ? (
           <span className="label-mono rounded-seal border border-ink/45 px-1.5 py-0.5 text-ink-soft">
             Demo
@@ -315,76 +315,41 @@ export function DraftingAgent({
         ) : null}
       </div>
 
-      <p className="mt-3 border-b border-ink/10 pb-4 text-[12.5px] leading-relaxed text-ink-soft">
-        Shisho AI provides drafting assistance, not legal advice.
-      </p>
-
       {mode === "demo" ? (
-        <p className="mt-4 text-[12.5px] leading-relaxed text-ink-soft">
+        <p className="mt-3 text-[12.5px] leading-relaxed text-ink-soft">
           No model is connected. Replies come from a small set of sample
           responses, not from analysis of what you tell it.
         </p>
       ) : null}
 
-      {messages.length === 0 ? (
-        <div className="mt-5">
-          <p className="text-[14px] leading-relaxed text-ink-soft">
-            Tell Shisho the facts — the parties, what happened, what you want
-            done about it — and attach a file if you have one. A first draft
-            will appear in the workspace below once there&rsquo;s enough to
-            work with.
-          </p>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {STARTER_SUGGESTIONS.map((suggestion) => (
-              <button
-                key={suggestion}
-                type="button"
-                onClick={() => setInput(suggestion)}
-                className={cn(
-                  "rounded-seal border border-ink/45 px-3 py-1.5 text-left text-[13px] text-ink-soft",
-                  "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75 hover:text-ink",
-                )}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-
-          <p className="mt-4 text-[13px] text-ink-soft">
-            Not sure what to draft?{" "}
-            <a href="/draft-bot/formats" className="text-ink underline underline-offset-2">
-              Browse all 99 civil and criminal formats
-            </a>
-            .
-          </p>
-        </div>
-      ) : (
-        <div aria-live="polite" className="mt-5 space-y-4">
-          {messages.map((message, i) => (
-            <div key={i} className="min-w-0">
-              <span className="label-mono block text-ink-faint">
-                {message.role === "user" ? "You" : "Shisho"}
-              </span>
-              <p
-                className={cn(
-                  "mt-1.5 whitespace-pre-wrap rounded-seal border p-3 text-[14px] leading-relaxed text-ink",
-                  message.role === "user"
-                    ? "border-ink/45 bg-paper-raised"
-                    : "border-ink/45",
-                )}
-              >
-                {message.content}
-              </p>
-              {message.draftSent ? (
-                <p className="mt-1.5 label-mono text-ink-faint">
-                  Draft sent to the workspace below.
+      {messages.length > 0 ? (
+        <ol aria-live="polite" className="mb-8 space-y-7">
+          {messages.map((message, i) =>
+            message.role === "user" ? (
+              <li key={i} className="flex min-w-0 flex-col items-end">
+                <span className="label-mono text-ink-faint">You</span>
+                {/* What you wrote is paper, same as the composer it came from. */}
+                <p className="sheet mt-2 max-w-[min(88%,62ch)] whitespace-pre-wrap bg-paper-raised px-4 py-3 text-[15px] leading-relaxed text-ink border border-ink/15 shadow-[var(--slip-shadow)]">
+                  {message.content}
                 </p>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      )}
+              </li>
+            ) : (
+              <li key={i} className="min-w-0">
+                <span className="label-mono text-seal">Shisho</span>
+                <p className="mt-2 max-w-[66ch] whitespace-pre-wrap font-display text-[1.2rem] leading-[1.55] text-ink">
+                  {message.content}
+                </p>
+                {message.draftSent ? (
+                  <p className="mt-3 inline-flex items-center gap-2 text-[13px] text-ink-soft">
+                    <ArrowIcon className="size-4 text-seal" />
+                    The draft is on the desk, under Review my draft.
+                  </p>
+                ) : null}
+              </li>
+            ),
+          )}
+        </ol>
+      ) : null}
 
       {status === "pending" ? <ThinkingSequence /> : null}
 
@@ -397,42 +362,53 @@ export function DraftingAgent({
       {locked ? (
         <LockedChat quota={entitlement.quota ?? 5} />
       ) : (
-        <div className="mt-5">
-          {/* No manual picker here — driveFiles' own doc comment explains
-              why: a default template auto-attaches via the effect above the
-              moment one is connected, so there's nothing to choose each
-              message. This just reports status/lets the visitor opt out. */}
-          {templateStatus === "loading" && !pendingAttachment ? (
-            <p className="mb-2.5 text-[13px] text-ink-soft">Loading your default template…</p>
-          ) : null}
-
-          {pendingAttachment ? (
-            <div className="mb-2.5 flex items-center gap-2 text-[13px] text-ink-soft">
-              <span className="min-w-0 truncate">
-                {pendingAttachment.kind === "upload"
-                  ? pendingAttachment.file.name
-                  : `${pendingAttachment.filename} (your default template — applies to every draft until removed)`}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  if (pendingAttachment.kind === "drive") setDefaultDismissed(true);
-                  setPendingAttachment(null);
-                }}
-                className="shrink-0 text-ink-faint underline underline-offset-2 hover:text-ink"
-              >
-                Remove
-              </button>
-            </div>
-          ) : null}
-
+        <div className="mt-6">
           {fileError ? (
             <p role="alert" className="mb-2.5 text-[13px] text-seal">
               {fileError}
             </p>
           ) : null}
 
-          <div className="flex items-end gap-3">
+          {/* One composer: the attachment, the box and its controls read as a
+              single object, with focus shown on the whole frame rather than
+              on the bare textarea inside it. */}
+          <div
+            className={cn(
+              "sheet bg-paper-raised text-ink border border-ink/15 shadow-[var(--sheet-shadow)]",
+              "has-[textarea:focus-visible]:outline-2 has-[textarea:focus-visible]:outline-offset-4 has-[textarea:focus-visible]:outline-seal",
+            )}
+          >
+            {/* No manual picker here — driveFiles' own doc comment explains
+                why: a default template auto-attaches via the effect above the
+                moment one is connected, so there's nothing to choose each
+                message. This just reports status/lets the visitor opt out. */}
+            {templateStatus === "loading" && !pendingAttachment ? (
+              <p className="px-4 pt-3 text-[13px] text-ink-soft">Loading your default template…</p>
+            ) : null}
+
+            {pendingAttachment ? (
+              <div className="flex items-center gap-2 px-3 pt-3">
+                <span className="inline-flex min-w-0 items-center gap-1.5 rounded-seal border border-ink/15 bg-paper px-2.5 py-1 text-[12.5px] text-ink-soft">
+                  <PaperclipIcon className="size-3.5 shrink-0" />
+                  <span className="min-w-0 truncate">
+                    {pendingAttachment.kind === "upload"
+                      ? pendingAttachment.file.name
+                      : `${pendingAttachment.filename} (your default template — applies to every draft until removed)`}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (pendingAttachment.kind === "drive") setDefaultDismissed(true);
+                    setPendingAttachment(null);
+                  }}
+                  className="shrink-0 text-[12.5px] text-ink-faint underline underline-offset-2 hover:text-ink"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : null}
+
             <label className="sr-only" htmlFor="assistant-input">
               Message Shisho
             </label>
@@ -446,41 +422,48 @@ export function DraftingAgent({
                   send();
                 }
               }}
-              placeholder="Describe the facts, or answer Shisho's question…"
-              rows={2}
+              placeholder={
+                messages.length === 0
+                  ? "The parties, what happened, and what you want done about it…"
+                  : "Answer Shisho, or add more facts…"
+              }
+              rows={3}
               className={cn(
-                "block h-[4.5rem] w-full resize-y rounded-seal border border-ink/45 bg-paper-raised p-3",
-                "font-sans text-[14px] leading-relaxed text-ink placeholder:text-ink-faint",
+                "block min-h-[7.5rem] w-full resize-y bg-transparent px-5 pt-5 pb-3 sm:px-6",
+                "font-display text-[1.25rem] leading-relaxed text-ink placeholder:text-ink-faint focus-visible:outline-none",
               )}
             />
 
-            <div className="flex shrink-0 flex-col items-stretch gap-2">
-              <div className="flex gap-2">
-                <label
-                  className={cn(
-                    "flex-1 cursor-pointer rounded-seal border border-ink/45 px-3 py-1.5 text-center text-[13px] text-ink-soft",
-                    "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/40",
-                  )}
-                >
-                  Attach
-                  <input
-                    type="file"
-                    accept={ACCEPT_ATTRIBUTE}
-                    onChange={onFileChange}
-                    className="sr-only"
-                  />
-                </label>
-                {speech.supported ? (
-                  <MicButton listening={speech.listening} onClick={toggleDictation} />
-                ) : null}
-              </div>
+            <div className="flex items-center gap-1 border-t border-ink/10 px-2.5 py-2.5 sm:px-3.5">
+              <label
+                className={cn(
+                  "inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-seal px-2.5 text-[13px] text-ink-soft",
+                  "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-ink/5 hover:text-ink",
+                  "has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-seal",
+                )}
+              >
+                <PaperclipIcon className="size-4" />
+                Attach
+                <input
+                  type="file"
+                  accept={ACCEPT_ATTRIBUTE}
+                  onChange={onFileChange}
+                  className="sr-only"
+                />
+              </label>
+              {speech.supported ? (
+                <MicButton listening={speech.listening} onClick={toggleDictation} />
+              ) : null}
+              <span className="mr-2 ml-auto hidden text-[12px] text-ink-faint md:inline">
+                Enter to send · Shift + Enter for a new line
+              </span>
               <Button
                 onClick={() => send()}
                 disabled={!input.trim() || status === "pending"}
                 aria-disabled={!input.trim() || status === "pending"}
-                size="sm"
+                className="max-md:ml-auto"
               >
-                Send
+                {messages.length === 0 ? "Ask Shisho" : "Send"}
               </Button>
             </div>
           </div>
@@ -498,13 +481,64 @@ export function DraftingAgent({
           ) : null}
 
           {remaining !== null ? (
-            <p className="mt-2.5 text-[13px] text-ink-soft">
+            <p className="mt-2.5 text-[12.5px] text-ink-faint">
               {remaining} of {entitlement.quota} free messages left
             </p>
           ) : null}
         </div>
       )}
+
+      {/* Ways in, shown only before the first message, under the composer.
+          Each fills the box (never sends), so facts can be added first. */}
+      {messages.length === 0 && !locked ? (
+        <ul className="mt-8 grid border-t border-ink/15 sm:grid-cols-2 sm:gap-x-10">
+          {STARTER_SUGGESTIONS.map((suggestion) => (
+            <li key={suggestion} className="border-b border-ink/15">
+              <button
+                type="button"
+                onClick={() => setInput(suggestion)}
+                className={STARTER_CLASS}
+              >
+                <span>{suggestion}</span>
+                <ArrowIcon className={ARROW_CLASS} />
+              </button>
+            </li>
+          ))}
+          <li className="border-b border-ink/15">
+            <a href="/draft-bot/formats" className={cn(STARTER_CLASS, "text-ink")}>
+              <span>Browse all 99 civil and criminal formats</span>
+              <ArrowIcon className={ARROW_CLASS} />
+            </a>
+          </li>
+        </ul>
+      ) : null}
     </div>
+  );
+}
+
+const STARTER_CLASS = cn(
+  "group flex h-full min-h-12 w-full items-center justify-between gap-4 py-3 text-left text-[14.5px] leading-snug text-ink-soft",
+  "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink",
+);
+
+const ARROW_CLASS =
+  "size-4 shrink-0 text-ink-faint transition-[color,transform] duration-[var(--duration-nudge)] ease-[var(--ease-precise)] group-hover:translate-x-1 group-hover:text-seal";
+
+/* Same line-art family as the mic and clock icons: 1.5 stroke, square caps,
+ * no rounding (radius is 0 everywhere on the site). */
+function ArrowIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={cn("fill-none stroke-current stroke-[1.5]", className)}>
+      <path d="M5 12h13M13 7l5 5-5 5" strokeLinecap="square" />
+    </svg>
+  );
+}
+
+function PaperclipIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={cn("fill-none stroke-current stroke-[1.5]", className)}>
+      <path d="M20 11.5l-7.8 7.8a5 5 0 0 1-7.1-7.1l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8" strokeLinecap="square" />
+    </svg>
   );
 }
 

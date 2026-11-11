@@ -18,6 +18,10 @@
  *     Wikipedia's BNS article, PRS/Lexology commentary, and The Leaflet's
  *     piece on the s.377 omission specifically — three independent sources
  *     agreeing BNS carries no successor at all, not even a narrowed one).
+ *   - Sections 27, 73 and 74, Contract Act, and Sections 7 and 34,
+ *     Arbitration and Conciliation Act, were checked against their Indian
+ *     Kanoon section pages on 21 Oct 2026 (doc/1431516, 339747, 1941714,
+ *     1846895, 536284) and are stored as structured summaries.
  *   - Constitutional articles are stated at the confidence the `verbatim`
  *     flag on each records — short, famous clauses (Arts. 14, 20(3), 21, 32,
  *     141) are quoted; longer or multi-clause articles (19, 25, 226, 356)
@@ -402,6 +406,33 @@ export const PROVISIONS: Provision[] = [
       "Deliberately narrow at common law — Section 124 by its own words only covers loss from human conduct. Loss from accident or natural events (a fire, say) falls outside this definition and is enforced, where it is, as an ordinary contractual promise rather than \"indemnity\" in this specific statutory sense.",
   },
   {
+    actId: "contract-act",
+    section: "Section 27",
+    title: "Agreement in restraint of trade, void",
+    text: "Every agreement by which anyone is restrained from exercising a lawful profession, trade or business of any kind is, to that extent, void. Exception 1: one who sells the goodwill of a business may agree with the buyer to refrain from carrying on a similar business within specified local limits, so long as the buyer (or anyone deriving title to the goodwill from him) carries on a like business there, provided the limits are reasonable having regard to the nature of the business.",
+    verbatim: false,
+    commentary:
+      "Stricter than English law: there is no general test of reasonableness for a restraint after a contract ends. A post-employment non-compete is void to the extent it restrains trade; the sale-of-goodwill exception is the statutory carve-out, and a restraint operating only during the term of the contract is treated differently from one that bites after it.",
+  },
+  {
+    actId: "contract-act",
+    section: "Section 73",
+    title: "Compensation for loss or damage caused by breach of contract",
+    text: "The party who suffers by a breach of contract is entitled to receive, from the party who broke it, compensation for loss or damage which naturally arose in the usual course of things from the breach, or which the parties knew, when they made the contract, to be likely to result from it. No compensation is given for remote and indirect loss or damage. The same applies to failure to discharge an obligation resembling one created by contract. In estimating the loss, the means which existed of remedying the inconvenience caused by the non-performance must be taken into account.",
+    verbatim: false,
+    commentary:
+      "Two limbs: loss arising in the usual course of things, and special loss only if it was in the parties' contemplation when they contracted. The Explanation is the duty to mitigate — a claimant who could reasonably have reduced the loss recovers only what was unavoidable.",
+  },
+  {
+    actId: "contract-act",
+    section: "Section 74",
+    title: "Compensation for breach of contract where penalty stipulated for",
+    text: "Where a contract names a sum to be paid on breach, or contains any other stipulation by way of penalty, the party complaining of the breach is entitled, whether or not actual damage or loss is proved to have been caused, to receive from the party in breach reasonable compensation not exceeding the amount named or the penalty stipulated. A stipulation for increased interest from the date of default may be a stipulation by way of penalty.",
+    verbatim: false,
+    commentary:
+      "India does not draw the English line between liquidated damages and penalties: either way the named sum is a ceiling, and the court awards reasonable compensation up to it. \"Whether or not actual damage is proved\" does not make the sum automatic — it spares proof of loss, not the requirement that the award be reasonable.",
+  },
+  {
     actId: "arbitration-act",
     section: "Section 9",
     title: "Interim measures by court",
@@ -419,6 +450,24 @@ export const PROVISIONS: Provision[] = [
     commentary:
       "Vidya Drolia's fourfold arbitrability test is applied at exactly this stage — a court asked to appoint an arbitrator under Section 11 first has to decide whether the dispute is even one arbitration can resolve at all.",
     citedIn: ["(2021) 2 SCC 1"],
+  },
+  {
+    actId: "arbitration-act",
+    section: "Section 7",
+    title: "Arbitration agreement",
+    text: "An arbitration agreement is an agreement by the parties to submit to arbitration all or certain disputes which have arisen or may arise between them in respect of a defined legal relationship, contractual or not. It may be a clause in a contract or a separate agreement, and must be in writing: in a document signed by the parties; in an exchange of letters, telex, telegrams or other means of telecommunication, including communication through electronic means, which provide a record of the agreement; or in an exchange of statements of claim and defence in which one party alleges the agreement and the other does not deny it. A reference in a written contract to a document containing an arbitration clause is an arbitration agreement if the reference makes that clause part of the contract.",
+    verbatim: false,
+    commentary:
+      "The gateway to everything else in the Act: no written agreement within Section 7, no arbitration. An emailed exchange can satisfy it, and so can a pleading the other side does not contest. Incorporation by reference works only where the contract makes the other document's clause part of itself.",
+  },
+  {
+    actId: "arbitration-act",
+    section: "Section 34",
+    title: "Application for setting aside arbitral award",
+    text: "Recourse to a court against an arbitral award may be made only by an application to set it aside, on the grounds the section lists: incapacity of a party, an invalid arbitration agreement, no proper notice or inability to present one's case, an award beyond the scope of the submission, a tribunal or procedure not in accordance with the agreement, a subject-matter not arbitrable, or conflict with the public policy of India; and, for arbitrations other than international commercial arbitrations, patent illegality appearing on the face of the award. The application may not be made after three months from receiving the award (or from disposal of a Section 33 request), though the court may entertain it within a further thirty days on sufficient cause shown, but not thereafter.",
+    verbatim: false,
+    commentary:
+      "A challenge, not an appeal: the Explanations say the public-policy test does not permit a review on the merits, and patent illegality does not cover a mere erroneous application of law or re-appreciation of evidence. The time limit is hard — three months plus at most thirty days, with no further extension.",
   },
   {
     actId: "commercial-courts-act",

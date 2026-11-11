@@ -4,7 +4,7 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { Button, Notice, Screen, T } from "@/ui/components";
 import { DigestBody } from "@/features/DigestBody";
 import { PREVIEW_CASES, slugify } from "@/lib/library";
-import { apiConfigured, describeError } from "@/api/client";
+import { ApiError, apiConfigured, describeError } from "@/api/client";
 import { fetchDigest, type DigestResult } from "@/api/endpoints";
 import { digestStore, saveDigest } from "@/state/digests";
 
@@ -21,6 +21,7 @@ export default function JudgmentScreen() {
   const item = PREVIEW_CASES.find((c) => slugify(c.title) === slug && c.sourceUrl);
   const { value: saved, ready } = digestStore.use();
   const [state, setState] = useState<State>({ kind: apiConfigured ? "loading" : "error", message: "" });
+  const [limited, setLimited] = useState(false);
   const [fresh, setFresh] = useState<DigestResult | null>(null);
   const copy = slug ? saved[slug] : undefined;
 
@@ -33,13 +34,16 @@ export default function JudgmentScreen() {
       if (result.digest.mode !== "demo") saveDigest(slug, result);
       setState({ kind: "ok" });
     } catch (e) {
+      setLimited(e instanceof ApiError && e.status === 402);
       setState({ kind: "error", message: describeError(e) });
     }
   }, [slug]);
 
+  // A digest saved on the phone is kept as it is: asking again would only
+  // spend the Free plan's daily digest on a judgment already here.
   useEffect(() => {
-    if (apiConfigured) void load();
-  }, [load]);
+    if (apiConfigured && ready && !copy) void load();
+  }, [load, ready, copy]);
 
   if (!item) {
     return (
@@ -59,7 +63,6 @@ export default function JudgmentScreen() {
       {shown ? (
         <>
           <DigestBody result={shown} savedAt={offlineCopy ? copy.savedAt : undefined} />
-          {state.kind === "loading" ? <T v="small" tone="faint" accessibilityLiveRegion="polite">Checking for a newer copy…</T> : null}
           {state.kind === "error" && apiConfigured ? (
             <T v="small" tone="faint">Could not refresh: {state.message} Showing your saved copy.</T>
           ) : null}
@@ -74,10 +77,14 @@ export default function JudgmentScreen() {
             <Notice title="Preparing the digest" body="Reading the judgment's text. This can take up to a minute the first time." />
           ) : (
             <Notice
-              title={apiConfigured ? "Could not load the digest" : "Digests need the online service"}
+              title={limited ? "Today's free digest is used" : apiConfigured ? "Could not load the digest" : "Digests need the online service"}
               body={apiConfigured ? (state.kind === "error" ? state.message : "") : "This build is not connected to it. You can still read the judgment itself."}
             >
-              {apiConfigured ? <Button label="Try again" variant="dark" onPress={() => void load()} /> : null}
+              {limited ? (
+                <Button label="See plans" variant="dark" href="/pricing" />
+              ) : apiConfigured ? (
+                <Button label="Try again" variant="dark" onPress={() => void load()} />
+              ) : null}
             </Notice>
           )}
           <Button label="Read the judgment on Indian Kanoon" variant="ghost" onPress={() => void Linking.openURL(item.sourceUrl!)} />

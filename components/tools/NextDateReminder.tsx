@@ -47,7 +47,7 @@ export function NextDateReminder() {
 
   const ready = title.trim() !== "" && date !== "";
   const input =
-    "mt-2 h-11 w-full rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink focus:border-ink/80 focus:outline-none";
+    "mt-2 h-11 w-full rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink focus:border-ink/80";
 
   function download() {
     const blob = new Blob([buildIcs(title.trim(), date, note.trim())], {

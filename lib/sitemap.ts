@@ -74,8 +74,8 @@ export const MAP_STAGES: MapStage[] = [
     summary: "Where someone lands, and what Shisho is.",
     serves: [],
     boxes: [
-      { label: "Shisho.in", href: "/" },
-      { label: "About Shisho", href: "/" },
+      { label: "Home", href: "/" },
+      { label: "About Shisho", href: "/about" },
     ],
   },
   {

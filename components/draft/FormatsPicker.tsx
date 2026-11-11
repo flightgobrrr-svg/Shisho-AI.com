@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { TAB_LABEL_CLASS, TAB_LIST_CLASS, tabClass } from "@/components/ui/Tabs";
 import { cn } from "@/lib/cn";
 import {
   DRAFT_FORMATS,
@@ -59,30 +60,27 @@ export function FormatsPicker() {
 
   return (
     <div>
-      <div role="tablist" aria-label="Format category" className="flex gap-2">
+      <div role="tablist" aria-label="Format category" className={TAB_LIST_CLASS}>
         {(["civil", "criminal"] as const).map((t) => (
           <button
             key={t}
+            type="button"
             role="tab"
+            id={`formats-tab-${t}`}
             aria-selected={tab === t}
+            aria-controls="formats-panel"
             onClick={() => switchTab(t)}
-            className={cn(
-              "rounded-seal border px-4 py-2 text-[14px] font-medium capitalize",
-              "transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
-              tab === t
-                ? "border-ink bg-ink text-paper-raised"
-                : "border-ink/45 text-ink-soft hover:border-ink/75 hover:text-ink",
-            )}
+            className={tabClass(tab === t, "flex items-baseline gap-2")}
           >
-            {t}
-            <span className="label-mono ml-2 opacity-70">
+            <span className={cn(TAB_LABEL_CLASS, "capitalize")}>{t}</span>
+            <span className="label-mono text-ink-faint">
               {formatsByCategory(t).length}
             </span>
           </button>
         ))}
       </div>
 
-      <p className="mt-3 text-[13px] text-ink-soft">
+      <p className="mt-4 text-[13px] text-ink-soft">
         {DRAFT_FORMATS.length} formats total, sorted alphabetically within
         each tab. A format marked for both categories appears in both.{" "}
         <button
@@ -105,7 +103,9 @@ export function FormatsPicker() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <ul
+          id="formats-panel"
           role="tabpanel"
+          aria-labelledby={`formats-tab-${tab}`}
           className="max-h-[32rem] min-w-0 space-y-1.5 overflow-y-auto rounded-seal border border-ink/20 p-2"
         >
           {list.map((format) => (

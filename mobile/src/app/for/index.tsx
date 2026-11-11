@@ -3,11 +3,13 @@ import { Headline, Row, Screen, T, TextButton } from "@/ui/components";
 import { AUDIENCE_GROUPS } from "@/lib/nav";
 import { AUDIENCES } from "@/lib/audiences";
 import { appRoute } from "@/features/audienceRoutes";
+import { builtInApp } from "@/features/appFeatures";
 
 /**
  * The twelve audiences from the promo video, in the same four sections as
- * the website's "Who it's for" menu (lib/nav.ts). Three already have a screen
- * in the app; the other nine open a page that says plainly they are planned.
+ * the website's "Who it's for" menu (lib/nav.ts). Every group now has
+ * something built for it in the app (features/appFeatures.ts); a group the
+ * app has not served yet would still say "Planned".
  */
 /* One line per group in the list (its topics), not the full pitch: the pitch
    is on the group's own page, and five-line rows made the list a long scroll. */
@@ -36,7 +38,7 @@ export default function WhoItsFor() {
     <Screen gap={4}>
       <Headline text="Built for students and advocates. Next, for *everyone* the law touches." v="h2" />
       <T tone="soft" style={{ marginTop: 8 }}>
-        Advocates can use Shisho today; planned groups say so. Each has a page with what works now and what is to come.
+        Every group has something to use in the app today. Each page shows what is built for that group and where to begin.
       </T>
 
       {AUDIENCE_GROUPS.map((g) => (
@@ -56,7 +58,7 @@ function GroupSection({ heading, links, first }: (typeof AUDIENCE_GROUPS)[number
           key={link.href}
           title={link.label}
           detail={summaryFor(link.href)}
-          status={link.planned ? "planned" : "live"}
+          status={link.planned && !builtInApp(link.href.replace("/for/", "")) ? "planned" : "live"}
           href={appRoute(link.href) ?? undefined}
         />
       ))}

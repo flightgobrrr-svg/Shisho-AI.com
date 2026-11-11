@@ -47,7 +47,7 @@ export default function SpokenEnglishClassPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-t border-ink/10">
+      <Section tone="raised">
         <Container>
           <ClassesTabs
             recorded={<RecordedLessonsList lessons={SPOKEN_ENGLISH_LESSONS} />}

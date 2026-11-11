@@ -29,7 +29,7 @@ An Android and iOS app for Shisho AI, built with **React Native and Expo (SDK 58
 | Review a draft | Clause-by-clause notes with the provision named, a must-fix filter, copy and share. |
 | Library digests | Fetched on demand; a real digest is saved on the phone for offline reading. A demo digest is shown as one and is never kept. |
 | Look up any judgment | Signed-in only. |
-| Accounts | Sign in, create account, forgot password (finishes on the website), sign out, and **delete my account** inside the app. |
+| Accounts | Sign in, create account, sign out, and **delete my account** inside the app. Forgot password opens the website's reset page in the phone's browser (a reset asked for from inside the app could not be finished; see "Validated"). A sign-up confirmation link lands on `/auth/confirmed`, which sends the person back to the app. |
 | "Tell me when this opens" | On each planned audience page. Uses the website's sign-up handler unchanged, through `/api/mobile/interest`; it answers "not open yet" until the `interest_signups` table exists. |
 
 When the site is not reachable, every online screen says so plainly. Nothing fakes an answer.
@@ -113,7 +113,7 @@ cd .. && npm test       # the legal-data tests (shared with the website)
 
 ## How it connects, and what it never holds
 
-The app calls only `/api/mobile/*` on the site: sign-in, refresh, forgot password, delete account, `me`, assistant, review, digest, lookup. These are **new routes** that reuse the site's own assistant and review handlers unchanged; none of the protected files were edited. Sign-in tokens live in the phone's secure store (Keychain or Keystore). The only other thing the app holds is a random device ID that counts free messages. It never holds a model key, a Supabase service key or any OAuth secret. See `docs/INTEGRATION.md`.
+The app calls only `/api/mobile/*` on the site: sign-in, refresh, delete account, `me`, assistant, review, digest, lookup. These are **new routes** that reuse the site's own assistant and review handlers unchanged; none of the protected files were edited. Sign-in tokens live in the phone's secure store (Keychain or Keystore). The only other thing the app holds is a random device ID that counts free messages. It never holds a model key, a Supabase service key or any OAuth secret. See `docs/INTEGRATION.md`.
 
 ## Validated, and how
 

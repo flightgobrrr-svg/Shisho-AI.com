@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import { useRouter } from "next/navigation";
-import { getDictionary, LOCALES, LOCALE_LABELS, LOCALE_PATHS, type Locale } from "@/lib/i18n/dictionaries";
+import { getDictionary, LOCALES, LOCALE_BCP47, LOCALE_LABELS, LOCALE_PATHS, type Locale } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/cn";
 
 /**
@@ -25,11 +25,14 @@ export function LanguageSwitch({ locale, className }: { locale: Locale; classNam
 
   return (
     <>
-      <label htmlFor={id} className="sr-only">
+      {/* The label and the selected name are in the current language, even
+          inside the English nav, so the select carries that language. */}
+      <label htmlFor={id} lang={LOCALE_BCP47[locale]} className="sr-only">
         {t.label}
       </label>
       <select
         id={id}
+        lang={LOCALE_BCP47[locale]}
         value={locale}
         onChange={(e) => router.push(LOCALE_PATHS[e.target.value as Locale])}
         className={cn(
@@ -39,7 +42,7 @@ export function LanguageSwitch({ locale, className }: { locale: Locale; classNam
         )}
       >
         {LOCALES.map((l) => (
-          <option key={l} value={l}>
+          <option key={l} value={l} lang={LOCALE_BCP47[l]}>
             {LOCALE_LABELS[l]}
           </option>
         ))}

@@ -30,15 +30,15 @@ export default function BareActsPage() {
         </Container>
       </Section>
 
-      <Section id="central" tone="raised" className="border-y border-ink/10">
+      <Section id="central" tone="raised">
         <Container>
           <Eyebrow>{CENTRAL_ACTS.length} Central Acts</Eyebrow>
-          <ol className="mt-6 grid list-none gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Columns, not a row-major grid: the list is alphabetical, so it
+              reads down each column the way an index does. */}
+          <ol className="mt-6 list-none gap-x-10 sm:columns-2 lg:columns-3">
             {CENTRAL_ACTS.map((act) => (
-              <li key={act.sno} className="flex items-baseline gap-2.5">
-                <span className="label-mono shrink-0 text-ink-faint">
-                  {act.sno}.
-                </span>
+              <li key={act.sno} className={ACT_ROW}>
+                <span className={ACT_NUMBER}>{act.sno}.</span>
                 <span className="text-[14.5px] leading-relaxed text-ink">
                   {act.name}, {act.year}
                 </span>
@@ -55,19 +55,32 @@ export default function BareActsPage() {
             State-wise index
           </h2>
 
-          <div className="mt-8 space-y-10">
+          <nav aria-label="Jump to a state" className="mt-6">
+            <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[13.5px]">
+              {STATE_ACTS.map((group) => (
+                <li key={group.state}>
+                  <a
+                    href={`#${stateId(group.state)}`}
+                    className="underline-draw inline-flex min-h-6 items-center text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
+                  >
+                    {group.state}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="mt-12 grid gap-x-14 gap-y-12 lg:grid-cols-2">
             {STATE_ACTS.map((group) => (
-              <div key={group.state}>
+              <div key={group.state} id={stateId(group.state)} className="min-w-0">
                 <h3 className="label-mono border-b border-ink/15 pb-2 text-indigo">
                   {group.state}
                 </h3>
                 {group.acts.length > 0 ? (
-                  <ol className="mt-4 list-none space-y-1.5">
+                  <ol className="mt-4 list-none">
                     {group.acts.map((act) => (
-                      <li key={act.sno} className="flex items-baseline gap-2.5">
-                        <span className="label-mono shrink-0 text-ink-faint">
-                          {act.sno}.
-                        </span>
+                      <li key={act.sno} className={ACT_ROW}>
+                        <span className={ACT_NUMBER}>{act.sno}.</span>
                         <span className="text-[14.5px] leading-relaxed text-ink">
                           {act.name}, {act.year}
                         </span>
@@ -87,4 +100,13 @@ export default function BareActsPage() {
       </Section>
     </>
   );
+}
+
+/* A fixed, right-aligned number column so the names line up whether the
+   number is one digit or two. */
+const ACT_ROW = "flex break-inside-avoid items-baseline gap-2.5 py-1";
+const ACT_NUMBER = "label-mono w-6 shrink-0 text-right text-ink-faint tabular-nums";
+
+function stateId(state: string) {
+  return `state-${state.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 }

@@ -14,14 +14,28 @@ import { isPlan, type Plan } from "@/lib/entitlements";
  * no row yet" isn't a real state to handle here — but fails to "free"
  * anyway on any read error rather than throwing, matching this app's
  * existing fail-open posture for entitlement data (lib/usageCounters.ts).
+ *
+ * A paid month (lib/payments.ts) sets `plan_expires_at`; once that passes the
+ * plan reads as free again. A plan with no expiry (set by hand) never lapses.
  */
-export async function getUserPlan(userId: string): Promise<Plan> {
+export type PlanDetails = { plan: Plan; expiresAt: string | null };
+
+export async function getUserPlanDetails(userId: string): Promise<PlanDetails> {
   const { data, error } = await supabase()
     .from("profiles")
-    .select("plan")
+    .select("plan, plan_expires_at")
     .eq("id", userId)
     .maybeSingle();
 
-  if (error || !data) return "free";
-  return isPlan(data.plan) ? data.plan : "free";
+  if (error || !data) return { plan: "free", expiresAt: null };
+  const plan: Plan = isPlan(data.plan) ? data.plan : "free";
+  const expiresAt = (data.plan_expires_at as string | null) ?? null;
+  if (plan !== "free" && expiresAt && new Date(expiresAt).getTime() <= Date.now()) {
+    return { plan: "free", expiresAt: null };
+  }
+  return { plan, expiresAt: plan === "free" ? null : expiresAt };
+}
+
+export async function getUserPlan(userId: string): Promise<Plan> {
+  return (await getUserPlanDetails(userId)).plan;
 }

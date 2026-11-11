@@ -6,26 +6,22 @@ import { Emphasis } from "@/components/ui/Emphasis";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { StageTrail } from "@/components/map/StageTrail";
 import { SampleCard } from "@/components/for/SampleCard";
+import { SidePhoto } from "@/components/for/SidePhoto";
+import { AUDIENCES } from "@/lib/audiences";
 import { StatusList } from "@/components/for/StatusList";
 import { EXTRAS } from "@/lib/audiencePages";
-import { COURSES } from "@/lib/courses";
+import {
+  CASE_BRIEF_SAMPLE,
+  COURSES,
+  COURSES_FAQS,
+  COURSES_INTRO,
+} from "@/lib/courses";
 
 export const metadata: Metadata = {
   title: "Courses",
   description:
     "Two courses for Indian law — Starter for foundations, Proficient for interim relief, commercial drafting, and litigation strategy. Plans from ₹9 at /pricing.",
 };
-
-const FAQS = [
-  {
-    q: "Do I need to be enrolled in a law school?",
-    a: "No. The Starter course assumes no prior legal training, though it moves quickly. Proficient assumes you can read a judgment and follow a pleading.",
-  },
-  {
-    q: "Is this a substitute for legal advice?",
-    a: "No. Shisho AI is an educational and drafting tool. It does not provide legal advice and is not a substitute for a licensed, practising advocate.",
-  },
-];
 
 export default function CoursesPage() {
   return (
@@ -38,14 +34,12 @@ export default function CoursesPage() {
           </h1>
           <StageTrail product="courses" className="mt-6" />
           <p className="mt-6 max-w-[52ch] text-[16.5px] leading-relaxed text-ink-soft md:text-[17.5px]">
-            Both tracks are built entirely on Indian law — the Constitution, the
-            CPC, the Indian Contract Act, and the authorities that actually bind
-            an Indian court. Every drafting exercise comes back marked.
+            {COURSES_INTRO}
           </p>
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-y border-ink/10 !pt-0 pb-20 md:pb-28">
+      <Section tone="raised" className="!pt-0 pb-20 md:pb-28">
         <Container>
           <div className="grid gap-6 md:grid-cols-2">
             {COURSES.map((course) => (
@@ -79,15 +73,19 @@ export default function CoursesPage() {
               <div className="min-w-0">
                 <Eyebrow>Recorded classes</Eyebrow>
                 <h2 className="mt-4 font-display text-[22px] font-semibold text-ink">
-                  Legal English — reading and{" "}
-                  <Emphasis>writing</Emphasis>.
+                  Legal English — reading and <Emphasis>writing</Emphasis>.
                 </h2>
                 <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
-                  Reading a judgment, writing a pleading — a separate,
-                  ungraded track. Watch in any order.
+                  Reading a judgment, writing a pleading — a separate, ungraded
+                  track. Watch in any order.
                 </p>
               </div>
-              <Button href="/courses/english" variant="ghost" size="lg" className="shrink-0">
+              <Button
+                href="/courses/english"
+                variant="ghost"
+                size="lg"
+                className="shrink-0"
+              >
                 Watch the classes
               </Button>
             </div>
@@ -96,15 +94,19 @@ export default function CoursesPage() {
               <div className="min-w-0">
                 <Eyebrow>Recorded classes</Eyebrow>
                 <h2 className="mt-4 font-display text-[22px] font-semibold text-ink">
-                  Spoken English — arguing in{" "}
-                  <Emphasis>court</Emphasis>.
+                  Spoken English — arguing in <Emphasis>court</Emphasis>.
                 </h2>
                 <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
-                  Oral argument and courtroom submissions — its own
-                  ungraded track. Watch in any order.
+                  Oral argument and courtroom submissions — its own ungraded
+                  track. Watch in any order.
                 </p>
               </div>
-              <Button href="/courses/spoken-english" variant="ghost" size="lg" className="shrink-0">
+              <Button
+                href="/courses/spoken-english"
+                variant="ghost"
+                size="lg"
+                className="shrink-0"
+              >
                 Watch the classes
               </Button>
             </div>
@@ -112,30 +114,27 @@ export default function CoursesPage() {
         </Container>
       </Section>
 
-      <Section className="!py-14 md:!py-16">
+      {/* The law students photo on the right, like the homepage hero's; the
+          list and the case-brief sample on the left. */}
+      <Section className="relative isolate overflow-hidden !py-14 md:!py-16">
         <Container>
-          <Eyebrow>For law students</Eyebrow>
-          <h2 className="mt-4 max-w-xl font-display text-[1.5rem] font-semibold text-ink">
-            Learn the law. Then learn to <Emphasis>apply</Emphasis> it.
-          </h2>
-          <div className="mt-6 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-16">
-            <StatusList items={EXTRAS.students} />
-            <SampleCard
-              sample={{
-                label: "Case brief",
-                rows: [
-                  { term: "Facts", detail: "What happened, in order" },
-                  { term: "Issue", detail: "The question for the court" },
-                  { term: "Held", detail: "What the court decided" },
-                  { term: "Ratio", detail: "The rule it rests on" },
-                ],
-              }}
-            />
+          <StudentsPhoto />
+          <div className="lg:max-w-[54%]">
+            <Eyebrow>For law students</Eyebrow>
+            <h2 className="mt-4 max-w-xl font-display text-[1.5rem] font-semibold text-ink">
+              Learn the law. Then learn to <Emphasis>apply</Emphasis> it.
+            </h2>
+            <div className="mt-6">
+              <StatusList items={EXTRAS.students} />
+              <div className="mt-8">
+                <SampleCard className="max-w-md" sample={CASE_BRIEF_SAMPLE} />
+              </div>
+            </div>
           </div>
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-t border-ink/10">
+      <Section tone="raised">
         <Container>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)]">
             <div>
@@ -146,7 +145,7 @@ export default function CoursesPage() {
             </div>
 
             <dl className="space-y-8">
-              {FAQS.map((faq) => (
+              {COURSES_FAQS.map((faq) => (
                 <div key={faq.q} className="min-w-0">
                   <dt className="font-display text-[18px] font-semibold text-ink">
                     {faq.q}
@@ -170,4 +169,10 @@ export default function CoursesPage() {
       </Section>
     </>
   );
+}
+
+/** The law students photo from the promo video, beside the case-brief sample. */
+function StudentsPhoto() {
+  const photo = AUDIENCES.find((a) => a.slug === "students")?.photo;
+  return photo ? <SidePhoto photo={photo} /> : null;
 }

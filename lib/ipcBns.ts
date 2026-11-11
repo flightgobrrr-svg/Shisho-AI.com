@@ -66,3 +66,13 @@ export function searchIpcBns(rows: IpcBnsRow[], query: string): IpcBnsRow[] {
 
 /** Date the entries were last checked against their sources. Update it when re-checked. */
 export const VERIFIED_ON = "18 October 2026";
+
+/** One row by its IPC section, case-insensitive ("498a" finds "498A"). */
+export function findIpcRow(ipc: string): IpcBnsRow | undefined {
+  return IPC_BNS.find((r) => r.ipc.toLowerCase() === ipc.toLowerCase());
+}
+
+/** The heading of a section's own page: "IPC 302 is BNS 103(1)". */
+export function ipcHeadline(ipc: string, bns: string): string {
+  return bns ? `IPC ${ipc} is BNS ${bns}` : `IPC ${ipc} has no BNS section`;
+}

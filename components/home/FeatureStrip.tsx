@@ -9,7 +9,7 @@ export function FeatureStrip({ locale = "en" }: { locale?: Locale }) {
   const FEATURES = t.features.map((f, i) => ({ ...f, href: HREFS[i] }));
 
   return (
-    <Section tone="raised" className="border-y border-ink/10">
+    <Section tone="raised">
       <Container>
         {/* Same staggered entrance as the other grids down this page (the
             matter flow above, pricing below), so the scroll rhythm is

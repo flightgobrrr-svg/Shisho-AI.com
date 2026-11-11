@@ -39,7 +39,7 @@ export function describeError(e: unknown): string {
 }
 
 type Options = {
-  method?: "GET" | "POST";
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   /** "required": needs a signed-in session. "optional": send it if there is one. "none": never. */
   auth?: "required" | "optional" | "none";

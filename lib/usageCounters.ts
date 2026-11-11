@@ -21,7 +21,12 @@ export const VISITOR_COOKIE = "shisho_visitor";
  *  decision, not a bug fix; keeping the existing behaviour on purpose. */
 const PERIOD_MS = 1000 * 60 * 60 * 24 * 30;
 
-export type UsageKind = "review" | "assistant";
+/** "tool" is shared by the app's Shisho tools (lib/aiTools.ts). "digest" is
+ *  the Free plan's daily Library digest in the app (app/api/mobile/digest). */
+export type UsageKind = "review" | "assistant" | "tool" | "digest";
+
+/** Every kind counts over the rolling 30 days above, except the daily digest. */
+const periodFor = (kind: UsageKind) => (kind === "digest" ? 1000 * 60 * 60 * 24 : PERIOD_MS);
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -64,7 +69,7 @@ export async function readUsageCount(
   }
   if (!data) return 0;
 
-  const expired = Date.now() - new Date(data.period_start).getTime() > PERIOD_MS;
+  const expired = Date.now() - new Date(data.period_start).getTime() > periodFor(kind);
   return expired ? 0 : data.count;
 }
 
@@ -87,7 +92,7 @@ export async function incrementUsageCount(
 
   const nowIso = new Date().toISOString();
   const expired =
-    !data || Date.now() - new Date(data.period_start).getTime() > PERIOD_MS;
+    !data || Date.now() - new Date(data.period_start).getTime() > periodFor(kind);
 
   const { error } = await client.from("usage_counters").upsert(
     {
@@ -101,4 +106,43 @@ export async function incrementUsageCount(
   );
 
   if (error) console.error("[usageCounters] increment failed:", error);
+}
+
+export type Consumed = { allowed: boolean; remaining: number };
+
+/**
+ * Checks the allowance and counts one use in a single step (the
+ * consume_usage database function), so parallel requests cannot all slip
+ * past the limit. Returns whether this use is allowed and how many remain.
+ *
+ * Falls back to the older read-then-write when the function is not in the
+ * database yet (supabase/schema.sql, "ATOMIC USAGE"), so nothing breaks before
+ * that SQL is run; the fallback has the race the function closes.
+ */
+export async function consumeUsage(visitorId: string, kind: UsageKind, limit: number): Promise<Consumed> {
+  const { data, error } = await supabase().rpc("consume_usage", {
+    p_visitor: visitorId,
+    p_kind: kind,
+    p_limit: limit,
+    p_period_seconds: Math.round(periodFor(kind) / 1000),
+  });
+  if (!error && typeof data === "number") {
+    return data < 0 ? { allowed: false, remaining: 0 } : { allowed: true, remaining: data };
+  }
+  console.error("[usageCounters] consume_usage unavailable, using read-then-write:", error);
+  const used = await readUsageCount(visitorId, kind);
+  if (used >= limit) return { allowed: false, remaining: 0 };
+  await incrementUsageCount(visitorId, kind);
+  return { allowed: true, remaining: Math.max(0, limit - used - 1) };
+}
+
+/** Gives back one use taken by consumeUsage, for a request that ended without a real answer. */
+export async function refundUsage(visitorId: string, kind: UsageKind): Promise<void> {
+  const { error } = await supabase().rpc("refund_usage", { p_visitor: visitorId, p_kind: kind });
+  if (!error) return;
+  // Fallback: the same decrement, read-then-write.
+  const { data } = await supabase().from("usage_counters").select("count").eq("visitor_id", visitorId).eq("kind", kind).maybeSingle();
+  if (data && data.count > 0) {
+    await supabase().from("usage_counters").update({ count: data.count - 1, updated_at: new Date().toISOString() }).eq("visitor_id", visitorId).eq("kind", kind);
+  }
 }

@@ -25,6 +25,10 @@
     "../lib/library.ts",
     "../lib/assistant.ts",
     "../lib/courses.ts",
-    "../lib/recordings.ts"
+    "../lib/recordings.ts",
+    "../lib/clerkWork.ts",
+    "../lib/clerkRegisters.ts",
+    "../lib/clerkServices.ts",
+    "../lib/clerkDoc.ts"
   ]
 }

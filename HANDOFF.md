@@ -39,6 +39,7 @@ What was added:
 - **Verified tools**, each with its source shown on the page: `/limitation` (+ `/limitation/[id]`; `lib/limitation.ts`: 12 Articles of the Limitation Act 1963 plus Order VIII Rule 1), `/ipc-bns` (+ `/ipc-bns/[ipc]`; `lib/ipcBns.ts`: 17 rows two published tables agree on; IPC 376 and 124A deliberately left out). `VERIFIED_ON` in each file is the last-checked date. Add a row only after checking it against a source, then add it to `tests/legal-data.test.mjs`.
 - **Practice tools** (browser-only storage via `lib/localStore.ts`): `/courses/moot`, `/courses/case-brief`, `/courses/revision`, next-date calendar file on `/clerks`.
 - **Review panel**: must-fix filter, downloadable review (`lib/reviewExport.ts`), and a strict "Why this matters" explainer (`findDocumentForAuthority` in `lib/documents.ts`).
+- **MSN format for download and print**: every Word/PDF download and every Print (app: Shisho chat drafts and review notes; website: Print under the draft box on `/draft-bot`) uses the MSN house layout taken from the firm's DRT application. `lib/msnFormat.ts` classifies lines and writes Word (from the template embedded in `lib/msnTemplate.ts`, no client text in it) and PDF; `lib/msnExport.ts` is shared by `app/api/mobile/export` and `app/api/export` (same-origin only). The text is never changed: `sameText` checks every character is in the file or the route refuses. Times has no ₹, so the PDF prints "Rs." (Word keeps ₹). The app's Print uses `expo-print`, a native module: a new app build is needed. Tests: `tests/msn-format.test.mjs`.
 - **Quality**: `npm test` runs `tests/legal-data.test.mjs` (Node's built-in runner); `.github/workflows/ci.yml` runs typecheck, lint, tests and build; axe-core accessibility pass done in light and dark; text now uses the `--color-ink-faint` token instead of `text-ink-soft/NN` (opacity on text failed contrast); whole project lints clean; `npm run build` passes (136 pages, no warnings).
 
 **Protected files edited this session (disclose, and decide whether to keep):**
@@ -116,7 +117,7 @@ Extends the digest feature above to any judgment at all, not just the curated Li
 - **The auth UI got a real visual pass**, not just the admin-login-style bare column it launched with: new `components/auth/AuthCard.tsx` wraps login/register/forgot-password/reset-password/account in a bordered, lightly-elevated card (`border-ink/45`, same "ruled box" language as EntryGate's audience cards and the nav dropdown), and each form now leads with the real `<Logo />` instead of a `label-mono` "Shisho AI" line — the latter was quietly violating `impeccable`'s own craft-floor rule against kicker/eyebrow labels above a heading. Went through `/impeccable polish`, not freehand. While polishing the whole path (per that command's own instruction not to fix one corner and leave the rest), found and fixed two real dead-end states: the register and forgot-password "check your email" confirmation screens had no way back to sign-in at all.
 - **A much bigger, unrelated discovery while trying to verify this in the browser: `app/loading.tsx` (the root Suspense/loading UI from an earlier session's "site loading UI" commit, nothing to do with auth) currently breaks EVERY static page on the site in this dev environment** — the Suspense fallback ("Reading…") renders and then never resolves back to the real content, forever, on a hard reload, not just a slow one. Confirmed via `curl` that the server-rendered HTML is actually correct and complete either way — this is a pure client-side Suspense-resolution failure, not a data or server bug. Only dynamic (`ƒ`) routes were unaffected; every static (`○`) route was completely stuck, including pages nobody touched this session (`/pricing`, `/map`) — proving it long predates this session's auth work and was already broken, just never noticed because nobody had reason to hard-reload a static page in dev recently.
   - **Root cause, confirmed by isolation** (renamed the file to `.disabled`, reproduced the fix, restored, reproduced the break again): Next.js 16 introduced a genuinely new caching/navigation model (Cache Components, `unstable_instant`, "instant shells") that `node_modules/next/dist/docs/01-app/02-guides/instant-navigation.md` documents in detail — a plain root-level `<Suspense>` boundary around `{children}` (exactly what `app/layout.tsx` has) no longer reliably resolves for static routes without opting into that new model. This is exactly the kind of "breaking change vs. training data" AGENTS.md's own header warns about, now with a concrete, reproduced example.
-  - **Current state: `app/loading.tsx` has been renamed to `app/loading.tsx.disabled`** (content preserved, not deleted) — the site is fully functional again with it disabled, just without the "Reading…" transition flash during real navigation delays. This was a judgment call to unblock a completely broken site rather than ship a decision that's really the product owner's: whether to invest in properly adopting Next 16's `unstable_instant`/Cache Components model to bring the loading UI back correctly, or leave it off. **Flagging this explicitly rather than deciding it silently — worth raising with the user before the next session touches routing or navigation.**
+  - **Resolved 21 Oct 2026 (owner chose "rebuild it properly"):** the root `app/loading.tsx(.disabled)` is deleted for good. Static pages never wait, so a root boundary only ever added risk. Loading states now live only beside routes that genuinely wait on the server: `app/library/judgments/[slug]/loading.tsx` (digest preparation), and an in-page `<Suspense>` around the result on `app/library/lookup/page.tsx` (a route-level loading.tsx there made Next 16 answer 404). Add another the same way, next to any new route that awaits slow work; do not reintroduce a root one.
 - Confirmed working end-to-end in the real browser once the blocking bug was worked around: all four auth pages render correctly and instantly at both mobile (375px, no horizontal overflow) and desktop widths, real Tab-key keyboard focus shows the correct seal-colored outline, and a real login/logout cycle against the account created earlier this session still works.
 
 ### Every visible "Bar Council" mention removed from the site
@@ -169,6 +170,65 @@ The user asked to "make all the important text bold and improve readability" acr
 - **Updated protected list, still don't touch without asking:** `app/api/draft/route.ts`, `lib/entitlements.ts`, `lib/draft.ts`, `app/api/assistant/route.ts`, `lib/assistant.ts`, `lib/assistantEntitlements.ts`, `lib/supabase.ts`, `lib/usageCounters.ts`, `supabase/schema.sql`, `app/api/cron/ingest-judgments/route.ts`, `lib/adminAuth.ts`, `proxy.ts`, `app/api/admin/**`, and **new this session: `lib/authSession.ts`** (the entire real-accounts security boundary — httpOnly cookie handling, session verification — lives in this one file; a casual edit here is a real security risk, not a style nit). This session got explicit, scoped permission for: `app/api/assistant/route.ts`'s Gemini integration and system-prompt-adjacent edits; `app/api/draft/route.ts` and `app/api/assistant/route.ts`'s auth-aware plan/quota resolution (narrow, additive edits — see "Real user accounts" above); and `supabase/schema.sql`'s new `profiles` table. None of that extends to unrelated parts of those files, or to any other file on this list, without asking again.
 - **New this session:** real Google OAuth credentials and a real refresh-token-bearing Supabase table now exist. Nothing here should ever be echoed back into chat/logs — when verifying Drive-related env vars, check presence/non-emptiness only (`grep -q "^KEY=.\+" .env.local`), never print the value.
 - Never write actual secret values into a file on the user's behalf, even a local gitignored `.env.local`, even when the user pastes the value into chat and asks directly — the user was asked twice this session to do this themselves and it was declined both times, consistently. Hold that line.
+
+### Advocate Clerk Work (app)
+
+Built 25 Oct to 1 Nov 2026 in the app (`mobile/src/app/clerk-work/*`), with server routes in `app/api/mobile/clerk/*`. No website pages.
+
+- **Config, shared with the app:**
+  - `lib/clerkWork.ts`: the 63 services, case fields, the 7 roles with `can()`, file names (`007_OS_125_2025_Vakalatnama_2026-11-14_v1.pdf`; office sheets start `OFFICE_`).
+  - `lib/clerkRegisters.ts`: the seven registers, task statuses and parts of the day, day-first date reading, redaction.
+  - `lib/clerkServices.ts`: the 60 typed services, each with its questions and how it composes its paper.
+  - `lib/clerkDoc.ts`: the document model.
+- **Server:**
+  - `lib/clerkStore.ts`: membership, roles, restricted cases, audit, private storage, filing register rows, hearings.
+  - `lib/clerkCreate.ts`: one path for every document; approval re-renders from what was stored.
+  - `lib/clerkOffice.ts`: dashboard and the office's day.
+  - `lib/clerkRender.ts`: PDF and Word for typed papers.
+  - `lib/clerkForms.ts`: fills court blank forms.
+  - `lib/clerkExtract.ts`: PDF reading.
+  - `lib/clerkLanguage.ts` and `lib/clerkTelugu.ts`: Telugu.
+- **All 63 services generate:**
+  - 60, 26 and 27 fill the court's own blank form; 60 never substitutes a format.
+  - The other 60 compose a typed paper (petition, memo, affidavit, application, record or register) from confirmed particulars and the service's own answers.
+  - Office-wide daily sheets, needing no case: 12, 22, 23, 24, 47, 57.
+- **Services file their own records:**
+  - Some add register rows: a process memo adds a service row, a returned cover keeps its endorsement word for word, a receipt adds custody rows, an expense memo adds an expense row.
+  - Hearing Result Entry (38) and Case Diary Update (11) record hearings. A clerk's report stays unconfirmed until checked against the order; only then does it move the next date.
+- **Tasks:** the 11 statuses, with every change kept (who and when). "Approved" and "Corrections Required" are an advocate's or the administrator's to set.
+- **Dashboard:**
+  - today's and tomorrow's matters (from `next_hearing_on`)
+  - overdue work, and deadlines over the next 3 days (marked for advocate verification)
+  - results to confirm, overlapping matters, open register work, attendance, missing receipts, work per person
+- **Telugu and bilingual output** (typed services only):
+  - Claude translates the composed English; names, numbers, dates and citations stay as written.
+  - HarfBuzz shapes Telugu and every glyph is drawn as an outline in the PDF (Noto Sans Telugu, OFL).
+  - The translation is stored with the draft, so approval does not re-translate.
+  - It needs `ANTHROPIC_API_KEY`; without it the server answers 503.
+- **PDF reading is Claude only** (`claude-opus-5-5`, with the server-side refusal fallback), never Gemini.
+  - Without `ANTHROPIC_API_KEY` it answers 503.
+  - `CLERK_EXTRACT_FIXTURE` replays a recorded reading, outside production only.
+- **Safeguards:**
+  - Every particular stays Unverified until someone confirms or corrects it, and conflicts block generation.
+  - Signature, seal, attestation, order and court-use spaces are never filled.
+  - Drafts carry "Draft for Advocate Review" until approved.
+  - Text never goes below 8 pt.
+  - Dispatch is never written as service.
+  - Full compliance without proof is written as part compliance.
+  - Exhibit numbers appear only as the court marked them.
+- **Security:**
+  - Office membership and role on every route.
+  - Restricted cases: only the administrator, senior advocates and listed members. Others get 404 for the case, its files and its register rows.
+  - Private storage, with every download logged.
+  - Optional masking of Aadhaar, PAN and account numbers in a paper.
+  - Soft delete and restore. Purging is the administrator's, after the office's retention period.
+  - Templates: approved versions are never overwritten.
+- **next.config.ts:** `harfbuzzjs` is a server external package, and the Telugu font files are traced for `/api/mobile/clerk/**`.
+- **Database:** the `clerk_*` tables (13) and the private `clerk-files` bucket are at the end of `supabase/schema.sql`. Applied to the local copy only. **Live: not yet applied.**
+- **Tests:**
+  - `tests/clerk-work.test.mjs` and `tests/clerk-services.test.mjs`: every service renders, safeguards, Telugu, dates, redaction.
+  - The end-to-end script (113 checks against the local server) lives in the session scratchpad, not the repo.
+- **Not built:** tablet layout with the source PDF beside the form; recognising scanned blank forms (no text layer). Both are refused or noted plainly.
 
 ## 4. Open decisions — the owner's to make, not yours
 

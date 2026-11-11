@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authClient, bearerToken, mobileError } from "@/lib/mobileApi";
-import { getUserPlan } from "@/lib/profile";
+import { getUserPlanDetails } from "@/lib/profile";
 import { isSupabaseConfigured } from "@/lib/usageCounters";
 
 /** GET /api/mobile/me: the signed-in person and their plan. */
@@ -15,6 +15,12 @@ export async function GET(request: Request) {
   const { data, error } = await client.auth.getUser(token);
   if (error || !data.user?.email) return mobileError(401, "Your session has ended. Sign in again.");
 
-  const plan = isSupabaseConfigured() ? await getUserPlan(data.user.id) : "free";
-  return NextResponse.json({ user: { id: data.user.id, email: data.user.email }, plan });
+  const details = isSupabaseConfigured()
+    ? await getUserPlanDetails(data.user.id)
+    : { plan: "free" as const, expiresAt: null };
+  return NextResponse.json({
+    user: { id: data.user.id, email: data.user.email },
+    plan: details.plan,
+    planExpiresAt: details.expiresAt,
+  });
 }

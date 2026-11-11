@@ -15,14 +15,17 @@ import {
   type Plan,
 } from "@/lib/entitlements";
 import {
-  incrementUsageCount,
+  consumeUsage,
   isSupabaseConfigured,
   readUsageCount,
   readVisitorId,
+  refundUsage,
   VISITOR_COOKIE,
 } from "@/lib/usageCounters";
 import { getSessionUser } from "@/lib/authSession";
 import { getUserPlan } from "@/lib/profile";
+import { withGeminiFallback } from "@/lib/geminiModels";
+import { VERIFIED_REFERENCE } from "@/lib/legalGrounding";
 
 /**
  * POST /api/draft
@@ -31,9 +34,12 @@ import { getUserPlan } from "@/lib/profile";
  *
  * ── Modes ──────────────────────────────────────────────────────────────────
  *   demo  — hand-written pattern rules from lib/draft.ts. Used when
- *           SHISHO_DRAFT_MODE=demo, or whenever ANTHROPIC_API_KEY is absent.
+ *           SHISHO_DRAFT_MODE=demo, or whenever neither GEMINI_API_KEY nor
+ *           ANTHROPIC_API_KEY is set.
  *           The response carries `mode: "demo"` so the UI can say so.
- *   live  — a real Claude call. See INTEGRATION POINT below.
+ *   live  — a real model call: Gemini when GEMINI_API_KEY is set (with the
+ *           lib/geminiModels.ts backups), Claude otherwise. See INTEGRATION
+ *           POINT below.
  *
  * ── Security ───────────────────────────────────────────────────────────────
  *   • ANTHROPIC_API_KEY is read here and only here. It must NEVER be prefixed
@@ -65,7 +71,9 @@ REVIEW STYLE:
 - Each annotation's "anchor" MUST be text copied verbatim from the draft, so it can be highlighted. Never paraphrase the anchor.
 - Be specific and terse. Say what is wrong and what to do about it.
 - Use severity "must-fix" for defects that would draw an objection or a return, "consider" for improvements, "good" where the draft gets something right.
-- Return at most 6 annotations, ordered most important first.`;
+- Return at most 6 annotations, ordered most important first.
+
+${VERIFIED_REFERENCE}`;
 
 const ANNOTATION_SCHEMA = {
   type: "object",
@@ -191,10 +199,29 @@ export async function POST(request: Request) {
     );
   }
 
-  /* ---- Mode selection ------------------------------------------------ */
+  /* Take the review from the allowance now, atomically (lib/usageCounters.ts
+     consumeUsage): checking above and counting after the model call let
+     parallel requests all pass the limit. Given back if the call fails. */
+  const consumed =
+    entitlement.quota !== null && useSupabase
+      ? await consumeUsage(visitorId!, "review", entitlement.quota)
+      : null;
+  if (consumed && !consumed.allowed) {
+    return NextResponse.json(
+      { error: "You have used all five free reviews this month.", entitlement: entitlementFor(plan, entitlement.quota ?? used) },
+      { status: 402 },
+    );
+  }
+
+  /* ---- Mode selection ------------------------------------------------
+     Gemini first when GEMINI_API_KEY is set (the free path, as in
+     app/api/assistant/route.ts), moving down lib/geminiModels.ts's list when
+     a model is busy; Claude when only ANTHROPIC_API_KEY is set, or when every
+     Gemini model is busy and both keys are set. Demo with neither. */
   const apiKey = process.env.ANTHROPIC_API_KEY;
+  const geminiApiKey = process.env.GEMINI_API_KEY;
   const forceDemo = process.env.SHISHO_DRAFT_MODE === "demo";
-  const useDemo = forceDemo || !apiKey;
+  const useDemo = forceDemo || (!apiKey && !geminiApiKey);
 
   let payload: DraftResponse;
 
@@ -202,13 +229,25 @@ export async function POST(request: Request) {
     payload = { mode: "demo", annotations: demoAnnotate(draft, docType) };
   } else {
     try {
-      payload = {
-        mode: "live",
-        annotations: await reviewWithClaude(draft, docType, apiKey!),
-      };
+      let annotations: Annotation[];
+      if (geminiApiKey) {
+        try {
+          annotations = await withGeminiFallback(
+            (model) => reviewWithGemini(draft, docType, geminiApiKey, model),
+            "api/draft",
+          );
+        } catch (geminiError) {
+          if (!apiKey) throw geminiError;
+          annotations = await reviewWithClaude(draft, docType, apiKey);
+        }
+      } else {
+        annotations = await reviewWithClaude(draft, docType, apiKey!);
+      }
+      payload = { mode: "live", annotations };
     } catch (error) {
       // Logged server-side only — never returned to the client.
       console.error("[api/draft] model call failed:", error);
+      if (consumed) await refundUsage(visitorId!, "review");
       return NextResponse.json(
         { error: "The review service is unavailable. Try again shortly." },
         { status: 502 },
@@ -224,7 +263,7 @@ export async function POST(request: Request) {
      MOCK: a cookie counter resets when the visitor clears site data. */
   if (entitlement.quota !== null) {
     if (useSupabase) {
-      await incrementUsageCount(visitorId!, "review");
+      // Already counted by consumeUsage above.
       // Only an anonymous visitor needs this cookie — a logged-in one is
       // already identified by their session, and writing visitorId (their
       // real user id) here too would just be a pointless duplicate.
@@ -298,5 +337,82 @@ async function reviewWithClaude(
 
   return (parsed.annotations ?? [])
     .filter((a) => typeof a.anchor === "string" && typeof a.note === "string")
+    .map((a, i) => ({ ...a, id: `live-${i}` }));
+}
+
+/** Gemini's `responseSchema` is proto-backed, not full JSON Schema: it rejects
+ *  `additionalProperties` (see app/api/assistant/route.ts). Same fields as
+ *  ANNOTATION_SCHEMA, kept in step by hand. */
+const GEMINI_ANNOTATION_SCHEMA = {
+  type: "object",
+  properties: {
+    annotations: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          anchor: { type: "string", description: "Text copied verbatim from the draft." },
+          severity: { type: "string", enum: ["must-fix", "consider", "good"] },
+          note: { type: "string" },
+          authority: {
+            type: "string",
+            description: "Indian statute or reported case. Omit entirely if not certain.",
+          },
+        },
+        required: ["anchor", "severity", "note"],
+      },
+    },
+  },
+  required: ["annotations"],
+} as const;
+
+/** Gemini's `generateContent` over REST, same prompt and output as
+ *  reviewWithClaude. `model` comes from lib/geminiModels.ts's list. */
+async function reviewWithGemini(
+  draft: string,
+  docType: string,
+  apiKey: string,
+  model: string,
+): Promise<Annotation[]> {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: `Document type: ${docType}\n\nReview this draft and return clause-level annotations.\n\n---\n${draft}\n---` }],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 8000,
+          responseMimeType: "application/json",
+          responseSchema: GEMINI_ANNOTATION_SCHEMA,
+        },
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error ${response.status}: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    promptFeedback?: { blockReason?: string };
+  };
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    const blocked = data.promptFeedback?.blockReason;
+    throw new Error(blocked ? `Gemini blocked the request: ${blocked}` : "Gemini returned no text.");
+  }
+
+  const parsed = JSON.parse(text) as { annotations?: ModelAnnotation[] };
+  const severities = ["must-fix", "consider", "good"];
+  return (parsed.annotations ?? [])
+    .filter((a) => typeof a.anchor === "string" && typeof a.note === "string" && severities.includes(a.severity))
     .map((a, i) => ({ ...a, id: `live-${i}` }));
 }

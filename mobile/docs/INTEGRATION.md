@@ -6,7 +6,7 @@
 
 | Route | Purpose |
 |---|---|
-| `POST /auth/login`, `/auth/register`, `/auth/refresh`, `/auth/forgot` | Supabase Auth through the library, returning tokens as JSON. Same rules as the website (valid email, 8+ character password). Login gives one message for wrong password and unknown email. |
+| `POST /auth/login`, `/auth/register`, `/auth/refresh` | Supabase Auth through the library, returning tokens as JSON. Same rules as the website (valid email, 8+ character password). Login gives one message for wrong password and unknown email. |
 | `POST /auth/delete` | Deletes the signed-in account and its usage record. The user ID comes from the token, never the body. |
 | `GET /me` | The user and plan. |
 | `POST /assistant`, `POST /review` | Forward to the website's `/api/assistant` and `/api/draft` handlers **unchanged**. |

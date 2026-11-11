@@ -21,14 +21,17 @@ import {
 import { DOC_TYPES, isDocType, type DocType } from "@/lib/draft";
 import { PLAN_COOKIE, readPlan, type Plan } from "@/lib/entitlements";
 import {
-  incrementUsageCount,
+  consumeUsage,
   isSupabaseConfigured,
   readUsageCount,
   readVisitorId,
+  refundUsage,
   VISITOR_COOKIE,
 } from "@/lib/usageCounters";
 import { getSessionUser } from "@/lib/authSession";
 import { getUserPlan } from "@/lib/profile";
+import { withGeminiFallback } from "@/lib/geminiModels";
+import { VERIFIED_REFERENCE } from "@/lib/legalGrounding";
 
 /**
  * POST /api/assistant
@@ -90,7 +93,9 @@ const CLAUDE_MODEL = "claude-opus-5";
  *  under real traffic, or once 3.7 stops being overloaded — check current
  *  availability AND quota before assuming any of these is still right,
  *  same lesson twice now. */
-const GEMINI_MODEL = "gemini-3.5-flash";
+/* Superseded on 21 Oct 2026 by the ordered list in lib/geminiModels.ts
+   (shared with the app's tools): a busy or out-of-quota model now hands over
+   to the next one instead of failing the turn. */
 
 const DRAFTING_SYSTEM_PROMPT = `You are Shisho, a senior Indian advocate helping a junior draft a document from the facts they give you — in conversation, not a formal clause-by-clause review.
 
@@ -126,7 +131,9 @@ HEARING PREP — when the user asks you to prepare them for a hearing, argument 
 
 TONE — formal throughout, not a casual chat assistant:
 - This is drafting assistance, not legal advice, and you should say so if the user seems to be relying on you as a substitute for one.
-- Write "reply" the way a senior advocate would address a junior in professional correspondence: formal register, no emoji, no exclamation marks, no chatty filler ("Great!", "Sure thing!", "Happy to help!"). Concise is still correct — a few sentences — but every sentence should read as legal correspondence, not a chat app. It is not the place to restate the draft.`;
+- Write "reply" the way a senior advocate would address a junior in professional correspondence: formal register, no emoji, no exclamation marks, no chatty filler ("Great!", "Sure thing!", "Happy to help!"). Concise is still correct — a few sentences — but every sentence should read as legal correspondence, not a chat app. It is not the place to restate the draft.
+
+${VERIFIED_REFERENCE}`;
 
 const ASSISTANT_SCHEMA = {
   type: "object",
@@ -357,6 +364,20 @@ export async function POST(request: Request) {
     );
   }
 
+  /* Take the turn from the allowance now, atomically (lib/usageCounters.ts
+     consumeUsage): checking above and counting after the model call let
+     parallel requests all pass the limit. Given back if the call fails. */
+  const consumed =
+    entitlement.quota !== null && useSupabase
+      ? await consumeUsage(visitorId!, "assistant", entitlement.quota)
+      : null;
+  if (consumed && !consumed.allowed) {
+    return NextResponse.json(
+      { error: "You have used all five free messages this month.", entitlement: assistantEntitlementFor(plan, entitlement.quota ?? used) },
+      { status: 402 },
+    );
+  }
+
   /* ---- Mode selection ----------------------------------------------------
      Independent of SHISHO_DRAFT_MODE — the reviewer and the agent can each
      be forced to demo without affecting the other. Gemini is tried first
@@ -373,12 +394,24 @@ export async function POST(request: Request) {
     payload = demoReply(lastMessage.content, cleanContext, !!uploadedFile);
   } else {
     try {
-      payload = geminiApiKey
-        ? await draftWithGemini(chatMessages, cleanContext, uploadedFile, geminiApiKey)
-        : await draftWithClaude(chatMessages, cleanContext, uploadedFile, anthropicApiKey!);
+      if (geminiApiKey) {
+        try {
+          payload = await withGeminiFallback(
+            (model) => draftWithGemini(chatMessages, cleanContext, uploadedFile, geminiApiKey, model),
+            "api/assistant",
+          );
+        } catch (geminiError) {
+          // Every Gemini model busy: Claude takes the turn when its key is set.
+          if (!anthropicApiKey) throw geminiError;
+          payload = await draftWithClaude(chatMessages, cleanContext, uploadedFile, anthropicApiKey);
+        }
+      } else {
+        payload = await draftWithClaude(chatMessages, cleanContext, uploadedFile, anthropicApiKey!);
+      }
     } catch (error) {
       // Logged server-side only — never returned to the client.
       console.error("[api/assistant] model call failed:", error);
+      if (consumed) await refundUsage(visitorId!, "assistant");
       return NextResponse.json(
         { error: "The assistant is unavailable. Try again shortly." },
         { status: 502 },
@@ -394,7 +427,7 @@ export async function POST(request: Request) {
      MOCK: a cookie counter resets when the visitor clears site data. */
   if (entitlement.quota !== null) {
     if (useSupabase) {
-      await incrementUsageCount(visitorId!, "assistant");
+      // Already counted by consumeUsage above.
       // Only an anonymous visitor needs this cookie — a logged-in one is
       // already identified by their session.
       if (!authUser) {
@@ -531,6 +564,7 @@ async function draftWithGemini(
   context: AssistantContext,
   file: UploadedFile | undefined,
   apiKey: string,
+  model: string,
 ): Promise<AssistantResponse> {
   const history = messages.slice(0, -1).map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
@@ -547,7 +581,7 @@ async function draftWithGemini(
   lastParts.push({ text: lastMessageText });
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
       method: "POST",
       headers: {

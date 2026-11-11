@@ -26,6 +26,14 @@ export async function POST(request: Request) {
     password: body.password,
   });
   const session = toMobileSession(data.session);
+  // Supabase checks the password before it checks confirmation, so this only
+  // ever reaches someone who already knows the password: it reveals nothing
+  // about which emails have accounts. Without it, a person who has just
+  // signed up and not yet clicked the email link was told their password
+  // was wrong.
+  if (error?.code === "email_not_confirmed") {
+    return mobileError(403, "Confirm your email first: open the link we sent you, then sign in.");
+  }
   if (error || !session) {
     // One message for wrong password and unknown email: do not reveal which accounts exist.
     return mobileError(401, "That email and password do not match.");

@@ -21,7 +21,10 @@ export function ComparisonTable() {
       <p className="mb-3 text-[13px] text-ink-soft md:hidden">
         Swipe the table sideways to see every plan.
       </p>
-      <div className="overflow-x-auto">
+      {/* `relative` keeps the visually-hidden cell labels (absolutely
+          positioned) inside the scroller; without it they escaped and
+          widened the whole page on a phone. */}
+      <div className="relative overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr className="border-b border-ink/10">

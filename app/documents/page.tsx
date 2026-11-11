@@ -46,7 +46,7 @@ export default function DocumentsPage() {
         </Container>
       </Section>
 
-      <Section className="border-y border-ink/10">
+      <Section>
         <Container>
           <div className="reveal-stagger space-y-14">
             {groups.map((group, gi) => (
@@ -61,7 +61,7 @@ export default function DocumentsPage() {
                   </h2>
                 </div>
 
-                <ul className="mt-5 ml-9.5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="mt-5 grid gap-3 sm:ml-9.5 sm:grid-cols-2 lg:grid-cols-3">
                   {group.documents.map((doc) => (
                     <li key={doc.slug} className="min-w-0">
                       <Link

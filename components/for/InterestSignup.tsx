@@ -64,7 +64,7 @@ export function InterestSignup({ audience, name }: { audience: string; name: str
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80 focus:outline-none"
+          className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80"
         />
         <button
           type="submit"

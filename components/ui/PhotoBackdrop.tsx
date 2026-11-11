@@ -34,6 +34,7 @@ export function PhotoBackdrop({
   frameClassName,
   priority = true,
   parallax,
+  sizes = "100vw",
 }: {
   src: string;
   /** CSS `object-position` — which part of the photo to keep in frame. */
@@ -58,6 +59,8 @@ export function PhotoBackdrop({
    * `inset-y-0`) or the drift will pull an edge of the photograph into view.
    */
   parallax?: number;
+  /** The image's rendered width, for picking the download size; full width unless the frame is narrower. */
+  sizes?: string;
 }) {
   const frame = (
     <div className={cn("absolute", frameClassName ?? "inset-y-0 right-0 w-full")}>
@@ -65,7 +68,7 @@ export function PhotoBackdrop({
         src={src}
         alt=""
         fill
-        sizes="100vw"
+        sizes={sizes}
         priority={priority}
         className="object-cover"
         style={{ objectPosition: focus, maskImage: mask, opacity }}

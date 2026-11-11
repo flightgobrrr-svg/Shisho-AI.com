@@ -138,3 +138,23 @@ export const ADD_ON = {
     "Unlimited drafting and review, without the courses. For practitioners who want the assistant and nothing else.",
   cta: { label: "Add Shisho", href: "/draft-bot" },
 } as const;
+
+/** The intro under "Priced for a student budget." on /pricing (website and app). */
+export const PRICING_INTRO =
+  "All prices in Indian rupees, billed monthly. Cancel any time. Four plans, from a \u20b99 entry price to unlimited, citation-checked drafting review.";
+
+/** "Before you subscribe" on /pricing (website and app). */
+export const PRICING_FAQS = [
+  {
+    q: "What do I actually get for \u20b99?",
+    a: "Basic unlocks the full Starter course and the full Legal Library \u2014 everything Free only previews. Shisho itself stays at the same 5 reviews a month as Free; unlimited reviews start at Core.",
+  },
+  {
+    q: "Can I cancel?",
+    a: "Yes \u2014 every plan is monthly and can be cancelled at any time. Access continues to the end of the billing month.",
+  },
+  {
+    q: "I only want Shisho, not the courses. Do I have to buy Core?",
+    a: "No \u2014 the \u20b9699 Shisho-only add-on, under the plans above, buys Shisho on its own, unlimited, without either course.",
+  },
+];

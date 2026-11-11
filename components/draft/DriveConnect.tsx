@@ -145,56 +145,40 @@ export function DriveConnect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!connected) {
-    return (
-      <div className="rounded-seal border border-ink/45 bg-paper-raised p-4">
-        <p className="label-mono text-ink-faint">Default template</p>
-        <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">
-          Connect Google Drive and point at the one document you want every
-          draft to follow — Shisho only ever sees that one file, nothing
-          else in your Drive.
-        </p>
-        <a
-          href="/api/drive/connect"
-          className="mt-3 inline-flex min-h-9 items-center rounded-seal border border-ink/45 px-3.5 text-[13px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75 hover:text-ink"
-        >
-          Connect Google Drive
-        </a>
-        {error ? (
-          <p role="alert" className="mt-3 text-[13px] text-seal">
-            {error}
-          </p>
-        ) : null}
-      </div>
-    );
-  }
+  /* A setting, not a step: one quiet line under the composer, with the
+     action at the right edge, instead of a card that sat above the chat and
+     outweighed it. */
+  const action =
+    "inline-flex h-8 shrink-0 items-center rounded-seal border border-ink/30 px-3 text-[12.5px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/70 hover:text-ink disabled:pointer-events-none disabled:opacity-50";
 
   return (
-    <div className="rounded-seal border border-ink/45 bg-paper-raised p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0">
+    <div className="border-t border-ink/10 pt-4">
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+        <div className="min-w-0 flex-1 basis-[22rem]">
           <p className="label-mono text-ink-faint">Default template</p>
-          <p className="mt-1.5 truncate text-[13.5px] text-ink">
-            {templateName ?? "Connected — no template chosen yet."}
+          {connected ? (
+            <p className="mt-1.5 truncate text-[13.5px] text-ink">
+              {templateName ?? "Connected — no template chosen yet."}
+            </p>
+          ) : null}
+          <p className="mt-1.5 max-w-[68ch] text-[12.5px] leading-relaxed text-ink-soft">
+            {!connected
+              ? "Connect Google Drive and point at the one document you want every draft to follow — Shisho only ever sees that one file, nothing else in your Drive."
+              : templateName
+                ? "Every draft in this chat will automatically follow this document’s structure and formatting, unless you remove it for a specific conversation."
+                : null}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openPicker}
-          disabled={status === "opening"}
-          aria-disabled={status === "opening"}
-          className="min-h-9 shrink-0 rounded-seal border border-ink/45 px-3.5 text-[13px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75 hover:text-ink disabled:pointer-events-none disabled:opacity-50"
-        >
-          {status === "opening" ? "Opening…" : templateName ? "Change template" : "Choose template"}
-        </button>
+        {connected ? (
+          <button type="button" onClick={openPicker} disabled={status === "opening"} aria-disabled={status === "opening"} className={action}>
+            {status === "opening" ? "Opening…" : templateName ? "Change template" : "Choose template"}
+          </button>
+        ) : (
+          <a href="/api/drive/connect" className={action}>
+            Connect Google Drive
+          </a>
+        )}
       </div>
-      {templateName ? (
-        <p className="mt-2.5 text-[12.5px] leading-relaxed text-ink-soft">
-          Every draft in the chat below will automatically follow this
-          document&rsquo;s structure and formatting, unless you remove it
-          for a specific conversation.
-        </p>
-      ) : null}
       {error ? (
         <p role="alert" className="mt-3 text-[13px] text-seal">
           {error}

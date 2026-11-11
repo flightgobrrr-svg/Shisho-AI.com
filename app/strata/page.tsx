@@ -108,7 +108,7 @@ export default function StrataPage() {
 
       {/* Runway. The effect needs somewhere to travel, and a plane centred in
           the viewport sits at rest — without this the scene never resolves. */}
-      <Section tone="raised" className="border-y border-ink/10">
+      <Section tone="raised">
         <Container>
           <Eyebrow>What is happening</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">

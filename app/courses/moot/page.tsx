@@ -48,7 +48,7 @@ export default function MootPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-y border-ink/10 !py-14">
+      <Section tone="raised" className="!py-14">
         <Container>
           <Eyebrow>The memorial</Eyebrow>
           <ol className="mt-6 grid gap-x-12 gap-y-5 md:grid-cols-2">
@@ -89,7 +89,7 @@ export default function MootPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-t border-ink/10 !py-14">
+      <Section tone="raised" className="!py-14">
         <Container>
           <Eyebrow>Your moot&rsquo;s own rules</Eyebrow>
           <h2 className="mt-4 max-w-xl font-display text-[1.5rem] font-semibold text-ink">

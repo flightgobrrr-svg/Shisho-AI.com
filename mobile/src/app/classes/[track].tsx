@@ -1,6 +1,7 @@
 import { Linking } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Card, Button, Notice, Screen, T } from "@/ui/components";
+import { PageHeader } from "@/ui/web";
 import {
   LEGAL_ENGLISH_LESSONS,
   LEGAL_ENGLISH_LIVE_SESSIONS,
@@ -25,9 +26,15 @@ export default function Classes() {
   return (
     <Screen>
       <Stack.Screen options={{ title: legal ? "Legal English" : "Spoken English" }} />
-      <T tone="soft">
-        {legal ? "Reading a judgment and writing a pleading." : "Oral argument and courtroom submissions."} Ungraded; watch in any order.
-      </T>
+      <PageHeader
+        eyebrow={legal ? "Legal English" : "Spoken English"}
+        headline={legal ? "The *written* register courts expect." : "The *spoken* register courts expect."}
+        intro={
+          legal
+            ? "Reading a judgment and writing a pleading, in the English an Indian courtroom expects on paper — recorded classes to watch in any order, and live sessions on the calendar below. Nothing here is timed or graded."
+            : "Oral argument and courtroom submissions, in the English an Indian courtroom expects out loud — recorded classes to watch in any order, and live sessions on the calendar below. Nothing here is timed or graded."
+        }
+      />
 
       <T v="label" tone="indigo">Recorded classes</T>
       {lessons.length === 0 ? (

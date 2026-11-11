@@ -25,10 +25,10 @@ export function MicButton({
       aria-label={listening ? "Stop dictating" : "Dictate the facts"}
       title={listening ? "Stop dictating" : "Dictate the facts"}
       className={cn(
-        "flex items-center justify-center rounded-seal border px-3 py-1.5 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+        "inline-flex size-9 items-center justify-center rounded-seal transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
         listening
-          ? "border-ink/75 text-ink"
-          : "border-ink/45 text-ink-soft hover:border-ink/75 hover:text-ink",
+          ? "bg-ink/10 text-ink"
+          : "text-ink-soft hover:bg-ink/5 hover:text-ink",
         className,
       )}
     >

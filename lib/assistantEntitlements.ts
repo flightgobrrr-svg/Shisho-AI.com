@@ -13,7 +13,7 @@
  * paid distinction stay single-sourced in the file that owns them.
  */
 
-import type { Plan } from "@/lib/entitlements";
+import { isTrialPlan, type Plan } from "@/lib/entitlements";
 
 /** Cookie name. Distinct from `shisho_reviews_used` — see header above. */
 export const ASSISTANT_USAGE_COOKIE = "shisho_assistant_used";
@@ -29,7 +29,7 @@ export const FREE_MONTHLY_ASSISTANT_MESSAGES = 5;
 
 /** `null` means unlimited. */
 export function assistantQuotaFor(plan: Plan): number | null {
-  return plan === "free" ? FREE_MONTHLY_ASSISTANT_MESSAGES : null;
+  return isTrialPlan(plan) ? FREE_MONTHLY_ASSISTANT_MESSAGES : null;
 }
 
 export function readAssistantUsage(value: string | undefined): number {

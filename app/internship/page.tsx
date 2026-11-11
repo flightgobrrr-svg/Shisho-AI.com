@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
-import { Emphasis } from "@/components/ui/Emphasis";
 import { Button } from "@/components/ui/Button";
 import { StepMark } from "@/components/ui/StepMark";
+import { AudienceHeadline } from "@/components/for/AudienceHeadline";
+import { INTERNSHIP } from "@/lib/internship";
 
 export const metadata: Metadata = {
   title: "The internship",
@@ -24,57 +25,6 @@ export const metadata: Metadata = {
  * requirement section stays true either way.
  */
 
-/* Bar Council of India, Rules of Legal Education 2008 (Rule 25). Verified
-   before writing: the durations, the four-week annual cap, and the permitted
-   venues are the Council's, not an approximation of them.
-   The visible copy below cites the rule (instrument + rule number) without
-   naming the issuing body — an explicit later request, not an oversight; see
-   HANDOFF.md. Don't "fix" this back without checking there first. */
-const REQUIREMENT = [
-  {
-    label: "Five-year course",
-    value: "20 weeks",
-    note: "Across the whole degree, not in one block.",
-  },
-  {
-    label: "Three-year course",
-    value: "12 weeks",
-    note: "Same rule, shorter degree.",
-  },
-  {
-    label: "In any one year",
-    value: "4 weeks max",
-    note: "You cannot bank it all into a final-year summer.",
-  },
-];
-
-const ASKED_OF_YOU = [
-  {
-    title: "Research a point, properly",
-    body: "Not a summary of the area — the answer to the question asked, with the authority that decides it and the ones that cut against it. A note that hides the bad case is worse than no note.",
-  },
-  {
-    title: "Draft, and be edited",
-    body: "A first draft of an application, a notice, a paragraph of a plaint. It will come back marked. The marks are the point; keep every version.",
-  },
-  {
-    title: "Court duty",
-    body: "Carry the file, note what fell, note the next date, and report it the same day. A missed date is a real consequence for a real client.",
-  },
-  {
-    title: "Read the file before you are asked to",
-    body: "The pleadings first, then the orders, then the documents. Most questions you will be asked are answerable from the file.",
-  },
-];
-
-const FIRST_WEEK = [
-  "Ask which matters you may read, and read those files end to end before you ask anything else.",
-  "Learn the listing: which court, which item, what time, and who appears.",
-  "Keep a running note of every task, who gave it, and when it is due. Nobody will chase you for it.",
-  "Cite properly from day one — the neutral citation, the paragraph number. Habits formed in week one are the ones that survive.",
-  "Ask for the marked-up version of anything you drafted. If it comes back clean, ask again.",
-];
-
 export default function InternshipPage() {
   return (
     <>
@@ -85,30 +35,27 @@ export default function InternshipPage() {
               href="/map#stage-9"
               className="underline-draw label-mono text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
             >
-              Beyond the matter
+              {INTERNSHIP.backLabel}
             </Link>
           </div>
           <h1 className="mt-5 max-w-3xl font-display text-title font-semibold">
-            Twelve weeks, or twenty. What you do with them is the
-            whole <Emphasis>difference</Emphasis>.
+            <AudienceHeadline text={INTERNSHIP.headline} />
           </h1>
           <p className="mt-5 max-w-[60ch] text-[16px] leading-relaxed text-ink-soft">
-            Every law student in India interns. Most come away with a
-            certificate. The ones who come away with something else treat it as
-            the first file they ever worked, not as attendance.
+            {INTERNSHIP.intro}
           </p>
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-y border-ink/10">
+      <Section tone="raised">
         <Container>
-          <Eyebrow>What the rules require</Eyebrow>
+          <Eyebrow>{INTERNSHIP.requirementEyebrow}</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">
-            The rules set a floor.
+            {INTERNSHIP.requirementHeading}
           </h2>
 
           <ul className="mt-10 grid gap-3 sm:grid-cols-3">
-            {REQUIREMENT.map((r) => (
+            {INTERNSHIP.requirement.map((r) => (
               <li
                 key={r.label}
                 className="border border-ink/45 bg-paper p-6"
@@ -125,22 +72,19 @@ export default function InternshipPage() {
           </ul>
 
           <p className="mt-8 max-w-[62ch] border-l-2 border-seal/70 pl-5 text-[15px] leading-relaxed text-ink-soft">
-            Rules of Legal Education, 2008, Rule 25. Internships may be
-            served in courts, chambers, law firms, legal departments, or
-            with an NGO — and the weeks must be spread across the degree
-            rather than banked into one final summer.
+            {INTERNSHIP.ruleNote}
           </p>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <Eyebrow>What you will actually be asked to do</Eyebrow>
+          <Eyebrow>{INTERNSHIP.askedEyebrow}</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">
-            Four things, over and over.
+            {INTERNSHIP.askedHeading}
           </h2>
           <ul className="reveal-stagger mt-10 grid gap-5 md:grid-cols-2">
-            {ASKED_OF_YOU.map((item, i) => (
+            {INTERNSHIP.askedOfYou.map((item, i) => (
               <li
                 key={item.title}
                 style={{ "--i": i } as React.CSSProperties}
@@ -158,14 +102,14 @@ export default function InternshipPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-y border-ink/10">
+      <Section tone="raised">
         <Container>
-          <Eyebrow>The first week</Eyebrow>
+          <Eyebrow>{INTERNSHIP.firstWeekEyebrow}</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">
-            Be useful before you are <Emphasis>interesting</Emphasis>.
+            <AudienceHeadline text={INTERNSHIP.firstWeekHeading} />
           </h2>
           <ol className="reveal-stagger mt-10 max-w-3xl space-y-5">
-            {FIRST_WEEK.map((step, i) => (
+            {INTERNSHIP.firstWeek.map((step, i) => (
               <li
                 key={step}
                 style={{ "--i": i } as React.CSSProperties}
@@ -183,15 +127,12 @@ export default function InternshipPage() {
 
       <Section>
         <Container>
-          <Eyebrow>What to leave with</Eyebrow>
+          <Eyebrow>{INTERNSHIP.leaveEyebrow}</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">
-            A record, not a <Emphasis>certificate</Emphasis>.
+            <AudienceHeadline text={INTERNSHIP.leaveHeading} />
           </h2>
           <p className="mt-6 max-w-[58ch] text-[16px] leading-relaxed text-ink-soft">
-            Every draft you touched, in the version you wrote and the version
-            that was filed. The difference between those two is the only
-            teaching material that is genuinely yours, and it is the thing you
-            will still be learning from in your third year of practice.
+            {INTERNSHIP.leaveBody}
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Button href="/documents">Learn the documents</Button>

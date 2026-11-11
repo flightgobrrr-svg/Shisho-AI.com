@@ -7,7 +7,10 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-ink/10 bg-paper-raised">
+    // English on every page, including the translated homepages (whose
+    // <html lang> is theirs): marked so screen readers and the script rules
+    // in globals.css treat it as the English it is.
+    <footer lang="en" className="mt-auto border-t border-ink/10 bg-paper-raised">
       <Container className="py-16 md:py-20">
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-3 lg:grid-cols-[1.3fr_repeat(5,1fr)] lg:gap-8">
           <div className="col-span-2 max-w-xs md:col-span-3 lg:col-span-1">

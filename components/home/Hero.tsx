@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { StateSelect } from "@/components/map/StateSelect";
 import { HERO_TIMING } from "@/lib/motion";
 import { getDictionary, type Locale, type Segment } from "@/lib/i18n/dictionaries";
+import { getStatePickerCopy } from "@/lib/i18n/statePicker";
 import { cn } from "@/lib/cn";
 
 /**
@@ -179,6 +180,7 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
         opacity={0.5}
         parallax={0.06}
         frameClassName="-inset-y-16 right-0 w-full lg:w-[52%]"
+        sizes="(min-width: 1024px) 52vw, 100vw"
       />
 
       {/* Mobile-only legibility wash. Below `lg` the frame is full width, so
@@ -256,16 +258,19 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
               <p className="mt-3.5 text-[13.5px] text-ink-soft">{t.ctaNote}</p>
 
               {/* Same picker /map uses to answer "which High Court hears
-                  this" — reused as-is (no translation of its own; it stays
-                  English even on /hi, since it's shared with /map, a page
-                  outside this pass's scope), just without the ml-9.5 that
-                  aligns it under a StepMark there — the hero has no
-                  StepMark to align under. The question itself is swapped:
-                  /map asks where the *matter* is (it decides jurisdiction);
-                  a first-time visitor here isn't mid-filing, so the hero
-                  asks about them instead — same derived High Court answer,
-                  a question that actually fits who's reading it. */}
-              <StateSelect className="mt-6 ml-0 max-w-xs" label="Where are you from" />
+                  this", in the page's language (lib/i18n/statePicker.ts),
+                  just without the ml-9.5 that aligns it under a StepMark
+                  there — the hero has no StepMark to align under. The
+                  question itself is swapped: /map asks where the *matter*
+                  is (it decides jurisdiction); a first-time visitor here
+                  isn't mid-filing, so the hero asks about them instead —
+                  same derived High Court answer, a question that actually
+                  fits who's reading it. */}
+              <StateSelect
+                className="mt-6 ml-0 max-w-xs"
+                locale={locale}
+                label={getStatePickerCopy(locale).askVisitor}
+              />
             </div>
           </div>
         </div>

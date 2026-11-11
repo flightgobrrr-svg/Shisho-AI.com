@@ -28,7 +28,10 @@ export async function POST(request: Request) {
   const { data, error } = await client.auth.signUp({
     email: body.email.trim(),
     password: body.password,
-    options: { emailRedirectTo: `${siteOrigin(request)}/auth/callback` },
+    // Not /auth/callback: that needs a code tied to the browser that asked,
+    // and this request came from the app, not a browser. Supabase confirms the
+    // address before redirecting, so the landing page only has to say so.
+    options: { emailRedirectTo: `${siteOrigin(request)}/auth/confirmed` },
   });
   if (error) return mobileError(400, error.message);
 

@@ -1,11 +1,13 @@
 import { type ComponentRef, type ReactNode, type Ref } from "react";
 import {
+  Image,
   Platform,
   Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
+  type ImageSourcePropType,
   type StyleProp,
   type TextInputProps,
   type TextProps,
@@ -55,7 +57,7 @@ export function Headline({ text, v = "title" }: { text: string; v?: "title" | "h
   return (
     <T v={v}>
       {before}
-      <Text style={{ fontFamily: fonts.displayItalic, textDecorationLine: "underline", textDecorationColor: p.seal }}>
+      <Text maxFontSizeMultiplier={1.35} style={{ fontFamily: fonts.displayItalic, textDecorationLine: "underline", textDecorationColor: p.seal }}>
         {key}
       </Text>
       {after}
@@ -151,7 +153,8 @@ export function Row({
   );
 }
 
-export function Chip({ label, onPress, selected }: { label: string; onPress?: () => void; selected?: boolean }) {
+/** `icon`: a small picture before the label (e.g. the print icon). */
+export function Chip({ label, onPress, selected, icon }: { label: string; onPress?: () => void; selected?: boolean; icon?: ImageSourcePropType }) {
   const p = usePalette();
   return (
     <Pressable
@@ -161,7 +164,13 @@ export function Chip({ label, onPress, selected }: { label: string; onPress?: ()
       accessibilityState={{ selected }}
       style={({ pressed }) => ({
         minHeight: 40,
+        // A long suggestion wraps inside the screen instead of running off it.
+        maxWidth: "100%",
+        paddingVertical: 8,
         paddingHorizontal: space.lg,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: space.sm,
         justifyContent: "center",
         borderRadius: 999,
         borderWidth: 1,
@@ -169,7 +178,8 @@ export function Chip({ label, onPress, selected }: { label: string; onPress?: ()
         backgroundColor: selected ? p.ink : pressed ? p.line : "transparent",
       })}
     >
-      <T v="small" style={{ color: selected ? p.onInk : p.ink }}>{label}</T>
+      {icon ? <Image source={icon} style={{ width: 22, height: 22 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+      <T v="small" style={{ color: selected ? p.onInk : p.ink, flexShrink: 1 }}>{label}</T>
     </Pressable>
   );
 }
@@ -180,8 +190,11 @@ export function Button({
   href,
   variant = "primary",
   disabled,
+  icon,
 }: {
   label: string;
+  /** A small picture before the label (e.g. the print icon). */
+  icon?: ImageSourcePropType;
   onPress?: () => void;
   href?: Href;
   variant?: "primary" | "ghost" | "dark";
@@ -204,6 +217,10 @@ export function Button({
       style={({ pressed }) => ({
         minHeight: TOUCH,
         paddingHorizontal: space.xl,
+        // Room for a label that wraps at large text sizes.
+        paddingVertical: space.sm,
+        flexDirection: "row",
+        gap: space.sm,
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: bg,
@@ -212,7 +229,8 @@ export function Button({
         opacity: disabled ? 0.45 : pressed ? 0.85 : 1,
       })}
     >
-      <Text style={{ fontFamily: fonts.sansMedium, fontSize: 16, color: fg }}>{label}</Text>
+      {icon ? <Image source={icon} style={{ width: 28, height: 28 }} resizeMode="contain" accessibilityIgnoresInvertColors /> : null}
+      <Text maxFontSizeMultiplier={1.35} style={{ fontFamily: fonts.sansMedium, fontSize: 16, color: fg, textAlign: "center", flexShrink: 1 }}>{label}</Text>
     </Pressable>
   );
 }
@@ -320,7 +338,7 @@ export function TextButton({ label, onPress }: { label: string; onPress: () => v
       hitSlop={8}
       style={({ pressed }) => ({ minHeight: TOUCH, minWidth: TOUCH, justifyContent: "center", opacity: pressed ? 0.6 : 1 })}
     >
-      <Text style={{ fontFamily: fonts.sansMedium, fontSize: 16, color: p.inkSoft, textDecorationLine: "underline" }}>{label}</Text>
+      <Text maxFontSizeMultiplier={1.35} style={{ fontFamily: fonts.sansMedium, fontSize: 16, color: p.inkSoft, textDecorationLine: "underline" }}>{label}</Text>
     </Pressable>
   );
 }

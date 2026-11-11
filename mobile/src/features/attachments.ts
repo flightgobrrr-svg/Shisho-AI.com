@@ -2,13 +2,15 @@ import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
 import * as LegacyFileSystem from "expo-file-system/legacy";
 import { Platform } from "react-native";
-import { ACCEPTED_MIME_TYPES, MAX_FILE_BYTES, isAcceptedMimeType } from "@/lib/assistant";
+import { MAX_FILE_BYTES, isAcceptedMimeType } from "@/lib/assistant";
 
 /**
  * Picking a file for Shisho. Uses the system document picker, so the app needs
  * no storage or photo permission; the person chooses exactly one file and the
- * app reads only that. Types and the 15 MB limit are the website's own
- * (lib/assistant.ts), so the server never sees something it will reject.
+ * app reads only that. Every file is shown and can be chosen; what Shisho can
+ * read is the website's own list (lib/assistant.ts), plus text-based files
+ * (CSV, Markdown, JSON, HTML…) sent as plain text. Anything else is refused here
+ * with its kind named, so the server never sees something it will reject.
  */
 
 export type Attachment = { filename: string; mimeType: string; dataBase64: string; size: number };
@@ -28,6 +30,18 @@ const BY_EXTENSION: Record<string, string> = {
   webp: "image/webp",
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 };
+
+/** Text-based files Shisho reads as plain text. */
+const TEXT_EXTENSIONS = new Set(["md", "markdown", "csv", "tsv", "json", "xml", "html", "htm", "rtf", "log", "srt", "yaml", "yml"]);
+
+/** What Shisho will send the file as, or null if it cannot read it. */
+function readableType(name: string, reported: string | null | undefined): string | null {
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  if (reported && isAcceptedMimeType(reported)) return reported;
+  if (BY_EXTENSION[ext]) return BY_EXTENSION[ext];
+  if (TEXT_EXTENSIONS.has(ext) || reported?.startsWith("text/")) return "text/plain";
+  return null;
+}
 
 /** Reads any URI React Native's networking layer can open (file://, content://, blob:). */
 async function readViaFetch(uri: string): Promise<string> {
@@ -68,7 +82,8 @@ export async function pickAttachment(): Promise<PickResult> {
   let result: DocumentPicker.DocumentPickerResult;
   try {
     result = await DocumentPicker.getDocumentAsync({
-      type: [...ACCEPTED_MIME_TYPES],
+      // Every file is selectable; unreadable kinds get a clear reason below.
+      type: "*/*",
       copyToCacheDirectory: true,
       multiple: false,
     });
@@ -78,10 +93,14 @@ export async function pickAttachment(): Promise<PickResult> {
   if (result.canceled || !result.assets?.[0]) return { kind: "cancelled" };
 
   const asset = result.assets[0];
-  const ext = asset.name.split(".").pop()?.toLowerCase() ?? "";
-  const mimeType = asset.mimeType && isAcceptedMimeType(asset.mimeType) ? asset.mimeType : BY_EXTENSION[ext];
+  const ext = asset.name.includes(".") ? asset.name.split(".").pop()!.toLowerCase() : "";
+  const mimeType = readableType(asset.name, asset.mimeType);
   if (!mimeType || !isAcceptedMimeType(mimeType)) {
-    return { kind: "error", message: "Shisho reads PDF, Word (.docx), plain text and image files." };
+    const kind = ext ? `.${ext} files` : "that kind of file";
+    return {
+      kind: "error",
+      message: `Shisho cannot read ${kind} yet. Save it as a PDF (or Word .docx) and attach that. It reads PDF, Word, text and image files.`,
+    };
   }
   if (asset.size != null && asset.size > MAX_FILE_BYTES) {
     return { kind: "error", message: `That file is ${formatSize(asset.size)}. The limit is ${formatSize(MAX_FILE_BYTES)}.` };
@@ -99,3 +118,6 @@ export async function pickAttachment(): Promise<PickResult> {
     return { kind: "error", message: "That file could not be read. Try another copy of it." };
   }
 }
+
+/** The same three-way read, for other pickers (Clerk Work's PDF and photo picker). */
+export const readPickedFile = readBase64;

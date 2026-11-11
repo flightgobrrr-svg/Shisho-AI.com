@@ -10,7 +10,7 @@ export function SampleCard({
 }) {
   return (
     <div
-      className={`w-full max-w-md rounded-seal border border-ink/20 bg-paper-raised p-6 md:p-7 ${className}`}
+      className={`w-full rounded-seal border border-ink/20 bg-paper-raised p-6 md:p-7 ${className || "max-w-md"}`}
     >
       <div className="flex items-baseline justify-between gap-4">
         <p className="label-mono text-indigo">{sample.label}</p>

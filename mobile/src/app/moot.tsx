@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { Button, Card, Chip, Field, Screen, T } from "@/ui/components";
+import { FadedPhoto } from "@/ui/FadedPhoto";
+import { PageHeader } from "@/ui/web";
 import { fonts, space, usePalette } from "@/ui/theme";
 import { mootStore, type MootRule } from "@/state/stores";
 
@@ -138,7 +140,12 @@ function Rules() {
 export default function Moot() {
   return (
     <Screen>
-      <T tone="soft">The usual parts of a memorial, a checklist for the oral round, and a timer. Your moot rules come first: check them for the required order and page limits.</T>
+      <FadedPhoto source={require("../../assets/moot.jpg")} height={190} />
+      <PageHeader
+        eyebrow="For law students"
+        headline="Moot *kit*."
+        intro="The usual parts of a memorial, a short checklist for the oral round, and a timer. Your moot rules come first: check them for the required order and page limits."
+      />
 
       <T v="label" tone="indigo">The memorial</T>
       {MEMORIAL.map(([name, note], i) => (

@@ -30,7 +30,7 @@ export function PricingPreview({ locale = "en" }: { locale?: Locale }) {
   const t = getDictionary(locale).pricingPreview;
 
   return (
-    <Section tone="raised" className="border-y border-ink/10">
+    <Section tone="raised">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>

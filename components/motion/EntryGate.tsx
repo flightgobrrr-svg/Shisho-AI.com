@@ -41,46 +41,34 @@ const FADE_MS = 420;
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-/* Advocates in three, as in the "Who it's for" menu: each goes to its own
-   page, which says what serves them today and where to begin. */
+/* Four starting points. Advocates are one door here: the entry screen asks
+   only the broad question, and Shisho (drafting, margin review, hearing prep)
+   is where every advocate begins. The "Who it's for" menu still splits
+   advocates into junior, senior and designated senior for anyone who looks. */
 const AUDIENCES = [
   {
     n: 1,
-    name: "Junior advocates",
-    detail: "The first years of practice: first drafts, research for your senior, court duty.",
-    cta: "Start here",
-    href: "/for/junior-advocates",
+    name: "Advocates",
+    detail: "Drafts, margin review and hearing prep, with every authority checked.",
+    cta: "Start with Shisho",
+    href: "/draft-bot",
   },
   {
     n: 2,
-    name: "Senior advocates",
-    detail: "Running chambers: checking juniors\u2019 drafts before they reach the registry.",
-    cta: "Start here",
-    href: "/for/senior-advocates",
-  },
-  {
-    n: 3,
-    name: "Designated senior advocates",
-    detail: "Arguing the matter: hearing notes and every authority checked.",
-    cta: "Start here",
-    href: "/for/designated-senior-advocates",
-  },
-  {
-    n: 4,
     name: "Advocate Clerks",
     detail: "Handling filings and paperwork — see what each document needs.",
     cta: "Open the practice manual",
     href: "/clerks",
   },
   {
-    n: 5,
+    n: 3,
     name: "Law students",
     detail: "Learning to read law and put a first document on paper.",
     cta: "Start with courses",
     href: "/courses",
   },
   {
-    n: 6,
+    n: 4,
     name: "General public",
     detail: "Curious how a case actually moves through the system.",
     cta: "See the map",
@@ -260,13 +248,13 @@ export function EntryGate() {
           )}
         >
           <div className="rise">
-            <Eyebrow>Six starting points</Eyebrow>
+            <Eyebrow>Four starting points</Eyebrow>
             <h2 className="mt-4 font-display text-title font-semibold">
               Which one are <Emphasis>you</Emphasis>?
             </h2>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 items-stretch gap-4 text-left sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-1 items-stretch gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
             {AUDIENCES.map((audience, i) => {
               const isChosen = chosen === audience.href;
               const receded = settling && !isChosen;
@@ -318,7 +306,7 @@ export function EntryGate() {
                     {audience.detail}
                   </span>
                   <span className="mt-5 text-[14px] font-medium text-ink">
-                    {audience.cta} →
+                    {audience.cta}&nbsp;→
                   </span>
                 </button>
               );

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
+import { DRAFT_EXCERPT } from "@/lib/showcase";
 
 /**
  * Adapted from the supplied Tailark `hero-section-1` block.
@@ -24,19 +25,6 @@ import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
  * reuses the annotation motif rather than sitting beside it.
  */
 
-/* A readable excerpt rather than grey placeholder bars: the point of the
-   frame is to show what a marked-up draft looks like, and bars only showed
-   that something would be there. Each flagged line carries a numbered seal
-   marker that matches its note in the margin. */
-const DRAFT: { text: string; note?: number; heading?: boolean }[] = [
-  { text: "IN THE HIGH COURT OF JUDICATURE", heading: true },
-  { text: "Writ Petition (Civil) No. ____ of 2026", heading: true },
-  { text: "1. The Petitioner is a citizen of India and carries on business in the city." },
-  { text: "2. The Respondents are “State” within the meaning of Article 12.", note: 0 },
-  { text: "3. The impugned order was passed without notice to the Petitioner." },
-  { text: "PRAYER: stay the operation of the impugned order pending the petition.", note: 1 },
-  { text: "Place: ____     Date: ____     Petitioner", note: 2 },
-];
 
 function DraftBotMiniature({ notes }: { notes: string[] }) {
   return (
@@ -46,7 +34,7 @@ function DraftBotMiniature({ notes }: { notes: string[] }) {
     >
       {/* Left: the draft */}
       <div className="space-y-3 p-5 sm:p-8">
-        {DRAFT.map((line) => (
+        {DRAFT_EXCERPT.map((line) => (
           <p
             key={line.text}
             className={

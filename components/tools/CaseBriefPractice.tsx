@@ -32,7 +32,7 @@ export function CaseBriefPractice({ options }: { options: Option[] }) {
   const [saved, setSaved] = useState(false);
 
   const input =
-    "mt-2 w-full rounded-seal border border-ink/45 bg-paper px-3 py-2 text-[15px] leading-relaxed text-ink focus:border-ink/80 focus:outline-none";
+    "mt-2 w-full rounded-seal border border-ink/45 bg-paper px-3 py-2 text-[15px] leading-relaxed text-ink focus:border-ink/80";
   const hasText = Object.values(values).some((v) => v.trim() !== "");
   const title = options.find((o) => o.slug === slug)?.title ?? "";
 

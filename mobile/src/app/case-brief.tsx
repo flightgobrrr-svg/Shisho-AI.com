@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Linking, View } from "react-native";
 import { Link } from "expo-router";
 import { Button, Card, Chip, Field, Notice, Screen, T } from "@/ui/components";
+import { PageHeader } from "@/ui/web";
 import { space } from "@/ui/theme";
 import { PREVIEW_CASES, slugify } from "@/lib/library";
 import { saveBrief } from "@/state/stores";
@@ -33,7 +34,11 @@ export default function CaseBrief() {
 
   return (
     <Screen>
-      <T tone="soft">Read the judgment, write the facts, issue, held and ratio in your own words, then open the judgment to see what you missed.</T>
+      <PageHeader
+        eyebrow="For law students"
+        headline="Brief it first, then *compare*."
+        intro="Read the judgment, write the facts, issue, held and ratio in your own words, then open the Library digest to see what you missed."
+      />
 
       <Field label="Find a judgment" value={query} onChangeText={setQuery} placeholder="Kesavananda, Maneka, Vishaka" autoCapitalize="none" />
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>

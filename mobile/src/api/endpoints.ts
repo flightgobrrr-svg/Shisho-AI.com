@@ -1,9 +1,11 @@
 import { api } from "@/api/client";
 import type { Session } from "@/state/auth";
+import type { ToolId, ToolInput, ToolResult } from "@/lib/toolTypes";
+import type { PaidPlan } from "@/features/plans";
 
 /** Typed wrappers for each endpoint. The shapes mirror app/api/mobile/* and the website's handlers. */
 
-export type Plan = "free" | "core" | "proficient" | "addon";
+export type Plan = "free" | "basic" | "core" | "proficient" | "addon";
 
 export type SignInResult = { session: Session; plan: Plan };
 export type RegisterResult =
@@ -16,10 +18,8 @@ export const signIn = (email: string, password: string) =>
 export const register = (email: string, password: string) =>
   api<RegisterResult>("/auth/register", { method: "POST", body: { email, password }, auth: "none" });
 
-export const forgotPassword = (email: string) =>
-  api<{ ok: true }>("/auth/forgot", { method: "POST", body: { email }, auth: "none" });
-
-export const fetchMe = () => api<{ user: { id: string; email: string }; plan: Plan }>("/me", { auth: "required" });
+export const fetchMe = () =>
+  api<{ user: { id: string; email: string }; plan: Plan; planExpiresAt?: string | null }>("/me", { auth: "required" });
 
 export const deleteAccount = () => api<{ ok: true }>("/auth/delete", { method: "POST", auth: "required" });
 
@@ -72,7 +72,8 @@ export type DigestResult = {
 };
 
 export const fetchDigest = (slug: string) =>
-  api<DigestResult>(`/digest/${encodeURIComponent(slug)}`, { auth: "none", timeoutMs: 90_000 });
+  // Signed in when possible, so a paid plan opens the whole Library (Free: one new digest a day).
+  api<DigestResult>(`/digest/${encodeURIComponent(slug)}`, { auth: "optional", timeoutMs: 90_000 });
 
 export const lookupJudgment = (q: string) =>
   api<DigestResult>(`/lookup?q=${encodeURIComponent(q)}`, { auth: "required", timeoutMs: 120_000 });
@@ -82,3 +83,20 @@ export const lookupJudgment = (q: string) =>
 /** "Tell me when this opens" for a planned audience. The site's own handler. */
 export const registerInterest = (email: string, audience: string) =>
   api<{ ok: true }>("/interest", { method: "POST", body: { email, audience, website: "" }, auth: "none" });
+
+/* ---- Shisho tools ---- */
+
+/** Runs one tool. Signed in: the account's plan applies. Otherwise the device's free allowance. */
+export const runTool = <T extends ToolId>(tool: T, input: ToolInput[T] & { file?: FilePayload }) =>
+  api<ToolResult<T>>(`/tools/${tool}`, {
+    method: "POST",
+    body: input,
+    auth: "optional",
+    timeoutMs: input && "file" in input && input.file ? 150_000 : 120_000,
+  });
+
+/* ---- Paying for a plan ---- */
+
+/** The Razorpay page for one month of a plan. Needs an account. */
+export const startPayment = (plan: PaidPlan) =>
+  api<{ url: string }>("/pay", { method: "POST", body: { plan }, auth: "required" });

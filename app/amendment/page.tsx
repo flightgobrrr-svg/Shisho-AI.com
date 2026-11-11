@@ -24,7 +24,7 @@ export default function AmendmentPage() {
     <>
       <AmendmentFilm />
 
-      <Section tone="raised" className="border-y border-ink/10">
+      <Section tone="raised">
         <Container>
           <Eyebrow>Where that came from</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-title font-semibold">

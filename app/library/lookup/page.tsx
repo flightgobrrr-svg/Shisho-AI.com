@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { LogoMark } from "@/components/brand/Logo";
 import { slugify } from "@/lib/library";
 import { searchKanoonTopResult } from "@/lib/indianKanoon";
 import { getCaseDigestForUrl } from "@/lib/caseBrief";
@@ -22,6 +24,12 @@ export const metadata: Metadata = {
  * Plain GET form, no client JS: submitting navigates to
  * `/library/lookup?q=...`, which this same Server Component then handles —
  * matches /library's own `?q=`/`?category=` convention.
+ *
+ * The result streams in under its own Suspense boundary (keyed by the query,
+ * so a new search shows the waiting state again) while the heading and the
+ * form stay on screen. A route-level loading.tsx here made Next.js 16 answer
+ * 404 for the page, the same family of fault as the retired root loading
+ * file (HANDOFF.md), so the boundary lives in the page instead.
  */
 export default async function LookupPage({
   searchParams,
@@ -70,7 +78,27 @@ export default async function LookupPage({
         </button>
       </form>
 
-      {query ? <LookupResult query={query} /> : null}
+      {query ? (
+        <Suspense key={query} fallback={<Finding />}>
+          <LookupResult query={query} />
+        </Suspense>
+      ) : null}
+    </div>
+  );
+}
+
+/** What shows while the search runs and the digest is prepared. */
+function Finding() {
+  return (
+    <div role="status" className="mt-14 flex flex-col items-center gap-4 py-16 text-center">
+      <LogoMark className="rise size-12" />
+      <p className="rise font-display text-[19px] font-semibold text-ink" style={{ animationDelay: "80ms" }}>
+        Finding the judgment&hellip;
+      </p>
+      <p className="rise max-w-[46ch] text-[14.5px] leading-relaxed text-ink-soft" style={{ animationDelay: "140ms" }}>
+        Shisho is searching for the judgment, then reading it to prepare a full citation digest. The first lookup of a
+        judgment can take a few minutes.
+      </p>
     </div>
   );
 }

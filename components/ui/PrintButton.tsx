@@ -6,9 +6,13 @@ export function PrintButton({ label = "Print this page" }: { label?: string }) {
     <button
       type="button"
       onClick={() => window.print()}
-      className="no-print underline-draw label-mono text-ink-soft transition-colors hover:text-ink"
+      className="no-print group inline-flex items-center gap-1.5 text-[13.5px] text-ink-soft transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:text-ink"
     >
-      {label}
+      {/* The same printer as the Shisho review's Print control. Decorative:
+          the label names the button. */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- a 13 KB static icon; next/image adds nothing here */}
+      <img src="/icons/print.png" alt="" width={20} height={20} className="size-5 dark:opacity-90" />
+      <span className="underline-draw">{label}</span>
     </button>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PRICING_FAQS, PRICING_INTRO } from "@/lib/pricing";
 import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { ComparisonTable } from "@/components/pricing/ComparisonTable";
 import { Button } from "@/components/ui/Button";
@@ -12,20 +13,6 @@ export const metadata: Metadata = {
     "Plans from ₹9 a month — Free, Basic, Core, and Proficient, plus a standalone Shisho add-on. Full feature breakdown.",
 };
 
-const FAQS = [
-  {
-    q: "What do I actually get for ₹9?",
-    a: "Basic unlocks the full Starter course and the full Legal Library — everything Free only previews. Shisho itself stays at the same 5 reviews a month as Free; unlimited reviews start at Core.",
-  },
-  {
-    q: "Can I cancel?",
-    a: "Yes — every plan is monthly and can be cancelled at any time. Access continues to the end of the billing month.",
-  },
-  {
-    q: "I only want Shisho, not the courses. Do I have to buy Core?",
-    a: "No — the ₹699 add-on below buys Shisho on its own, unlimited, without either course.",
-  },
-];
 
 export default function PricingPage() {
   return (
@@ -37,14 +24,12 @@ export default function PricingPage() {
             Priced for a student <Emphasis>budget</Emphasis>.
           </h1>
           <p className="mt-6 max-w-[52ch] text-[16.5px] leading-relaxed text-ink-soft md:text-[17.5px]">
-            All prices in Indian rupees, billed monthly. Cancel any time. Four
-            plans, from a ₹9 entry price to unlimited, citation-checked drafting
-            review.
+            {PRICING_INTRO}
           </p>
         </Container>
       </Section>
 
-      <Section id="plans" tone="raised" className="border-y border-ink/10 !pt-0">
+      <Section id="plans" tone="raised" className="!pt-0">
         <Container>
           <PricingGrid />
         </Container>
@@ -63,7 +48,7 @@ export default function PricingPage() {
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-t border-ink/10">
+      <Section tone="raised">
         <Container>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)]">
             <div>
@@ -74,7 +59,7 @@ export default function PricingPage() {
             </div>
 
             <dl className="space-y-8">
-              {FAQS.map((faq) => (
+              {PRICING_FAQS.map((faq) => (
                 <div key={faq.q} className="min-w-0">
                   <dt className="font-display text-[18px] font-semibold text-ink">
                     {faq.q}

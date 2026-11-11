@@ -1,18 +1,12 @@
 import Link from "next/link";
 import { Eyebrow } from "@/components/ui/Section";
-import { DOCUMENTS } from "@/lib/documents";
+import { documentOfTheWeek } from "@/lib/documents";
 
 /** ISO-ish week number, so the pick changes every Monday and is the same for everyone. */
-function weekNumber(d: Date) {
-  const start = Date.UTC(d.getUTCFullYear(), 0, 1);
-  const day = Math.floor((d.getTime() - start) / 86_400_000);
-  return Math.floor((day + new Date(start).getUTCDay()) / 7);
-}
 
 /** One reference page, rotated weekly — a reason to come back and read one. */
 export function DocumentOfTheWeek() {
-  const now = new Date();
-  const doc = DOCUMENTS[(weekNumber(now) + now.getUTCFullYear()) % DOCUMENTS.length];
+  const doc = documentOfTheWeek();
 
   return (
     <div className="mt-10 rounded-seal border border-ink/20 bg-paper-raised p-6 md:p-7">

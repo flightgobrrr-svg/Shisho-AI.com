@@ -3,7 +3,10 @@ import { StatusList } from "@/components/for/StatusList";
 import { NextDateReminder } from "@/components/tools/NextDateReminder";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { EXTRAS } from "@/lib/audiencePages";
+import { SidePhoto } from "@/components/for/SidePhoto";
+import { AUDIENCES } from "@/lib/audiences";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
+import { cn } from "@/lib/cn";
 import {
   CLERK_BASIC_REQUIREMENTS,
   CLERK_CLOSING_NOTES,
@@ -22,6 +25,7 @@ export const metadata: Metadata = {
 
 export default function ClerksPage() {
   const groups = clerkEntriesByLetter();
+  const present = new Set(groups.map((g) => g.letter));
 
   return (
     <>
@@ -37,7 +41,7 @@ export default function ClerksPage() {
         </Container>
       </Section>
 
-      <Section id="routine" tone="raised" className="border-y border-ink/10">
+      <Section id="routine" tone="raised">
         <Container>
           <Eyebrow>Essential daily routine</Eyebrow>
           <div className="mt-6 grid gap-8 md:grid-cols-3">
@@ -64,9 +68,34 @@ export default function ClerksPage() {
             The manual
           </h2>
 
+          {/* A–Z jump bar, held under the site nav while the manual scrolls:
+              99 entries is too long to hunt through by scrolling alone.
+              Letters with no entry stay in place, unlinked, so the alphabet
+              keeps its shape. */}
+          <nav
+            aria-label="Jump to a letter"
+            className="sticky top-16 z-10 -mx-6 mt-6 bg-paper/95 px-6 py-3 backdrop-blur-sm md:-mx-8 md:px-8"
+          >
+            <ul className="flex flex-wrap gap-1">
+              {ALPHABET.map((letter) =>
+                present.has(letter) ? (
+                  <li key={letter}>
+                    <a href={`#letter-${letter}`} className={cn(LETTER_CELL, "border-ink/25 text-ink hover:border-ink/70 hover:bg-ink/[0.04]")}>
+                      {letter}
+                    </a>
+                  </li>
+                ) : (
+                  <li key={letter} aria-hidden="true" className={cn(LETTER_CELL, "border-transparent text-ink-faint/50")}>
+                    {letter}
+                  </li>
+                ),
+              )}
+            </ul>
+          </nav>
+
           <div className="mt-8 space-y-10">
             {groups.map((group) => (
-              <div key={group.letter}>
+              <div key={group.letter} id={`letter-${group.letter}`} className="scroll-mt-16">
                 <h3 className="label-mono border-b border-ink/15 pb-2 text-indigo">
                   {group.letter}
                 </h3>
@@ -74,12 +103,12 @@ export default function ClerksPage() {
                   {group.entries.map((entry) => (
                     <div key={entry.sno} className="min-w-0">
                       <dt className="flex items-baseline gap-2.5 font-display text-[15.5px] font-semibold text-ink">
-                        <span className="label-mono shrink-0 font-sans text-ink-faint">
+                        <span className="label-mono w-6 shrink-0 text-right font-sans text-ink-faint tabular-nums">
                           {entry.sno}.
                         </span>
                         {entry.name}
                       </dt>
-                      <dd className="mt-1.5 pl-[1.9rem] text-[13.5px] leading-relaxed text-ink-soft">
+                      <dd className="mt-1.5 pl-[2.125rem] text-[13.5px] leading-relaxed text-ink-soft">
                         {entry.description}
                       </dd>
                     </div>
@@ -91,7 +120,7 @@ export default function ClerksPage() {
         </Container>
       </Section>
 
-      <Section id="formats" tone="raised" className="border-y border-ink/10">
+      <Section id="formats" tone="raised">
         <Container>
           <Eyebrow>Practical formats</Eyebrow>
           <p className="mt-4 max-w-[64ch] text-[15px] leading-relaxed text-ink-soft">
@@ -123,19 +152,23 @@ export default function ClerksPage() {
         </Container>
       </Section>
 
-      <Section className="!py-14 md:!py-16">
+      {/* The clerks photo on the right, like the homepage hero's. */}
+      <Section className="relative isolate overflow-hidden !py-14 md:!py-16">
         <Container>
-          <Eyebrow>More for clerks</Eyebrow>
-          <h2 className="mt-4 font-display text-[1.4rem] font-semibold text-ink">
-            Every filing, date and file in <Emphasis>order</Emphasis>.
-          </h2>
-          <div className="mt-6 max-w-3xl">
-            <StatusList items={EXTRAS.clerks} />
+          <ClerksPhoto />
+          <div className="lg:max-w-[54%] lg:min-h-[26rem]">
+            <Eyebrow>More for clerks</Eyebrow>
+            <h2 className="mt-4 font-display text-[1.4rem] font-semibold text-ink">
+              Every filing, date and file in <Emphasis>order</Emphasis>.
+            </h2>
+            <div className="mt-6">
+              <StatusList items={EXTRAS.clerks} />
+            </div>
           </div>
         </Container>
       </Section>
 
-      <Section id="reminder" tone="raised" className="border-y border-ink/10 !py-14 md:!py-16">
+      <Section id="reminder" tone="raised" className="!py-14 md:!py-16">
         <Container>
           <Eyebrow>Next-date reminder</Eyebrow>
           <h2 className="mt-4 font-display text-[1.4rem] font-semibold text-ink">
@@ -167,3 +200,14 @@ export default function ClerksPage() {
     </>
   );
 }
+
+/** The clerks photo from the promo video, beside what the site does for them. */
+function ClerksPhoto() {
+  const photo = AUDIENCES.find((a) => a.slug === "clerks")?.photo;
+  return photo ? <SidePhoto photo={photo} /> : null;
+}
+
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+const LETTER_CELL =
+  "label-mono inline-flex size-8 items-center justify-center rounded-seal border transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]";

@@ -52,8 +52,8 @@ export function MootRulesChecklist() {
           id="moot-rule"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="e.g. Memorial not more than 30 pages"
-          className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80 focus:outline-none"
+          placeholder="e.g. Memorial within 30 pages"
+          className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80"
         />
         <button
           type="submit"

@@ -112,3 +112,30 @@ export const COURSES: Course[] = [
     ],
   },
 ];
+
+/** The intro under "Two courses, one mentor." on /courses (website and app). */
+export const COURSES_INTRO =
+  "Both tracks are built entirely on Indian law — the Constitution, the CPC, the Indian Contract Act, and the authorities that actually bind an Indian court. Every drafting exercise comes back marked.";
+
+/** "Before you begin" on /courses (website and app). */
+export const COURSES_FAQS = [
+  {
+    q: "Do I need to be enrolled in a law school?",
+    a: "No. The Starter course assumes no prior legal training, though it moves quickly. Proficient assumes you can read a judgment and follow a pleading.",
+  },
+  {
+    q: "Is this a substitute for legal advice?",
+    a: "No. Shisho AI is an educational and drafting tool. It does not provide legal advice and is not a substitute for a licensed, practising advocate.",
+  },
+];
+
+/** The case-brief sample beside "For law students" on /courses. */
+export const CASE_BRIEF_SAMPLE = {
+  label: "Case brief",
+  rows: [
+    { term: "Facts", detail: "What happened, in order" },
+    { term: "Issue", detail: "The question for the court" },
+    { term: "Held", detail: "What the court decided" },
+    { term: "Ratio", detail: "The rule it rests on" },
+  ],
+};

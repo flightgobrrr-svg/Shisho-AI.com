@@ -4,6 +4,9 @@ import { cn } from "@/lib/cn";
  * Vertical rhythm is defined here and nowhere else. Every landing section uses
  * <Section>, so the page reads as one calm document rather than a stack of
  * components each inventing its own spacing.
+ *
+ * Sections never draw a full-width line on their edges, and the raised tone
+ * fades in and out (`band-raised`): hard seams made sections look pasted on.
  */
 export function Section({
   children,
@@ -20,8 +23,8 @@ export function Section({
       id={id}
       className={cn(
         "py-20 md:py-28",
-        tone === "raised" && "bg-paper-raised",
-        tone === "ink" && "bg-ink text-paper",
+        tone === "raised" && "band-raised",
+        tone === "ink" && "bg-inverse text-on-inverse",
         className,
       )}
       {...props}

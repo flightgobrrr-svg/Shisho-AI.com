@@ -19,7 +19,7 @@ export function IpcBnsLookup() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="420, 498A, theft…"
-        className="mt-2 h-11 w-full rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80 focus:outline-none"
+        className="mt-2 h-11 w-full rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80"
       />
 
       <div aria-live="polite" className="mt-6">

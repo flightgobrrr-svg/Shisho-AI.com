@@ -1,23 +1,19 @@
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Linking, View } from "react-native";
 import { Button, Card, Chip, Field, Notice, Screen, T, TextButton } from "@/ui/components";
 import { space } from "@/ui/theme";
-import { ApiError, apiConfigured, describeError } from "@/api/client";
-import { deleteAccount, fetchMe, forgotPassword, register, signIn, type Plan } from "@/api/endpoints";
+import { API_URL, ApiError, apiConfigured, describeError } from "@/api/client";
+import { deleteAccount, fetchMe, register, signIn, type Plan } from "@/api/endpoints";
 import { clearSession, saveSession, useSession } from "@/state/auth";
+import { PLAN_LABEL } from "@/features/plans";
 
 type Mode = "signin" | "register" | "forgot";
 
-const PLAN_LABEL: Record<Plan, string> = {
-  free: "Free",
-  core: "Core",
-  proficient: "Proficient",
-  addon: "Shisho add-on",
-};
 
 export default function Account() {
   const { session } = useSession();
   const [plan, setPlan] = useState<Plan | null>(null);
+  const [until, setUntil] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +27,11 @@ export default function Account() {
     if (!session) return;
     let cancelled = false;
     fetchMe()
-      .then((r) => !cancelled && setPlan(r.plan))
+      .then((r) => {
+        if (cancelled) return;
+        setPlan(r.plan);
+        setUntil(r.planExpiresAt ?? null);
+      })
       .catch(() => {});
     return () => {
       cancelled = true;
@@ -69,9 +69,6 @@ export default function Account() {
           setPlan(r.plan);
         }
         setPassword("");
-      } else {
-        await forgotPassword(email.trim());
-        setInfo("If that address has an account, a reset link is on its way. It finishes on the website.");
       }
     } catch (e) {
       setError(describeError(e));
@@ -101,8 +98,12 @@ export default function Account() {
         <Card>
           <T v="label" tone="indigo">Signed in</T>
           <T v="h3">{session.user.email}</T>
-          <T v="small" tone="soft">Plan: {plan ? PLAN_LABEL[plan] : "checking…"}</T>
+          <T v="small" tone="soft">
+            Plan: {plan ? PLAN_LABEL[plan] : "checking…"}
+            {until ? `, until ${new Date(until).toLocaleDateString("en-IN")}` : ""}
+          </T>
         </Card>
+        <Button label={plan && plan !== "free" ? "Plans and renewal" : "See plans"} href="/pricing" variant="ghost" />
         {info ? <T tone="soft">{info}</T> : null}
         {error ? <T tone="seal" accessibilityLiveRegion="polite">{error}</T> : null}
         <Button label="Sign out" variant="ghost" onPress={() => clearSession()} />
@@ -135,16 +136,38 @@ export default function Account() {
         <Chip label="Forgot password" selected={mode === "forgot"} onPress={() => { setMode("forgot"); setError(null); setInfo(null); }} />
       </View>
 
-      <Field
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        textContentType="emailAddress"
-      />
+      {mode === "forgot" ? (
+        /* The reset runs in the phone's browser, on the website. A reset asked
+           for from inside the app could not finish: the emailed link has to be
+           opened in the same browser that asked for it. Tested end to end. */
+        <Card>
+          <T v="h3">Reset your password on the website</T>
+          <T v="small" tone="soft">
+            This opens Shisho's reset page in your browser. Ask for the link there, open the email on this
+            phone, choose a new password, then come back and sign in here.
+          </T>
+          <Button
+            label="Open the reset page"
+            variant="dark"
+            onPress={() => {
+              Linking.openURL(`${API_URL}/forgot-password`).catch(() =>
+                setError("Your browser did not open. Go to the Shisho website and choose Forgot password."),
+              );
+            }}
+          />
+        </Card>
+      ) : (
+        <Field
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+          autoCorrect={false}
+          textContentType="emailAddress"
+        />
+      )}
       {mode !== "forgot" ? (
         <Field
           label={mode === "register" ? "Password (8 or more characters)" : "Password"}
@@ -161,15 +184,19 @@ export default function Account() {
       {info ? <T tone="soft" accessibilityLiveRegion="polite">{info}</T> : null}
       {error ? <T tone="seal" accessibilityLiveRegion="polite">{error}</T> : null}
 
-      <Button
-        label={busy ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "register" ? "Create account" : "Send reset link"}
-        variant="dark"
-        disabled={busy || !email.trim() || (mode !== "forgot" && !password)}
-        onPress={submit}
-      />
-      <T v="small" tone="faint">
-        By creating an account you agree to the terms of use. Shisho is educational and drafting help, not legal advice.
-      </T>
+      {mode !== "forgot" ? (
+        <Button
+          label={busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+          variant="dark"
+          disabled={busy || !email.trim() || !password}
+          onPress={submit}
+        />
+      ) : null}
+      {mode === "register" ? (
+        <T v="small" tone="faint">
+          By creating an account you agree to the terms of use. Shisho is educational and drafting help, not legal advice.
+        </T>
+      ) : null}
     </Screen>
   );
 }

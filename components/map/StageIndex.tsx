@@ -94,7 +94,7 @@ export function StageIndex() {
       aria-label="Jump to a stage"
       className="mt-9 border-b border-ink/10 pb-3"
     >
-      <ul className="-mx-6 flex snap-x gap-x-6 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:gap-y-1 sm:overflow-visible sm:px-0">
+      <ul className="-mx-6 flex snap-x scroll-px-6 gap-x-6 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:gap-y-1 sm:overflow-visible sm:px-0">
         {MAP_STAGES.map((stage) => {
           const isActive = active === stage.n;
           return (

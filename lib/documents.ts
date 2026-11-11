@@ -380,3 +380,15 @@ export function findDocumentForAuthority(authority: string): LegalDocument | und
 
   return matches.length === 1 ? matches[0] : undefined;
 }
+
+/** Week of the year, counted the way the website's DocumentOfTheWeek counts it. */
+function weekNumber(d: Date) {
+  const start = Date.UTC(d.getUTCFullYear(), 0, 1);
+  const day = Math.floor((d.getTime() - start) / 86_400_000);
+  return Math.floor((day + new Date(start).getUTCDay()) / 7);
+}
+
+/** One reference page, rotated weekly; the same pick on the website and in the app. */
+export function documentOfTheWeek(now: Date = new Date()) {
+  return DOCUMENTS[(weekNumber(now) + now.getUTCFullYear()) % DOCUMENTS.length];
+}

@@ -3,6 +3,7 @@ import { Linking, View } from "react-native";
 import { Button, Card, Field, Notice, Screen, T, TextButton, type InputRef } from "@/ui/components";
 import { space, usePalette } from "@/ui/theme";
 import { formatDate, parseDate } from "@/ui/dates";
+import { FadedPhoto } from "@/ui/FadedPhoto";
 import {
   addNextDate,
   ensurePermission,
@@ -68,6 +69,7 @@ export default function NextDates() {
 
   return (
     <Screen>
+      <FadedPhoto source={require("../../assets/screens/next-dates.jpg")} height={180} />
       <T tone="soft">Put a next date on your phone, with an alert around 9 am the day before. Nothing is sent to Shisho.</T>
       {unavailable ? <Notice title="Alerts are off here" body={`${unavailable} Dates you save are still listed below.`} /> : null}
 

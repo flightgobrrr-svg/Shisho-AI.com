@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Button, Field, Notice, Screen, T } from "@/ui/components";
 import { DigestBody } from "@/features/DigestBody";
@@ -12,7 +13,9 @@ import { useSession } from "@/state/auth";
  */
 export default function Lookup() {
   const { session } = useSession();
-  const [q, setQ] = useState("");
+  // A case name typed on Home arrives as ?q= and is filled in, ready to send.
+  const { q: passed } = useLocalSearchParams<{ q?: string }>();
+  const [q, setQ] = useState(passed ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DigestResult | null>(null);

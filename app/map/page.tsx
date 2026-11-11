@@ -53,7 +53,7 @@ export default function MapPage() {
           /courses, where the section opens on a heading that brings its own
           space — here it opens straight onto stage 1, so the number box
           collided with the hairline above it. */}
-      <Section className="border-y border-ink/10">
+      <Section>
         <Container>
           {/* A real heading for the list, so the nine stages nest under it as
               h3 instead of standing as nine sibling h2s alongside the closing

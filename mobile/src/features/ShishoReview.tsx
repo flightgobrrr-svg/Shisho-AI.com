@@ -5,6 +5,8 @@ import { space, usePalette } from "@/ui/theme";
 import { copyText, shareText } from "@/ui/share";
 import { ApiError, describeError } from "@/api/client";
 import { reviewDraft, type Annotation } from "@/api/endpoints";
+import { chooseAndDownload, PRINT_ICON, printWithErrors } from "@/features/downloadText";
+import { ShishoThinking } from "@/features/ShishoThinking";
 import { DOC_TYPES, DOC_TYPE_LABELS, MAX_DRAFT_CHARS, type DocType } from "@/lib/draft";
 
 const SEVERITY: Record<Annotation["severity"], string> = {
@@ -21,10 +23,10 @@ function asText(draftType: string, notes: Annotation[]) {
   return `Shisho notes on a ${draftType}\n\n${lines.join("\n\n")}\n\nShisho AI provides drafting assistance, not legal advice. Check every provision against its source before you file.`;
 }
 
-export function ShishoReview() {
+export function ShishoReview({ initialDocType = "plaint" }: { initialDocType?: DocType }) {
   const p = usePalette();
   const [draft, setDraft] = useState("");
-  const [docType, setDocType] = useState<DocType>("plaint");
+  const [docType, setDocType] = useState<DocType>(initialDocType);
   const [notes, setNotes] = useState<Annotation[] | null>(null);
   const [demo, setDemo] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -92,6 +94,7 @@ export function ShishoReview() {
       {error ? <T tone="seal" accessibilityLiveRegion="polite">{error}</T> : null}
       <Button label={busy ? "Reading your draft…" : "Ask Shisho"} variant="dark" disabled={busy || tooShort} onPress={run} />
       {tooShort && draft.length > 0 ? <T v="small" tone="faint">Paste a little more of the draft first.</T> : null}
+      {busy ? <ShishoThinking message="Reading your draft and marking it up. This usually takes 15 to 30 seconds." /> : null}
 
       {notes ? (
         <View style={{ gap: space.md }} accessibilityLiveRegion="polite">
@@ -117,6 +120,8 @@ export function ShishoReview() {
               }}
             />
             <Chip label="Share" onPress={() => void shareText(asText(DOC_TYPE_LABELS[docType], notes))} />
+            <Chip label="Download" onPress={() => chooseAndDownload(`Review notes - ${DOC_TYPE_LABELS[docType]}`, asText(DOC_TYPE_LABELS[docType], notes), setError)} />
+            <Chip label="Print" icon={PRINT_ICON} onPress={() => printWithErrors(`Review notes - ${DOC_TYPE_LABELS[docType]}`, asText(DOC_TYPE_LABELS[docType], notes), setError)} />
           </View>
           {shown?.length === 0 ? <T tone="soft">No notes on this draft.</T> : null}
           {shown?.map((n) => (

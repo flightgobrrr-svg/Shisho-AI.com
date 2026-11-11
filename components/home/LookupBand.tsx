@@ -20,7 +20,7 @@ export function LookupBand() {
       className="pt-4 pb-16 md:pt-6 md:pb-20"
     >
       <Container>
-        <div className="rounded-seal border border-ink/20 bg-paper-raised p-6 shadow-[0_1px_2px_rgba(34,37,43,0.04),0_18px_40px_-24px_rgba(34,37,43,0.22)] md:p-8">
+        <div className="rounded-seal border border-ink/20 bg-paper-raised p-5 shadow-[0_1px_2px_rgba(34,37,43,0.04),0_18px_40px_-24px_rgba(34,37,43,0.22)] sm:p-6 md:p-8">
           <form
             method="GET"
             action="/library/lookup"
@@ -38,7 +38,7 @@ export function LookupBand() {
                 Kerala&rdquo;, and read a digest prepared from the real text.
               </p>
             </div>
-            <div className="flex min-w-0 flex-1 gap-3">
+            <div className="flex min-w-0 flex-1 gap-2 sm:gap-3">
               <input
                 id="home-lookup"
                 name="q"
@@ -46,11 +46,11 @@ export function LookupBand() {
                 required
                 maxLength={200}
                 placeholder="Party A vs Party B"
-                className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80 focus:outline-none"
+                className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-3 text-[15px] sm:px-4 text-ink placeholder:text-ink-faint focus:border-ink/80"
               />
               <button
                 type="submit"
-                className="inline-flex h-11 shrink-0 items-center rounded-seal border border-transparent bg-ink px-5 text-[14.5px] font-medium text-paper-raised transition-colors hover:bg-ink-soft"
+                className="inline-flex h-11 shrink-0 items-center rounded-seal border border-transparent bg-ink px-4 text-[14.5px] sm:px-5 font-medium text-paper-raised transition-colors hover:bg-ink-soft"
               >
                 Look up
               </button>
@@ -75,7 +75,7 @@ export function LookupBand() {
                 &ldquo;Order VII Rule 11&rdquo;.
               </p>
             </div>
-            <div className="flex min-w-0 flex-1 gap-3">
+            <div className="flex min-w-0 flex-1 gap-2 sm:gap-3">
               <input
                 id="home-provision"
                 name="q"
@@ -83,11 +83,11 @@ export function LookupBand() {
                 required
                 maxLength={100}
                 placeholder="Section, Order or Article"
-                className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-4 text-[15px] text-ink placeholder:text-ink-faint focus:border-ink/80 focus:outline-none"
+                className="h-11 min-w-0 flex-1 rounded-seal border border-ink/45 bg-paper px-3 text-[15px] sm:px-4 text-ink placeholder:text-ink-faint focus:border-ink/80"
               />
               <button
                 type="submit"
-                className="inline-flex h-11 shrink-0 items-center rounded-seal border border-ink/45 px-5 text-[14.5px] font-medium text-ink transition-colors hover:bg-ink/[0.04]"
+                className="inline-flex h-11 shrink-0 items-center rounded-seal border border-ink/45 px-4 text-[14.5px] font-medium text-ink sm:px-5 transition-colors hover:bg-ink/[0.04]"
               >
                 Find
               </button>

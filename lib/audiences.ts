@@ -43,6 +43,21 @@ export type Audience = {
   aside?: string;
   /** Where `aside` comes from, and when it was checked (PRODUCT.md). */
   sources?: string;
+  /**
+   * The portrait photo shown beside the sample, as on the promo video's
+   * slides. People in these photos appear with no name and no quote: an
+   * illustration of who the section is for, never an endorsement (the Bar
+   * Council of India's rules restrict advocates from advertising). Rights and
+   * consent are recorded in the asset register.
+   */
+  photo?: {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+    /** CSS object-position for the crop; defaults to the upper middle. */
+    focus?: string;
+  };
 };
 
 export const AUDIENCES: Audience[] = [
@@ -53,6 +68,7 @@ export const AUDIENCES: Audience[] = [
      and its page says so. Shisho serves all three today, so each is `live`. */
   {
     slug: "junior-advocates",
+    photo: { src: "/audiences/junior-advocates.jpg", alt: "Young advocates in robes working through files and books in a library", width: 600, height: 912 },
     name: "Junior advocates",
     eyebrow: "For junior advocates",
     headline: "Learn the craft on real *drafts*.",
@@ -79,6 +95,14 @@ export const AUDIENCES: Audience[] = [
       "You run the chambers and your juniors draft the matters. Check a draft for defects before it reaches the registry, confirm the last day to file, and prepare for the hearing with the authorities in one place.",
     chips: ["Draft review", "Limitation", "Hearing prep"],
     live: true,
+    photo: {
+      src: "/audiences/senior-advocates.webp",
+      // A full-length portrait: keep his face in the crop, not his knees.
+      focus: "50% 14%",
+      alt: "An advocate in a black jacket and white bands, his gown over one arm, on the steps of a court building",
+      width: 853,
+      height: 1280,
+    },
     aside:
       "Here \u201csenior\u201d means the advocate who runs chambers and briefs juniors. In the Advocates Act, 1961, \u201csenior advocate\u201d means one designated by the Supreme Court or a High Court; that has its own page.",
     sample: {
@@ -116,6 +140,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "corporate",
+    photo: { src: "/audiences/corporate.jpg", alt: "Lawyers at a boardroom table with papers and a data screen, a city skyline behind", width: 600, height: 912 },
     name: "Corporate",
     eyebrow: "For corporate lawyers",
     headline: "Close the deal. Protect the *business*.",
@@ -135,6 +160,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "clerks",
+    photo: { src: "/audiences/clerks.jpg", alt: "Advocate clerks with lanyards carrying and checking stacks of court files", width: 600, height: 912 },
     name: "Clerks",
     eyebrow: "For advocate clerks",
     headline: "Every filing, date and file in *order*.",
@@ -146,6 +172,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "scholars",
+    photo: { src: "/audiences/scholars.jpg", alt: "Researchers around a library table piled with old books and papers", width: 600, height: 912 },
     name: "Scholars",
     eyebrow: "For scholars",
     headline: "Trace a doctrine across *decades*.",
@@ -166,6 +193,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "judges",
+    photo: { src: "/audiences/judges.jpg", alt: "Judges in black robes and white bands beneath the scales of justice", width: 600, height: 912 },
     name: "Judges",
     eyebrow: "For judges",
     headline: "A clear record, close at *hand*.",
@@ -184,6 +212,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "lecturers",
+    photo: { src: "/audiences/lecturers.jpg", alt: "A group of law teachers in a faculty room", width: 600, height: 912 },
     name: "Lecturers",
     eyebrow: "For lecturers",
     headline: "Spend class time *teaching*, not preparing.",
@@ -202,6 +231,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "students",
+    photo: { src: "/audiences/students.jpg", alt: "Law students around a table with laptops and books in a library", width: 600, height: 912 },
     name: "Students",
     eyebrow: "For law students",
     headline: "Learn the law. Then learn to *apply* it.",
@@ -213,6 +243,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "clat",
+    photo: { src: "/audiences/clat.jpg", alt: "A modern classroom: a teacher at a large screen and students at their desks", width: 600, height: 912 },
     name: "CLAT",
     eyebrow: "For CLAT — Common Law Admission Test",
     headline: "Practise smart. Walk into the exam *ready*.",
@@ -232,6 +263,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "judicial-exams",
+    photo: { src: "/audiences/judicial-exams.jpg", alt: "Exam aspirants in robes studying among stacks of books", width: 600, height: 912 },
     name: "JCJ · DJ · APP",
     eyebrow: "For judiciary and prosecution exams",
     headline: "Prepare for the bench and the *prosecution*.",
@@ -256,6 +288,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "court-staff",
+    photo: { src: "/audiences/court-staff.jpg", alt: "Candidates at computers in a modern lab, with a screen of icons", width: 600, height: 912 },
     name: "Court staff",
     eyebrow: "For court staff exams",
     headline: "Get ready for judiciary *employee* exams.",
@@ -275,6 +308,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "citizens",
+    photo: { src: "/audiences/citizens.jpg", alt: "Families, workers and a wheelchair user in front of a court building", width: 600, height: 912 },
     name: "Citizens",
     eyebrow: "For citizens",
     headline: "Know your rights, in plain *language*.",
@@ -299,6 +333,7 @@ export const AUDIENCES: Audience[] = [
   },
   {
     slug: "advice",
+    photo: { src: "/audiences/advice.jpg", alt: "A senior lawyer advising two clients at a round table", width: 600, height: 912 },
     name: "Legal advice",
     eyebrow: "For legal advice",
     headline: "Clear guidance, one conversation at a *time*.",

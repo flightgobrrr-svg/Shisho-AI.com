@@ -61,6 +61,28 @@ export const LIMITATION_ENTRIES: LimitationEntry[] = [
     source: SCHEDULE,
   },
   {
+    id: "art-21",
+    article: "Article 21",
+    label: "Money lent, payable on demand",
+    description: "For money lent under an agreement that it shall be payable on demand.",
+    period: { n: 3, unit: "years" },
+    // Not from the demand: a loan payable on demand is due at once (contrast Article 22).
+    runsFrom: "When the loan is made.",
+    dateLabel: "Date the loan was made",
+    source: SCHEDULE,
+  },
+  {
+    id: "art-22",
+    article: "Article 22",
+    label: "Money deposited, payable on demand",
+    description:
+      "For money deposited under an agreement that it shall be payable on demand, including money of a customer in the hands of his banker so payable.",
+    period: { n: 3, unit: "years" },
+    runsFrom: "When the demand is made.",
+    dateLabel: "Date the demand was made",
+    source: SCHEDULE,
+  },
+  {
     id: "art-54",
     article: "Article 54",
     label: "Specific performance of a contract",

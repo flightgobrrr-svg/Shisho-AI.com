@@ -1,23 +1,35 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { Button, Card, Chip, Field, Headline, Notice, Row, Screen, T } from "@/ui/components";
 import { space, usePalette } from "@/ui/theme";
-import { getAudience } from "@/lib/audiences";
+import { AUDIENCES, getAudience } from "@/lib/audiences";
 import { TODAY, startHereHeading } from "@/lib/audiencePages";
 import { apiConfigured, describeError } from "@/api/client";
 import { registerInterest } from "@/api/endpoints";
 import { appRoute } from "@/features/audienceRoutes";
+import { AUDIENCE_PHOTOS, AudienceSample } from "@/features/audienceUi";
+import { FadedPhoto } from "@/ui/FadedPhoto";
+import { APP_FEATURES, BUILT_IN_APP, builtInApp } from "@/features/appFeatures";
+import { correctItems } from "@/features/sharedCopy";
 
 /**
  * One audience: the same pitch, sample and "start here" list as the
  * website's /for/[slug] page, from the same data. Each page says whether it
- * is available now or planned, and the sample is labelled as one.
+ * is available now or planned, and the sample is labelled as one. Where the
+ * app has built what the website still plans (features/appFeatures.ts), the
+ * page opens with it and says "In the app".
  */
 export default function AudiencePage() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const p = usePalette();
   const audience = slug ? getAudience(slug) : undefined;
+
+  // Clerks and students have their own screens (the Advocate Clerks' manual,
+  // Courses); a link to their /for/ address opens that screen instead.
+  const served = !audience && slug ? AUDIENCES.find((a) => a.slug === slug && a.href) : undefined;
+  const servedRoute = served ? appRoute(served.href) : null;
+  if (servedRoute) return <Redirect href={servedRoute} />;
 
   if (!audience) {
     return (
@@ -28,12 +40,17 @@ export default function AudiencePage() {
     );
   }
 
-  const today = (TODAY[audience.slug] ?? []).slice(0, 3);
+  const today = correctItems((TODAY[audience.slug] ?? []).slice(0, 3));
+  const inApp = APP_FEATURES[audience.slug] ?? [];
+  const available = audience.live || builtInApp(audience.slug);
 
   return (
     <Screen>
       <Stack.Screen options={{ title: audience.name }} />
-      <T v="label" tone={audience.live ? "indigo" : "faint"}>{audience.live ? "Available now" : "Planned"}</T>
+      {audience.photo && AUDIENCE_PHOTOS[audience.slug] ? (
+        <FadedPhoto source={AUDIENCE_PHOTOS[audience.slug]} height={260} />
+      ) : null}
+      <T v="label" tone={available ? "indigo" : "faint"}>{audience.live ? "Available now" : available ? "Available in the app" : "Planned"}</T>
       <Headline text={audience.headline} v="h2" />
       <T tone="soft">{audience.blurb}</T>
       {audience.aside ? (
@@ -48,33 +65,16 @@ export default function AudiencePage() {
         ))}
       </View>
 
-      {audience.sample ? (
-        <Card>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space.md }}>
-            <T v="label" tone="indigo" style={{ flexShrink: 1 }}>{audience.sample.label}</T>
-            <T v="label" tone="faint">Sample</T>
-          </View>
-          {audience.sample.rows.map((row) => (
-            <View
-              key={row.term}
-              style={{
-                flexDirection: "row",
-                gap: space.md,
-                paddingVertical: space.sm,
-                borderTopWidth: 1,
-                borderTopColor: p.line,
-              }}
-            >
-              <T v="h3" style={{ fontSize: 16, width: "38%" }}>{row.term}</T>
-              {row.detail ? (
-                <T v="small" tone="soft" style={{ flex: 1 }}>{row.detail}</T>
-              ) : null}
-            </View>
+      <AudienceSample audience={audience} />
+
+      {inApp.length > 0 ? (
+        <View>
+          <T v="label" tone="indigo">In the app</T>
+          <T v="h3" style={{ marginTop: space.sm, marginBottom: space.xs }}>Built for you.</T>
+          {inApp.map((f) => (
+            <Row key={f.label} title={f.label} detail={f.note} status={f.offline ? "offline" : "live"} href={f.href} />
           ))}
-          {audience.disclaimer ? (
-            <T v="small" tone="soft" style={{ fontStyle: "italic" }}>{audience.disclaimer}</T>
-          ) : null}
-        </Card>
+        </View>
       ) : null}
 
       {today.length > 0 ? (
@@ -82,13 +82,15 @@ export default function AudiencePage() {
           <T v="label" tone="indigo">Start here</T>
           <T v="h3" style={{ marginTop: space.sm, marginBottom: space.xs }}>{startHereHeading(today.length)}</T>
           {today.map((item) => {
-            const route = item.status === "live" ? appRoute(item.href) : null;
+            const built = item.status === "planned" ? BUILT_IN_APP[item.label] : undefined;
+            const status = built ? "live" : item.status;
+            const route = built ?? (item.status === "live" ? appRoute(item.href) : null);
             return (
               <Row
                 key={item.label}
                 title={item.label}
-                detail={route || item.status !== "live" ? item.note : `${item.note} On the website.`}
-                status={item.status}
+                detail={route || status !== "live" ? item.note : `${item.note} On the website.`}
+                status={status}
                 href={route ?? undefined}
               />
             );
@@ -96,7 +98,7 @@ export default function AudiencePage() {
         </View>
       ) : null}
 
-      {audience.live ? null : <InterestSignup slug={audience.slug} name={audience.name} />}
+      {available ? null : <InterestSignup slug={audience.slug} name={audience.name} />}
     </Screen>
   );
 }

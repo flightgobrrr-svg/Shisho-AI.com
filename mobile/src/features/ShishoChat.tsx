@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, Image, Pressable, View } from "react-native";
 import { Button, Card, Chip, Field, T } from "@/ui/components";
 import { space, usePalette } from "@/ui/theme";
 import { copyText, shareText } from "@/ui/share";
 import { ApiError, describeError } from "@/api/client";
 import { askShisho, type ChatTurn } from "@/api/endpoints";
 import { formatSize, pickAttachment, type Attachment } from "@/features/attachments";
+import { chooseAndDownload, PRINT_ICON, printWithErrors } from "@/features/downloadText";
+import { ShishoThinking } from "@/features/ShishoThinking";
 
 const MAX_MESSAGE_CHARS = 4_000;
 const MAX_HISTORY_MESSAGES = 20;
@@ -30,7 +32,7 @@ function trimHistory(turns: ChatTurn[]): ChatTurn[] {
 }
 
 /** `initialInput` starts the message box with a prompt, e.g. for hearing prep. */
-export function ShishoChat({ initialInput = "" }: { initialInput?: string }) {
+export function ShishoChat({ initialInput = "", docType }: { initialInput?: string; docType?: string }) {
   const p = usePalette();
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [input, setInput] = useState(initialInput);
@@ -70,6 +72,7 @@ export function ShishoChat({ initialInput = "" }: { initialInput?: string }) {
       const reply = await askShisho(
         trimHistory(next.map(({ role, content: c }) => ({ role, content: c }))),
         file ? { filename: file.filename, mimeType: file.mimeType, dataBase64: file.dataBase64 } : undefined,
+        docType,
       );
       setAttachment(null);
       setDemo(reply.mode === "demo");
@@ -140,6 +143,8 @@ export function ShishoChat({ initialInput = "" }: { initialInput?: string }) {
                   }}
                 />
                 <Button label="Share" variant="ghost" onPress={() => void shareText(b.draft!)} />
+                <Button label="Download" variant="ghost" onPress={() => chooseAndDownload("Shisho draft", b.draft!, setError)} />
+                <Button label="Print" icon={PRINT_ICON} variant="ghost" onPress={() => printWithErrors("Shisho draft", b.draft!, setError)} />
               </View>
               <T v="small" tone="faint">Read it in full and check every provision before you file.</T>
             </Card>
@@ -148,7 +153,7 @@ export function ShishoChat({ initialInput = "" }: { initialInput?: string }) {
       ))}
 
       {sending ? (
-        <T tone="soft" accessibilityLiveRegion="polite">{attachment ? "Reading your file and drafting. This can take up to a minute." : "Drafting. This usually takes 15 to 25 seconds."}</T>
+        <ShishoThinking message={attachment ? "Reading your file and drafting. This can take up to a minute." : "Drafting. This usually takes 15 to 25 seconds."} />
       ) : null}
       {demo ? (
         <T v="small" tone="faint">Demo mode: no model is connected, so replies are samples, not analysis of your facts.</T>
@@ -176,10 +181,10 @@ export function ShishoChat({ initialInput = "" }: { initialInput?: string }) {
           <Chip label="Remove" onPress={() => setAttachment(null)} />
         </View>
       ) : (
-        <Button label={picking ? "Opening files…" : "Attach a file"} variant="ghost" disabled={sending || picking} onPress={() => void attach()} />
+        <AttachButton busy={picking} disabled={sending || picking} onPress={() => void attach()} />
       )}
       <T v="small" tone="faint">
-        One file per message: PDF, Word, text or an image, up to 15 MB. Shisho says what it took from it, and can follow it as a template.
+        Attach any file, one per message, up to 15 MB. Shisho reads PDF, Word, images and text-based files (text, CSV, Markdown, HTML), says what it took from it, and can follow it as a template.
       </T>
       <Button label={sending ? "Waiting for Shisho…" : "Send"} variant="dark" disabled={sending || !input.trim()} onPress={() => void send(input)} />
       {bubbles.length > 0 ? (
@@ -189,5 +194,42 @@ export function ShishoChat({ initialInput = "" }: { initialInput?: string }) {
         What you type is sent to an AI provider to write the reply. Shisho does not save it. Share only what you are authorised to, and leave out client names where you can.
       </T>
     </View>
+  );
+}
+
+const ATTACH_ART = require("../../assets/attach-file.jpg");
+
+/**
+ * The attach button: the Shisho "Attach file" artwork (3:1) as a button. It dims while the picker is opening
+ * or a message is sending, and reads as "Attach a file" to a screen reader.
+ */
+function AttachButton({ busy, disabled, onPress }: { busy: boolean; disabled: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel="Attach a file"
+      accessibilityHint="Opens your files to choose one to send with the message"
+      accessibilityState={{ disabled, busy }}
+      hitSlop={6}
+      style={({ pressed }) => ({
+        // The full width of the message box above it, square-cornered like the
+        // app's other fields and buttons. Shorter than the artwork's 3:1, so the
+        // top and bottom of the scene are trimmed; the gold bar sits mid-height.
+        alignSelf: "stretch",
+        height: 76,
+        overflow: "hidden",
+        opacity: disabled ? 0.55 : pressed ? 0.85 : 1,
+        transform: [{ scale: pressed ? 0.98 : 1 }],
+      })}
+    >
+      <Image source={ATTACH_ART} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+      {busy ? (
+        <View style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(10,16,40,0.55)" }}>
+          <ActivityIndicator color="#F4E3B0" />
+        </View>
+      ) : null}
+    </Pressable>
   );
 }

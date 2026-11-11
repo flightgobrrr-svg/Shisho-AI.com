@@ -128,8 +128,10 @@ export function Nav() {
     !href.includes("#") && pathname === href;
 
 
+  // English on every page, as the footer is; see Footer.tsx.
   return (
     <header
+      lang="en"
       className={cn(
         "sticky top-0 z-50 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
         scrolled || open

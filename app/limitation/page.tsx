@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { LimitationChecker } from "@/components/tools/LimitationChecker";
 import { Emphasis } from "@/components/ui/Emphasis";
+import { TAG_LINK_CLASS } from "@/components/ui/Tag";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { LIMITATION_ENTRIES, SCHEDULE_SOURCE, VERIFIED_ON } from "@/lib/limitation";
 
@@ -55,7 +56,7 @@ export default async function LimitationPage({
               <li key={e.id}>
                 <Link
                   href={`/limitation/${e.id}`}
-                  className="inline-block rounded-full border border-ink/30 px-3.5 py-1.5 text-[13.5px] text-ink hover:border-ink/70 hover:bg-ink/[0.04]"
+                  className={TAG_LINK_CLASS}
                 >
                   {e.label}
                 </Link>

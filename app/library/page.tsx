@@ -93,7 +93,7 @@ export default async function LibraryPage({
 
   function chipClasses(active: boolean) {
     return cn(
-      "label-mono inline-flex min-h-9 items-center border px-3.5 text-[12.5px] transition-colors",
+      "label-mono inline-flex min-h-9 shrink-0 items-center border px-3.5 text-[12.5px] whitespace-nowrap transition-colors",
       "duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
       active
         ? "border-ink bg-ink text-paper-raised"
@@ -134,7 +134,7 @@ export default async function LibraryPage({
         </Container>
       </Section>
 
-      <Section id="collections" tone="raised" className="border-y border-ink/10 !pt-0">
+      <Section id="collections" tone="raised" className="!pt-0">
         <Container>
           <h2 className="font-display text-[22px] font-semibold text-ink">Three collections</h2>
           <ul className="reveal-stagger mt-10 grid gap-6 md:grid-cols-3">
@@ -192,7 +192,9 @@ export default async function LibraryPage({
               </div>
 
               {byCourtFilter.length > 0 && (
-                <div className="mt-8 flex flex-wrap gap-2">
+                /* One scrolling row on a phone, where six long mono labels
+                   stacked into a wall; wrapping from sm up. */
+                <div className="-mx-6 mt-8 flex scroll-px-6 gap-2 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
                   <Link
                     href={libraryHref({ category: null })}
                     scroll={false}
@@ -286,7 +288,7 @@ export default async function LibraryPage({
         </Container>
       </Section>
 
-      <Section tone="raised" className="border-t border-ink/10">
+      <Section tone="raised">
         <Container className="text-center">
           <h2 className="mx-auto max-w-xl font-display text-title font-semibold">
             Read while the library is being <Emphasis>built</Emphasis>.

@@ -12,7 +12,7 @@ export function FinalCta({ locale = "en" }: { locale?: Locale }) {
     <Section tone="ink" className="relative overflow-hidden">
       <Spotlight />
       <Container className="relative text-center">
-        <h2 className="mx-auto max-w-2xl font-display text-title font-semibold text-paper">
+        <h2 className="mx-auto max-w-2xl font-display text-title font-semibold text-on-inverse">
           {t.heading.map((seg, i) =>
             seg.em ? (
               <Emphasis key={i} className="decoration-accent-soft/80">
@@ -23,7 +23,7 @@ export function FinalCta({ locale = "en" }: { locale?: Locale }) {
             ),
           )}
         </h2>
-        <p className="mx-auto mt-5 max-w-[44ch] text-[16px] leading-relaxed text-paper/70">
+        <p className="mx-auto mt-5 max-w-[44ch] text-[16px] leading-relaxed text-on-inverse/70">
           {t.body}
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -36,7 +36,7 @@ export function FinalCta({ locale = "en" }: { locale?: Locale }) {
             href="/pricing"
             variant="ghost"
             size="lg"
-            className="border-paper/25 text-paper hover:border-paper/45 hover:bg-paper/5"
+            className="border-on-inverse/25 text-on-inverse hover:border-on-inverse/45 hover:bg-on-inverse/5"
           >
             {t.ctaSecondary}
           </Button>

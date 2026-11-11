@@ -45,13 +45,15 @@ export async function GET(request: Request) {
      when CRON_SECRET is configured — see
      https://vercel.com/docs/cron-jobs/manage-cron-jobs#securing-cron-jobs.
      The ingestion source itself is free, but this still writes to Supabase
-     on every run, so the route stays gated regardless. */
+     on every run, so the route stays gated regardless: with CRON_SECRET
+     unset it refuses every request rather than accepting any. */
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!cronSecret) {
+    console.error("[ingest-judgments] CRON_SECRET is not set; refusing to run.");
+    return NextResponse.json({ error: "Not configured" }, { status: 503 });
+  }
+  if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const year = new Date().getFullYear();

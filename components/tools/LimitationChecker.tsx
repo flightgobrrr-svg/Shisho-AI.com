@@ -32,7 +32,7 @@ export function LimitationChecker({
   const outer = valid && entry.outer ? lastDay(start, entry.outer.period) : null;
 
   const inputClass =
-    "mt-2 h-11 w-full rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink focus:border-ink/80 focus:outline-none";
+    "mt-2 h-11 w-full rounded-seal border border-ink/45 bg-paper px-3 text-[15px] text-ink focus:border-ink/80";
 
   async function copyLink() {
     const url = `${window.location.origin}/limitation?a=${entryId}&d=${date}`;

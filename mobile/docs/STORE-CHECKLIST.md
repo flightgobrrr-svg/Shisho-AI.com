@@ -17,9 +17,10 @@
 ## Policy and compliance (verify against current rules)
 
 - [ ] **Privacy policy at a public URL.** Both stores require one. The website is not deployed, so there is no URL yet. BLOCKER. The text in `lib/legalPages.ts` describes the website; write the app's own. It must cover sign-in, the text sent to Shisho and on to an AI provider, the random device ID, and what stays only on the phone.
+- [ ] **Unneeded Android permissions are blocked** in `app.json` (`blockedPermissions`: storage read/write and draw-over-apps), since the system file picker needs none of them. Confirm the release manifest after each build.
 - [ ] **Apple privacy nutrition label and Google Data safety form.** The app now has sign-in and sends drafts to the site, so it **does collect and send data**: email and password (sign-in), the text you submit to Shisho (passed to an AI provider, not saved by Shisho), a random device ID, and any file a person attaches to Shisho (passed on the same way). The app also asks for notification permission, only when a reminder is switched on. Answer the forms from that, and re-answer whenever it changes.
 - [ ] **Account deletion.** Accounts can now be created in the app, and deletion is built in (Me > Account). Verify each store's current rules on in-app account deletion and what it must cover.
-- [ ] **Payments.** None exist. If paid plans are added, check each store's current rules on in-app purchase versus external payment.
+- [ ] **Payments.** Built (21 Oct 2026): one month of a plan, paid through Razorpay in the system browser, Android only; the iPhone build shows a note instead. Before release, check Google Play's current Payments policy and India user-choice billing rules for digital subscriptions bought this way, and Apple's in-app purchase rules before any iOS payment. BLOCKER until checked.
 - [ ] **Content and category rules for legal-information apps and AI-generated content.** Check current guidelines on disclaimers, claims of professional advice, and disclosure of AI use. The app states "not legal advice" on every tool.
 - [ ] **Age rating questionnaires** (both stores).
 - [ ] **Target SDK / API level and 64-bit requirements** for Android; **minimum Xcode/SDK** for iOS. Expo's chosen SDK sets these; check that SDK 58 meets the current requirement at submission time.
@@ -29,8 +30,8 @@
 ## Listing material
 
 - [ ] Screenshots at each store's current required sizes, from a real device or emulator.
-- [ ] Short and long descriptions that match what is actually built (see `README.md`, "What works"). Do not list Shisho drafting, accounts, courses or payments.
-- [ ] Open-source notices screen (not built yet).
+- [ ] Short and long descriptions that match what is actually built. A draft is in `docs/STORE-LISTING.md`; re-check it against the app before submitting.
+- [x] Open-source notices screen: Menu → Legal → Open-source notices (`src/app/licences.tsx`). Run `npm run licences` after any dependency change.
 - [ ] Signing: Android upload key and Apple certificates/profiles. Keep them out of the repository (`mobile/.gitignore` already excludes `*.jks`, `*.p12`, `*.key`, `*.mobileprovision`).
 
 ## Testing still to do before any submission

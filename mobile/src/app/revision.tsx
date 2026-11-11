@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { Button, Card, Notice, Screen, T } from "@/ui/components";
+import { PageHeader } from "@/ui/web";
 import { space, usePalette } from "@/ui/theme";
 import { formatDate } from "@/ui/dates";
 import { INTERVAL_DAYS, isDue, isFinished } from "@/lib/revisionCore";
 import { markReviewed, removeBrief, revisionStore } from "@/state/stores";
 import { RevisionReminderToggle } from "@/features/RevisionReminderToggle";
 
+import { FadedPhoto } from "@/ui/FadedPhoto";
 export default function Revision() {
   const p = usePalette();
   const { value: cards, ready } = revisionStore.use();
@@ -19,6 +21,12 @@ export default function Revision() {
   if (cards.length === 0) {
     return (
       <Screen>
+      <FadedPhoto source={require("../../assets/screens/next-dates.jpg")} height={180} />
+      <PageHeader
+        eyebrow="For law students"
+        headline="Brief it once. *Remember* it."
+        intro="Each brief you save returns after a day, a week and a month. The cards live on this phone only; nothing is sent to Shisho."
+      />
         <Notice
           title="No briefs saved yet"
           body="Write a brief in case-brief practice and choose “Save for revision”. It comes back here after a day, a week and a month."
@@ -36,6 +44,12 @@ export default function Revision() {
 
   return (
     <Screen>
+      <FadedPhoto source={require("../../assets/screens/next-dates.jpg")} height={180} />
+      <PageHeader
+        eyebrow="For law students"
+        headline="Brief it once. *Remember* it."
+        intro="Each brief you save returns after a day, a week and a month. The cards live on this phone only; nothing is sent to Shisho."
+      />
       <T v="small" tone="soft">Briefs saved: {cards.length}. Reviews completed: {reviews}.</T>
       <RevisionReminderToggle />
 

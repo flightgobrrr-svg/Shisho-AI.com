@@ -12,17 +12,22 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
+    "@expo-google-fonts/noto-sans-telugu": "^0.4.2",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
     "@vercel/analytics": "^2.0.1",
     "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
+    "docx": "^9.14.0",
     "googleapis": "^176.0.0",
+    "harfbuzzjs": "^1.6.4",
     "mammoth": "^1.12.0",
     "next": "16.2.12",
+    "pdf-lib": "^1.17.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "unpdf": "^1.9.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
