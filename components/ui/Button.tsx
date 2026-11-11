@@ -30,8 +30,8 @@ const VARIANTS: Record<ButtonVariant, string> = {
     "bg-seal text-paper-raised hover:bg-seal-dark active:bg-seal-dark " +
     "border border-transparent",
   ghost:
-    "bg-transparent text-ink border border-ink/25 " +
-    "hover:border-ink/45 hover:bg-ink/[0.04] active:bg-ink/[0.07]",
+    "bg-transparent text-ink border border-ink/45 " +
+    "hover:border-ink/75 hover:bg-ink/[0.04] active:bg-ink/[0.07]",
   dark:
     "bg-ink text-paper-raised border border-transparent " +
     "hover:bg-ink-soft active:bg-ink-soft",

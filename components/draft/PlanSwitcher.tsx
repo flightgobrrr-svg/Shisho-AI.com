@@ -1,6 +1,7 @@
 "use client";
 
 import { PLAN_COOKIE, PLANS, PLAN_LABELS, USAGE_COOKIE, type Plan } from "@/lib/entitlements";
+import { ASSISTANT_USAGE_COOKIE } from "@/lib/assistantEntitlements";
 
 /**
  * DEVELOPMENT ONLY — rendered by app/draft-bot/page.tsx only when
@@ -27,9 +28,13 @@ export function PlanSwitcher({ plan }: { plan: Plan }) {
     writeCookie(USAGE_COOKIE, "0", 0);
   }
 
+  function resetAssistantUsage() {
+    writeCookie(ASSISTANT_USAGE_COOKIE, "0", 0);
+  }
+
   return (
     <div className="mb-8 rounded-seal border border-dashed border-ink/25 bg-paper-raised p-4">
-      <p className="label-mono text-ink-soft/70">
+      <p className="label-mono text-ink-faint">
         Dev only · mock plan state
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -54,6 +59,13 @@ export function PlanSwitcher({ plan }: { plan: Plan }) {
           className="ml-2 text-[13px] text-ink-soft underline underline-offset-4 hover:text-ink"
         >
           Reset review count
+        </button>
+        <button
+          type="button"
+          onClick={resetAssistantUsage}
+          className="text-[13px] text-ink-soft underline underline-offset-4 hover:text-ink"
+        >
+          Reset chat count
         </button>
       </div>
     </div>

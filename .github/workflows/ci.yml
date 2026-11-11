@@ -1,0 +1,36 @@
+name: CI
+
+# Runs on every push and pull request. The legal-data tests are the important
+# ones: they fail if a limitation period, an IPC to BNS row or a document
+# provision is changed by mistake (see tests/legal-data.test.mjs).
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Legal-data tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://example.invalid

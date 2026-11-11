@@ -5,17 +5,50 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
-import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import { AuthStatus } from "@/components/layout/AuthStatus";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LanguageSwitch } from "@/components/home/LanguageSwitch";
+import { LOCALES, type Locale } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/cn";
-import { PRIMARY_NAV } from "@/lib/nav";
+import { PRIMARY_NAV, type NavLink } from "@/lib/nav";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+const NON_ENGLISH_LOCALES = LOCALES.filter((l) => l !== "en");
+
+/** Every translated route is a bare top-level segment (/hi, /bn, …) — the
+ *  nav has no per-route locale of its own to read, so it derives one from
+ *  the URL rather than needing every page to thread a `locale` prop down
+ *  to a component that renders on all of them. Anything else (including
+ *  the 14+ pages with no translation yet) reads as "en", which is exactly
+ *  right: switching language from one of those takes you to that
+ *  language's homepage, since that's the only translated page there is. */
+function localeFromPathname(pathname: string): Locale {
+  const first = pathname.split("/")[1];
+  return (NON_ENGLISH_LOCALES as string[]).includes(first) ? (first as Locale) : "en";
+}
+
+/** One audience in the desktop "Who it's for" panel. */
+function GroupLink({ link }: { link: NavLink }) {
+  return (
+    <Link
+      href={link.href}
+      className="block px-3 py-2 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper"
+    >
+      <span className="block text-[14px] text-ink">{link.label}</span>
+      <span className="label-mono mt-0.5 block text-ink-faint">
+        {link.planned ? "Planned" : "Available now"}
+      </span>
+    </Link>
+  );
+}
 
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const locale = localeFromPathname(pathname);
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -94,8 +127,11 @@ export function Nav() {
   const isActive = (href: string) =>
     !href.includes("#") && pathname === href;
 
+
+  // English on every page, as the footer is; see Footer.tsx.
   return (
     <header
+      lang="en"
       className={cn(
         "sticky top-0 z-50 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
         scrolled || open
@@ -112,11 +148,22 @@ export function Nav() {
           <Logo />
         </Link>
 
-        {/* Desktop */}
-        <nav aria-label="Primary" className="hidden lg:block">
-          <ul className="flex items-center gap-9">
+        {/* Desktop.
+
+            The dropdowns are pure CSS — `group-hover` for the pointer and
+            `group-focus-within` for the keyboard, so there is no open-menu
+            state to manage and nothing to get stuck open on a route change.
+            The panel is a ruled box like every other box on the site, and it
+            fades and settles 4px with the standard nudge; the reduced-motion
+            backstop in globals.css collapses that to an instant swap.
+
+            The panel's wrapper carries `pt-2` rather than a margin so the gap
+            between trigger and panel is still inside the hover target — with
+            a margin the menu closes as the pointer crosses the gap. */}
+        <nav aria-label="Primary" className="hidden xl:block">
+          <ul className="flex items-center gap-9 whitespace-nowrap">
             {PRIMARY_NAV.map((link) => (
-              <li key={link.href}>
+              <li key={link.href} className="group relative">
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
@@ -129,54 +176,132 @@ export function Nav() {
                 >
                   {link.label}
                 </Link>
+
+                {link.groups && link.groups.length > 0 && (
+                  <div
+                    className={cn(
+                      "invisible absolute top-full left-1/2 z-10 -translate-x-1/2 pt-5 opacity-0",
+                      "transition-[opacity,transform] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                      "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
+                      "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
+                      "-translate-y-1",
+                    )}
+                  >
+                    <div className="grid w-[46rem] grid-cols-4 gap-2 whitespace-normal border border-ink/45 bg-paper-raised p-4 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]">
+                      {link.groups.map((group) => (
+                        <div key={group.heading}>
+                          <p className="label-mono px-3 pt-1 pb-2 text-indigo">{group.heading}</p>
+                          <ul>
+                            {group.links.map((child) => (
+                              <li key={child.href}>
+                                <GroupLink link={child} />
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {link.children && link.children.length > 0 && (
+                  <div
+                    className={cn(
+                      "invisible absolute top-full left-1/2 z-10 -translate-x-1/2 pt-5 opacity-0",
+                      "transition-[opacity,transform] duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                      "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
+                      "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
+                      "-translate-y-1",
+                    )}
+                  >
+                    <ul className="w-72 whitespace-normal border border-ink/45 bg-paper-raised p-2 shadow-[0_18px_44px_-16px_rgba(34,37,43,0.28)]">
+                      {link.children.map((child) => (
+                        <li key={child.href}>
+                          <Link
+                            href={child.href}
+                            className="block px-3 py-2.5 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:bg-paper"
+                          >
+                            <span className="block text-[14px] text-ink">
+                              {child.label}
+                            </span>
+                            {child.blurb && (
+                              <span className="mt-0.5 block text-[12.5px] leading-snug text-ink-soft">
+                                {child.blurb}
+                              </span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
         </nav>
 
-        <div className="hidden lg:block">
-          <Button href="/draft-bot" size="sm">
-            Try free
-          </Button>
-        </div>
+        {/* Language select lives here — in the sticky header — rather than
+            on the homepage hero it started on, so it stays on top of every
+            page instead of scrolling away with the hero the moment it isn't
+            the homepage anymore. */}
+        <div className="flex items-center gap-3">
+          <AuthStatus />
+          <ThemeToggle />
+          <LanguageSwitch locale={locale} />
 
-        {/* Mobile trigger */}
-        <button
-          ref={triggerRef}
-          type="button"
-          onClick={() => (open ? close() : setOpen(true))}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          aria-label={open ? "Close menu" : "Open menu"}
-          className="-mr-2 inline-flex size-11 items-center justify-center rounded-seal text-ink lg:hidden"
-        >
-          <span aria-hidden="true" className="relative block h-3 w-5">
-            <span
-              className={cn(
-                "absolute left-0 block h-px w-5 bg-current transition-transform duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
-                open ? "top-1.5 rotate-45" : "top-0",
-              )}
-            />
-            <span
-              className={cn(
-                "absolute left-0 block h-px w-5 bg-current transition-transform duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
-                open ? "top-1.5 -rotate-45" : "top-3",
-              )}
-            />
-          </span>
-        </button>
+          <div className="hidden xl:block">
+            <Button href="/draft-bot" size="sm">
+              Try free
+            </Button>
+          </div>
+
+          {/* Mobile trigger */}
+          <button
+            ref={triggerRef}
+            type="button"
+            onClick={() => (open ? close() : setOpen(true))}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="-mr-2 inline-flex size-11 items-center justify-center rounded-seal text-ink xl:hidden"
+          >
+            <span aria-hidden="true" className="relative block h-3 w-5">
+              <span
+                className={cn(
+                  "absolute left-0 block h-px w-5 bg-current transition-transform duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                  open ? "top-1.5 rotate-45" : "top-0",
+                )}
+              />
+              <span
+                className={cn(
+                  "absolute left-0 block h-px w-5 bg-current transition-transform duration-[var(--duration-nudge)] ease-[var(--ease-precise)]",
+                  open ? "top-1.5 -rotate-45" : "top-3",
+                )}
+              />
+            </span>
+          </button>
+        </div>
       </div>
 
-      <ScrollProgress />
-
-      {/* Mobile panel */}
+      {/* Mobile panel — lives inside this sticky header, and the effect
+          above locks body scroll while it's open (so the page behind it
+          can't scroll instead). Without its own overflow-y-auto, a sticky
+          element taller than the viewport is a genuine trap: body scroll is
+          exactly what's disabled, so anything past the fold — now that
+          Courses alone has 4 children, on top of The Map's 6 — would be
+          unreachable. max-h caps it to the space below the fixed h-16 bar
+          above (100svh, not 100vh, for the same mobile-chrome reason
+          Hero.tsx's own min-h-[calc(100svh-4rem)] uses it) and lets the
+          panel scroll independently instead. */}
       <div
         id="mobile-menu"
         ref={panelRef}
         hidden={!open}
-        className="border-t border-ink/10 bg-paper-raised lg:hidden"
+        className="max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain border-t border-ink/10 bg-paper-raised xl:hidden"
       >
         <nav aria-label="Primary" className="px-6 py-6">
+          <AuthStatus variant="panel" />
+
           <ul className="space-y-1">
             {PRIMARY_NAV.map((link) => (
               <li key={link.href}>
@@ -195,6 +320,52 @@ export function Nav() {
                     </span>
                   ) : null}
                 </Link>
+
+                {/* Inline rather than a nested disclosure: there is no hover
+                    on touch, and a tap-to-expand would put a second tap
+                    between someone and the thing they came for. The rule and
+                    indent carry the nesting instead. */}
+                {link.groups && link.groups.length > 0 && (
+                  <div className="mb-2 ml-1 space-y-3 border-l border-ink/15 pl-4">
+                    {link.groups.map((group) => (
+                      <div key={group.heading}>
+                        <p className="label-mono pt-1 text-indigo">{group.heading}</p>
+                        <ul>
+                          {group.links.map((child) => (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                onClick={() => setOpen(false)}
+                                className="flex items-baseline gap-3 py-2 text-[14.5px] text-ink-soft"
+                              >
+                                {child.label}
+                                {child.planned ? (
+                                  <span className="label-mono text-ink-faint">Planned</span>
+                                ) : null}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {link.children && link.children.length > 0 && (
+                  <ul className="mb-2 ml-1 border-l border-ink/15 pl-4">
+                    {link.children.map((child) => (
+                      <li key={child.href}>
+                        <Link
+                          href={child.href}
+                          onClick={() => setOpen(false)}
+                          className="block py-2 text-[14.5px] text-ink-soft"
+                        >
+                          {child.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>

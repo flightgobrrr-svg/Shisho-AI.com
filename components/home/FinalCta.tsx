@@ -3,32 +3,42 @@ import { Container, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Spotlight } from "@/components/motion/Spotlight";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
-export function FinalCta() {
+export function FinalCta({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).finalCta;
+
   return (
     <Section tone="ink" className="relative overflow-hidden">
       <Spotlight />
       <Container className="relative text-center">
-        <h2 className="mx-auto max-w-2xl font-display text-title font-semibold text-paper">
-          Put your draft in front of a{" "}
-          <Emphasis className="decoration-accent-soft/80">mentor</Emphasis>.
+        <h2 className="mx-auto max-w-2xl font-display text-title font-semibold text-on-inverse">
+          {t.heading.map((seg, i) =>
+            seg.em ? (
+              <Emphasis key={i} className="decoration-accent-soft/80">
+                {seg.text}
+              </Emphasis>
+            ) : (
+              <span key={i}>{seg.text}</span>
+            ),
+          )}
         </h2>
-        <p className="mx-auto mt-5 max-w-[44ch] text-[16px] leading-relaxed text-paper/70">
-          Five free reviews a month. No card required, and nothing to install.
+        <p className="mx-auto mt-5 max-w-[44ch] text-[16px] leading-relaxed text-on-inverse/70">
+          {t.body}
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Magnetic>
             <Button href="/draft-bot" size="lg">
-              Try the Draft Bot
+              {t.ctaPrimary}
             </Button>
           </Magnetic>
           <Button
             href="/pricing"
             variant="ghost"
             size="lg"
-            className="border-paper/25 text-paper hover:border-paper/45 hover:bg-paper/5"
+            className="border-on-inverse/25 text-on-inverse hover:border-on-inverse/45 hover:bg-on-inverse/5"
           >
-            See pricing
+            {t.ctaSecondary}
           </Button>
         </div>
       </Container>

@@ -1,0 +1,20 @@
+# What `vercel deploy` leaves out of the upload. The website builds without
+# any of these; secrets go into the Vercel dashboard, never the upload.
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+.mcp.json
+.claude/
+
+# The mobile app is a separate project (Expo); the website never imports it.
+# Anchored with "/": a bare "mobile/" would also drop app/api/mobile, the
+# app's server routes.
+/mobile/
+
+# Build output and dependencies (Vercel installs and builds itself)
+node_modules/
+.next/
+*.apk
+*.aab

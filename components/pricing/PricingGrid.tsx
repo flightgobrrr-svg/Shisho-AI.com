@@ -16,7 +16,7 @@ import { cn } from "@/lib/cn";
  *     to wrap awkwardly.
  * ₹999 is the widest value; verified at 320px.
  *
- * Seal budget on this page: the "Most popular" badge, the Core CTA, and the
+ * Seal budget on this page: the "Recommended for students" badge, the Core CTA, and the
  * Emphasis underlines. Nothing else. Feature checks are ink-soft on purpose.
  */
 
@@ -51,18 +51,18 @@ export function PricingGrid() {
                 "hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-20px_rgba(34,37,43,0.45)]",
                 tier.popular
                   ? "border-seal/40"
-                  : "border-ink/10 hover:border-ink/20",
+                  : "border-ink/45 hover:border-ink/75",
               )}
             >
               {tier.popular ? (
                 <span className="label-mono absolute -top-2.5 left-7 bg-paper-raised px-2 text-seal">
-                  Most popular
+                  Recommended for students
                 </span>
               ) : null}
 
-              <h3 className="font-display text-[20px] font-semibold text-ink">
+              <h2 className="font-display text-[20px] font-semibold text-ink">
                 {tier.name}
-              </h3>
+              </h2>
 
               <Price amount={tier.price} />
 
@@ -76,7 +76,7 @@ export function PricingGrid() {
                     key={feature}
                     className="flex gap-2.5 text-[14px] leading-relaxed text-ink-soft"
                   >
-                    <span aria-hidden="true" className="mt-px text-ink-soft/60">
+                    <span aria-hidden="true" className="mt-px text-ink-faint">
                       &#10003;
                     </span>
                     <span className="min-w-0">{feature}</span>
@@ -98,11 +98,11 @@ export function PricingGrid() {
 
       {/* The add-on is not a fifth tier — it is a different kind of thing,
           so it sits outside the comparison rather than inside it. */}
-      <div className="mt-8 rounded-seal border border-ink/10 bg-paper-raised p-7">
+      <div className="mt-8 rounded-seal border border-ink/45 bg-paper-raised p-7">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0 md:max-w-xl">
-            <p className="label-mono text-ink-soft/70">Standalone add-on</p>
-            <h3 className="mt-3 font-display text-[20px] font-semibold text-ink">
+            <p className="label-mono text-ink-faint">Standalone add-on</p>
+            <h2 className="mt-3 font-display text-[20px] font-semibold text-ink">
               {ADD_ON.name} —{" "}
               <span className="whitespace-nowrap tabular-nums">
                 {formatINR(ADD_ON.price)}
@@ -111,7 +111,7 @@ export function PricingGrid() {
                 {" "}
                 / month
               </span>
-            </h3>
+            </h2>
             <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
               {ADD_ON.description}
             </p>

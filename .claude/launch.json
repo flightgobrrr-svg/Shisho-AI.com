@@ -4,9 +4,35 @@
     {
       "name": "shisho-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "shisho-mobile",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "mobile",
+        "run",
+        "web",
+        "--",
+        "--port",
+        "8081"
+      ],
+      "port": 8081,
+      "autoPort": true
+    },
+    {
+      "name": "shisho-dev-localdb",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/Users/madha/AppData/Local/Temp/claude/C--Users-madha-OneDrive-Desktop-Shisho/854df475-cf13-496f-89e4-b523864e3f3e/scratchpad/localdev.mjs"
+      ],
+      "port": 3000
     }
   ]
 }

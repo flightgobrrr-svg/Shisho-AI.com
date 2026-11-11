@@ -32,7 +32,7 @@ export const TIERS: Tier[] = [
     tagline: "See how a mentor marks your work.",
     features: [
       "Starter course preview",
-      "5 Draft Bot reviews per month",
+      "5 Shisho reviews per month",
       "Legal Library — daily judgment digest",
     ],
     cta: { label: "Start free", href: "/draft-bot" },
@@ -45,7 +45,7 @@ export const TIERS: Tier[] = [
     features: [
       "Full Starter course",
       "Full Legal Library access",
-      "5 Draft Bot reviews per month",
+      "5 Shisho reviews per month",
     ],
     cta: { label: "Get Basic", href: "/draft-bot" },
   },
@@ -57,7 +57,7 @@ export const TIERS: Tier[] = [
     popular: true,
     features: [
       "Everything in Basic",
-      "Draft Bot included — unlimited",
+      "Shisho included — unlimited",
       "Downloadable case briefs",
     ],
     cta: { label: "Get Core", href: "/draft-bot" },
@@ -70,7 +70,7 @@ export const TIERS: Tier[] = [
     features: [
       "Everything in Core",
       "Full Proficient course",
-      "Priority Draft Bot with citation checks",
+      "Priority Shisho with citation checks",
       "Drafting templates — pleadings and contracts",
     ],
     cta: { label: "Get Proficient", href: "/draft-bot" },
@@ -94,7 +94,7 @@ export const COMPARISON_ROWS: {
   values: Record<TierId, string | boolean>;
 }[] = [
   {
-    label: "Draft Bot reviews",
+    label: "Shisho reviews",
     values: { free: "5 / month", basic: "5 / month", core: "Unlimited", proficient: "Unlimited" },
   },
   {
@@ -114,6 +114,10 @@ export const COMPARISON_ROWS: {
     values: { free: "Daily digest", basic: "Full access", core: "Full access", proficient: "Full access" },
   },
   {
+    label: "Practitioner commentary",
+    values: { free: false, basic: "Read", core: "Read", proficient: "Read + ask Shisho" },
+  },
+  {
     label: "Downloadable case briefs",
     values: { free: false, basic: false, core: true, proficient: true },
   },
@@ -128,9 +132,29 @@ export const COMPARISON_ROWS: {
  * comparison grid because it is not comparable to the four plans above.
  */
 export const ADD_ON = {
-  name: "Draft Bot only",
+  name: "Shisho only",
   price: 699,
   description:
     "Unlimited drafting and review, without the courses. For practitioners who want the assistant and nothing else.",
-  cta: { label: "Add Draft Bot", href: "/draft-bot" },
+  cta: { label: "Add Shisho", href: "/draft-bot" },
 } as const;
+
+/** The intro under "Priced for a student budget." on /pricing (website and app). */
+export const PRICING_INTRO =
+  "All prices in Indian rupees, billed monthly. Cancel any time. Four plans, from a \u20b99 entry price to unlimited, citation-checked drafting review.";
+
+/** "Before you subscribe" on /pricing (website and app). */
+export const PRICING_FAQS = [
+  {
+    q: "What do I actually get for \u20b99?",
+    a: "Basic unlocks the full Starter course and the full Legal Library \u2014 everything Free only previews. Shisho itself stays at the same 5 reviews a month as Free; unlimited reviews start at Core.",
+  },
+  {
+    q: "Can I cancel?",
+    a: "Yes \u2014 every plan is monthly and can be cancelled at any time. Access continues to the end of the billing month.",
+  },
+  {
+    q: "I only want Shisho, not the courses. Do I have to buy Core?",
+    a: "No \u2014 the \u20b9699 Shisho-only add-on, under the plans above, buys Shisho on its own, unlimited, without either course.",
+  },
+];

@@ -10,18 +10,30 @@
  * That is deliberate and sufficient for building and demonstrating the UI, but
  * it must not be mistaken for a paywall:
  *
- *   TODO BEFORE LAUNCH — replace `readPlan` and the usage counter with a
- *   real session lookup against your account store. Until then, anyone who
- *   edits a cookie gets Proficient for free.
+ *   Signed-in visitors get their plan from the profile (lib/profile.ts).
+ *   For everyone else, `readPlan` honours the cookie only outside
+ *   production, so editing it in production grants nothing.
  *
  * What IS real, and must stay real: the gate is enforced in the route handler
  * (app/api/draft/route.ts), not in the client. Moving that check to the
  * browser would make it decorative.
  */
 
-export type Plan = "free" | "core" | "proficient" | "addon";
+export type Plan = "free" | "basic" | "core" | "proficient" | "addon";
 
-export const PLANS: Plan[] = ["free", "core", "proficient", "addon"];
+export const PLANS: Plan[] = ["free", "basic", "core", "proficient", "addon"];
+
+/** Free and Basic share the trial allowance; Basic adds study access, not the bot (lib/pricing.ts). */
+export const isTrialPlan = (plan: Plan) => plan === "free" || plan === "basic";
+
+/**
+ * The Library in the app: Free gets one new judgment digest a day (lib/pricing.ts
+ * sells Free as "Daily digest" and Basic upward as "Full access"). Digests
+ * already saved on the phone stay readable on every plan. The Shisho-only
+ * add-on is sold "without the courses", so it reads the Library as Free does.
+ */
+export const FREE_DAILY_DIGESTS = 1;
+export const libraryIsLimited = (plan: Plan) => plan === "free" || plan === "addon";
 
 /** Cookie names. Both are mock storage — see the warning above. */
 export const PLAN_COOKIE = "shisho_plan";
@@ -37,14 +49,19 @@ export function isPlan(value: unknown): value is Plan {
   return typeof value === "string" && (PLANS as string[]).includes(value);
 }
 
-/** Parses a cookie value into a plan, defaulting to free. */
+/**
+ * Parses the plan cookie, defaulting to free. In production it is always free:
+ * the cookie is visitor-editable and exists for the dev-only PlanSwitcher, so
+ * a paid plan there comes only from the signed-in profile (lib/profile.ts).
+ */
 export function readPlan(value: string | undefined): Plan {
+  if (process.env.NODE_ENV === "production") return "free";
   return isPlan(value) ? value : "free";
 }
 
 /** `null` means unlimited. */
 export function reviewQuotaFor(plan: Plan): number | null {
-  return plan === "free" ? FREE_MONTHLY_REVIEWS : null;
+  return isTrialPlan(plan) ? FREE_MONTHLY_REVIEWS : null;
 }
 
 export function readUsage(value: string | undefined): number {
@@ -75,6 +92,7 @@ export function entitlementFor(plan: Plan, used: number): Entitlement {
 /** Human-readable plan name, for the upgrade panel and the dev switcher. */
 export const PLAN_LABELS: Record<Plan, string> = {
   free: "Free",
+  basic: "Basic",
   core: "Core",
   proficient: "Proficient",
   addon: "Draft Bot only",

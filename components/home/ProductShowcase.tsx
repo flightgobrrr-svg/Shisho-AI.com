@@ -3,6 +3,8 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { Button } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
 import { Emphasis } from "@/components/ui/Emphasis";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
+import { DRAFT_EXCERPT } from "@/lib/showcase";
 
 /**
  * Adapted from the supplied Tailark `hero-section-1` block.
@@ -23,60 +25,56 @@ import { Emphasis } from "@/components/ui/Emphasis";
  * reuses the annotation motif rather than sitting beside it.
  */
 
-const DRAFT_LINES = [
-  { w: "w-[62%]", strong: true },
-  { w: "w-[38%]" },
-  { w: "w-full" },
-  { w: "w-[88%]" },
-  { w: "w-[71%]" },
-  { w: "w-[44%]", strong: true },
-  { w: "w-full" },
-  { w: "w-[82%]" },
-  { w: "w-[57%]" },
-];
 
-const MINI_NOTES = [
-  "Art. 226 — plead territorial jurisdiction.",
-  "Interim relief: plead all three limbs.",
-  "No verification clause — Order VI R. 15.",
-];
-
-function DraftBotMiniature() {
+function DraftBotMiniature({ notes }: { notes: string[] }) {
   return (
     <div
       aria-hidden="true"
-      className="grid grid-cols-1 gap-0 sm:grid-cols-[minmax(0,1fr)_12rem]"
+      className="grid grid-cols-1 text-left sm:grid-cols-[minmax(0,1fr)_15rem]"
     >
       {/* Left: the draft */}
-      <div className="space-y-2.5 p-5 sm:p-7">
-        <div className="mb-4 flex gap-1.5">
-          <span className="h-1.5 w-10 rounded-full bg-ink/20" />
-          <span className="h-1.5 w-6 rounded-full bg-ink/10" />
-        </div>
-        {DRAFT_LINES.map((line, i) => (
-          <span
-            key={i}
-            className={`block h-1.5 rounded-full ${line.w} ${
-              line.strong ? "bg-ink/25" : "bg-ink/12"
-            }`}
-          />
+      <div className="space-y-3 p-5 sm:p-8">
+        {DRAFT_EXCERPT.map((line) => (
+          <p
+            key={line.text}
+            className={
+              line.heading
+                ? "label-mono text-ink-soft"
+                : "flex gap-2 font-display text-[14px] leading-snug text-ink sm:text-[15px]"
+            }
+          >
+            {line.heading ? (
+              line.text
+            ) : (
+              <>
+                <span
+                  className={
+                    line.note === undefined
+                      ? "min-w-0"
+                      : "min-w-0 underline decoration-seal/60 decoration-1 underline-offset-4"
+                  }
+                >
+                  {line.text}
+                </span>
+                {line.note !== undefined ? (
+                  <sup className="mt-1 shrink-0 font-sans text-[10px] font-semibold text-seal">
+                    {line.note + 1}
+                  </sup>
+                ) : null}
+              </>
+            )}
+          </p>
         ))}
       </div>
 
-      {/* Right on desktop, stacked underneath on mobile — the margin only
+      {/* Right on desktop, stacked underneath on mobile: the margin only
           exists once there is width to spare for one. */}
-      <div className="space-y-2.5 border-t border-ink/10 bg-paper/40 p-4 sm:border-t-0 sm:border-l sm:p-5">
-        <span className="label-mono block text-[7px] text-ink-soft/50">
-          Shisho notes
-        </span>
-        {MINI_NOTES.map((note) => (
-          <div
-            key={note}
-            className="rounded-[2px] border-l-2 border-seal/50 bg-paper-raised py-1.5 pl-2"
-          >
-            <span className="block text-[8px] leading-snug text-seal sm:text-[9px]">
-              {note}
-            </span>
+      <div className="space-y-3 border-t border-ink/10 bg-paper/50 p-5 sm:border-t-0 sm:border-l sm:p-6">
+        <span className="label-mono block text-ink-faint">Shisho notes</span>
+        {notes.map((note, i) => (
+          <div key={note} className="flex gap-2.5 text-[13px] leading-snug text-ink">
+            <span className="mt-px font-sans text-[11px] font-semibold text-seal">{i + 1}</span>
+            <span>{note}</span>
           </div>
         ))}
       </div>
@@ -84,7 +82,9 @@ function DraftBotMiniature() {
   );
 }
 
-export function ProductShowcase() {
+export function ProductShowcase({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).productShowcase;
+
   return (
     <Section>
       <Container>
@@ -93,11 +93,9 @@ export function ProductShowcase() {
               project's 3px / 180ms hover motion. */}
           <Link
             href="/draft-bot"
-            className="group mx-auto inline-flex w-fit items-center gap-3 rounded-full border border-ink/20 bg-paper-raised py-1 pr-3 pl-4 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/35"
+            className="group mx-auto inline-flex w-fit items-center gap-3 rounded-seal border border-ink/45 bg-paper-raised py-1 pr-3 pl-4 transition-colors duration-[var(--duration-nudge)] ease-[var(--ease-precise)] hover:border-ink/75"
           >
-            <span className="label-mono text-ink-soft">
-              Draft Bot · demo mode
-            </span>
+            <span className="label-mono text-ink-soft">{t.pill}</span>
             <span aria-hidden="true" className="h-3.5 w-px bg-ink/15" />
             <span
               aria-hidden="true"
@@ -108,23 +106,23 @@ export function ProductShowcase() {
           </Link>
 
           <h2 className="mx-auto mt-8 max-w-2xl font-display text-title font-semibold text-balance">
-            See what a marked-up <Emphasis>draft</Emphasis> looks like.
+            {t.heading.map((seg, i) =>
+              seg.em ? <Emphasis key={i}>{seg.text}</Emphasis> : <span key={i}>{seg.text}</span>,
+            )}
           </h2>
 
           <p className="mx-auto mt-5 max-w-[48ch] text-[16px] leading-relaxed text-ink-soft">
-            Paste a plaint or a contract on the left. Notes come back in the
-            margin, each tied to the clause it marks and the Indian authority it
-            rests on.
+            {t.body}
           </p>
 
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Magnetic>
               <Button href="/draft-bot" size="lg">
-                Open the Draft Bot
+                {t.ctaPrimary}
               </Button>
             </Magnetic>
             <Button href="/pricing" variant="ghost" size="lg">
-              See pricing
+              {t.ctaSecondary}
             </Button>
           </div>
         </div>
@@ -133,24 +131,18 @@ export function ProductShowcase() {
             makes the frame read as a window onto something larger rather than
             a cropped screenshot. */}
         <figure className="reveal relative mx-auto mt-14 max-w-4xl">
-          <div className="overflow-hidden rounded-seal border border-ink/12 bg-paper-raised p-1.5 shadow-[0_1px_2px_rgba(34,37,43,0.04),0_18px_44px_-16px_rgba(34,37,43,0.18)]">
+          <div className="overflow-hidden rounded-seal border border-ink/45 bg-paper-raised p-1.5 shadow-[0_1px_2px_rgba(34,37,43,0.04),0_18px_44px_-16px_rgba(34,37,43,0.18)]">
             <div className="overflow-hidden rounded-[2px] border border-ink/8 bg-paper-raised">
-              <DraftBotMiniature />
+              <DraftBotMiniature notes={t.miniNotes} />
             </div>
           </div>
 
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-paper"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-paper"
           />
 
-          <figcaption className="sr-only">
-            A preview of the Draft Bot workspace: the draft on the left, and
-            three Shisho notes in the right margin covering territorial
-            jurisdiction under Article 226, the three limbs required for interim
-            relief, and a missing verification clause under Order VI Rule 15 of
-            the Code of Civil Procedure.
-          </figcaption>
+          <figcaption className="sr-only">{t.figcaption}</figcaption>
         </figure>
       </Container>
     </Section>

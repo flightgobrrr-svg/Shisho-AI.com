@@ -20,24 +20,47 @@
 
 @theme {
   /* --- Colour ------------------------------------------------------------
-     Refined off the AI-default cream/terracotta. `paper` is cooler and
-     greyer — Indian court paper, not California cream — and `seal` is a
-     hotter, deeper vermilion: lac sealing wax and a registrar's stamp,
-     rather than editorial terracotta.
+     Restored, on request, after a round trip through a green palette that
+     didn't hold up. For the full history: this is the THIRD direction this
+     project has been through. A bronze/cream + Bodoni Moda/Jost redesign
+     was tried and reverted before this file's git history even starts. A
+     4-stop green ramp replaced this identity for one session — every value
+     in it had to be derived by blending toward black/white to clear
+     accessibility contrast at all, `seal` cleared AA by less than a point,
+     and `indigo` had no cool hue available in an all-green source, so it
+     collapsed into `ink`. That palette was judged "not up to the mark" and
+     this is the answer: not a fourth invented palette, but recognising that
+     this one was never actually beaten on its own terms — it was replaced,
+     then found worse, then restored.
 
-     `indigo` is new and is the point of the exercise: a genuine cool tone
-     held in tension against a wholly warm palette. It replaces the old
-     `slate`, which was deleted for failing AA at body size and for being
-     used exactly zero times.
+     `paper` is cooler and greyer than the AI-default cream/terracotta —
+     Indian court paper, not California cream — and `seal` is a hotter,
+     deeper vermilion: lac sealing wax and a registrar's stamp, not
+     editorial terracotta. `seal` is the mentor's red pen specifically
+     because red-ink correction is the real, recognisable convention this
+     product is naming itself after — a color the brand's whole positioning
+     depends on, not a swap-able accent.
+
+     `indigo` is a genuine cool tone held in tension against a wholly warm
+     palette — the thing the green palette had no way to reproduce. It
+     replaced an even older `slate`, deleted for failing AA at body size.
      --------------------------------------------------------------------- */
   --color-ink: #1e2127; /* body text, headings                            */
   --color-ink-soft: #3a3f49; /* secondary text, small print, hairlines    */
+  --color-ink-faint: #5b5f66; /* tertiary labels: 5.2:1 on paper, 5.5:1 raised. Use instead of
+                                 text-ink-soft/NN, which dropped below 4.5:1 */
   --color-paper: #eae8e1; /* page ground                                  */
   --color-paper-raised: #f2f1ec; /* cards, sticky nav, lifted surfaces    */
   --color-seal: #a32e1f; /* CTA + annotation ONLY                         */
   --color-seal-dark: #85251a; /* CTA hover/active only                    */
   --color-indigo: #2c3a57; /* cool counter-tone: mono labels, citations   */
   --color-accent-soft: #d9a99a; /* decorative rules/washes — NEVER text   */
+  /* The inverted band (Section tone="ink"): a dark ground in BOTH themes. In
+     light mode it is simply ink on paper flipped; in dark mode flipping would
+     turn it into a bright slab at the foot of a dark page, so it goes one step
+     darker than paper instead. */
+  --color-inverse: #1e2127;
+  --color-on-inverse: #eae8e1;
 
   /* Contrast, measured against --color-paper (#EAE8E1):
        ink          13.15:1  ✓ AAA, any size
@@ -46,8 +69,8 @@
        seal          5.77:1  ✓ AA normal text   (paper-raised ON seal: 6.26:1)
        accent-soft   1.9:1   ✗ decorative only, never carries text
 
-     Every pairing here is better than the palette it replaced — seal rose
-     from 5.01 to 5.77, and the old `slate` (4.45, failing) is gone. */
+     Every pairing here comfortably clears AA, several clear AAA — the
+     margin the green palette never had (seal there cleared AA by 0.05). */
 
   /* --- Type --------------------------------------------------------------
      Sizes are ~8% up on the previous scale. EB Garamond runs small and
@@ -71,8 +94,10 @@
   --font-weight-semibold: 650;
 
   /* --- Form -------------------------------------------------------------- */
-  /* Court paper is cut, not rounded. Radii stay tight and deliberate. */
-  --radius-seal: 3px;
+  /* Court paper is cut, not rounded — so the corner is square, full stop.
+     Every box on the site is a ruled box on a page: a pleading's marginal
+     box, a cause-title block, a form field on a court-issued form. */
+  --radius-seal: 0px;
 
   /* --- Motion ------------------------------------------------------------ */
   /* Precise, not bouncy: decelerate hard, never overshoot. */
@@ -84,6 +109,87 @@
   --font-display: var(--font-garamond), ui-serif, Georgia, serif;
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
+}
+
+/* ============================================================================
+   DARK MODE
+   ----------------------------------------------------------------------------
+   Not a naive invert — each value was re-derived and contrast-checked
+   against the same bar the light palette documents above (WCAG relative
+   luminance, computed by hand against the ACTUAL dark-mode pairing, not
+   assumed from the light-mode number).
+
+     ink on paper           14.32:1  ✓ AAA
+     ink-soft on paper        7.86:1  ✓ AAA (normal text)
+     indigo on paper          7.23:1  ✓ AAA
+     seal on paper             5.14:1  ✓ AA normal text
+     paper-raised text on seal fill   4.64:1  ✓ AA normal text
+     paper-raised text on ink fill   12.88:1  ✓ AAA
+
+   `seal` specifically is NOT the light-mode value carried over — at the
+   light-mode vermilion's own luminance, a dark background gives it almost
+   no separation from paper (2.45:1, would fail). It's a genuinely brighter
+   red here, chosen by solving for AA against both paper and the button-text
+   pairing above, not just eyeballed. `accent-soft` needs no such check —
+   it stays decorative-only, never text, in both palettes.
+
+   Two mechanisms set the theme, deliberately layered:
+     1. `@media (prefers-color-scheme: dark)`, scoped to :not([data-theme=
+        "light"]) — the system default, works with zero JS (and so is
+        correct on first paint even if a script is blocked).
+     2. `:root[data-theme="dark"|"light"]` — an explicit override, set by
+        components/layout/ThemeToggle.tsx and persisted to localStorage. The
+        inline script at the top of <body> in app/layout.tsx applies a
+        stored override before first paint so switching themes doesn't leave
+        a flash of the other one on the next visit.
+
+   Known gap: photography (PhotoBackdrop images) is not dimmed or treated
+   for dark mode — left as full-brightness in both themes. Re-treating
+   photographic assets for a dark canvas is a separate, larger pass.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-ink: #ece9e2;
+    --color-ink-soft: #b3aea4;
+    --color-ink-faint: #99948b;
+    --color-paper: #1c1a17;
+    --color-paper-raised: #262320;
+    --color-seal: #ec5d42;
+    --color-seal-dark: #cf4a30;
+    --color-indigo: #93a8cf;
+    --color-accent-soft: #5c4038;
+    --color-inverse: #121110;
+    --color-on-inverse: #ece9e2;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-ink: #ece9e2;
+  --color-ink-soft: #b3aea4;
+  --color-ink-faint: #99948b;
+  --color-paper: #1c1a17;
+  --color-paper-raised: #262320;
+  --color-seal: #ec5d42;
+  --color-seal-dark: #cf4a30;
+  --color-indigo: #93a8cf;
+  --color-accent-soft: #5c4038;
+  --color-inverse: #121110;
+  --color-on-inverse: #ece9e2;
+}
+
+/* `dark:` follows the same two mechanisms as the palette above — the system
+   setting unless the toggle says light, or the toggle saying dark — rather
+   than Tailwind's default, which only reads the system setting and so would
+   disagree with the page whenever the toggle has been used. */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+  &:where(:root[data-theme="dark"] *) {
+    @slot;
+  }
 }
 
 /* ============================================================================
@@ -122,6 +228,18 @@
 
   p {
     text-wrap: pretty;
+  }
+
+  /* Tamil, Malayalam, Telugu and Kannada join words into single long ones
+     ("நிர்ணயிக்கப்பட்டுள்ளது"), and at title size one of them can be wider
+     than a phone, which pushed the translated homepages into sideways
+     scrolling. `anywhere` lets a heading break inside a word only when that
+     word cannot fit its line at all; English headings never hit it, so this
+     is scoped to the translated languages rather than changed for everyone.
+     Section headings only: the hero h1s fit, and on them it pushed a final
+     full stop onto a line of its own. */
+  :is(h2, h3):is(:lang(hi), :lang(bn), :lang(mr), :lang(te), :lang(ta), :lang(gu), :lang(kn), :lang(ml)) {
+    overflow-wrap: anywhere;
   }
 
   /* One visible focus treatment, everywhere, no exceptions. */
@@ -198,12 +316,39 @@
 }
 
 /* Mono eyebrow/label — case numbers, section refs, form numbers. */
+/* A lighter band that fades in and out instead of starting and stopping
+   with a hard edge. Sections used to switch to paper-raised abruptly, often
+   with a full-width hairline on the seam, and every page had a strip that
+   looked cut out and pasted on; on /pricing the plan cards began exactly on
+   the seam. The fade keeps the rhythm of light and dark without the cut. */
+@utility band-raised {
+  background-image: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-paper-raised) 5rem,
+    var(--color-paper-raised) calc(100% - 5rem),
+    transparent
+  );
+}
+
 @utility label-mono {
   font-family: var(--font-mono);
   font-size: var(--text-label);
-  line-height: 1;
+  /* Not 1: a label that wraps (a long provision, a long eyebrow on a phone)
+     stacked its lines on top of each other. */
+  line-height: 1.45;
   letter-spacing: 0.13em;
   text-transform: uppercase;
+  /* Mono and tracking are for Latin capitals. Plex Mono has no Indic glyphs,
+     so on the translated homepages the letters came from a fallback font
+     while the spaces stayed mono-wide, and the tracking pulled apart letters
+     that are meant to join (the Devanagari headline bar broke into pieces).
+     Those scripts have no capitals to space out, so their labels set in the
+     sans, untracked. `lang` comes from <html>, set by HtmlLangSync. */
+  &:is(:lang(hi), :lang(bn), :lang(mr), :lang(te), :lang(ta), :lang(gu), :lang(kn), :lang(ml)) {
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+  }
 }
 
 /* ============================================================================
@@ -240,6 +385,75 @@
   opacity: 1;
   transform: none;
   animation: shisho-rise 600ms var(--ease-precise) both;
+}
+
+/* --- Splash exit ------------------------------------------------------------
+   The one-time site-entry gate (components/motion/EntryGate.tsx) fades to
+   its hidden state — the mirror image of `rise`, because this is an EXIT: the
+   resting rule for entrances has to be the VISIBLE state so nothing is
+   trapped invisible if the animation never runs, but here the correct rest
+   state if the animation never runs is GONE. The reduced-motion backstop
+   collapsing this to near-zero duration is exactly right for an exit — a
+   reduced-motion visitor reaches "gone" immediately rather than sitting
+   through a fade they didn't ask for.
+   ------------------------------------------------------------------------- */
+@keyframes shisho-splash-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@utility splash-out {
+  animation: shisho-splash-out 420ms var(--ease-precise) forwards;
+  pointer-events: none;
+}
+
+/* --- Entry gate progress --------------------------------------------------
+   The splash's hold bar (components/motion/EntryGate.tsx) — width 0 to
+   100%, timed inline to the gate's own HOLD_MS constant rather than a fixed
+   duration here, since the two must finish together. Referenced by name via
+   Tailwind's arbitrary `animate-[...]` value would work too, but the
+   duration has to come from JS either way, so this follows the same inline
+   `style={{ animation: ... }}` pattern AmbientDrift already uses for its own
+   fixed-duration loops — not a new convention.
+
+   No explicit reduced-motion handling needed: the global backstop already
+   collapses `animation-duration`, so a reduced-motion visitor sees the bar
+   already full rather than watching it move — present, not moving, same
+   contract as everything else in this file.
+   ------------------------------------------------------------------------- */
+@keyframes shisho-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* --- Thinking-stage swap ----------------------------------------------------
+   DraftingAgent's live-mode wait state (components/draft/ThinkingSequence.tsx)
+   swaps its icon and label forward through four stages. A plain opacity fade
+   is enough — this is a small inline status change, not a page entrance, so
+   `rise`'s 12px travel would read as bouncy rather than precise at this size.
+   Collapses under the reduced-motion backstop below like everything else
+   here; the stage still advances (that's information, not motion), it just
+   arrives without a fade.
+   ------------------------------------------------------------------------- */
+@keyframes shisho-thinking-swap {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility thinking-swap {
+  animation: shisho-thinking-swap 220ms var(--ease-precise) both;
 }
 
 /* --- Scroll reveal ---------------------------------------------------------
@@ -297,8 +511,21 @@
 }
 
 /* --- Staggered grids ------------------------------------------------------
-   Children carry `--i` (their index); the reveal offsets by 60ms each, so a
-   grid resolves as a wave rather than all at once.
+   Each child reveals on its OWN ViewTimeline, so a grid already resolves as a
+   wave: an item enters when the reader reaches it.
+
+   There is no `animation-delay` here, deliberately. A time delay on a progress
+   timeline does not wait its turn — it offsets the timeline itself, so a
+   sibling can sit at negative progress and `fill-mode: both` pins it to the
+   hidden keyframe. Measured on the /documents grid before removal: three cards
+   sharing one row, at an identical viewport top, resolved to 1, 1 and 0.84.
+   After removal, same row, same scroll: 1 and 1.
+
+   The effect was confined to siblings sharing a row. A vertical list was never
+   harmed — each item there has its own view timeline and enters as the reader
+   reaches it, which is the stagger, and every stage of /map was verified to
+   reach full opacity once genuinely on screen. `--i` is still read by the
+   transition-based fallback below, where a time delay means what it says.
    ------------------------------------------------------------------------ */
 @supports (animation-timeline: view()) {
   .reveal-stagger > * {
@@ -308,7 +535,6 @@
     animation-fill-mode: both;
     animation-timeline: view();
     animation-range: entry 6% cover 24%;
-    animation-delay: calc(var(--i, 0) * 60ms);
   }
 }
 
@@ -524,5 +750,539 @@
      appears on hover, it simply appears instantly instead of drawing in. */
   .underline-draw::after {
     transition: none;
+  }
+}
+
+/* ============================================================================
+   THE AMENDMENT — a scroll-film section (components/film/AmendmentFilm.tsx)
+   ----------------------------------------------------------------------------
+   One clause, fixed centre. Scroll moves the DRAFT, not a camera: red strikes
+   the vague words, the corrected phrasing resolves in their place, the
+   authority writes itself into the margin, and the red drains to ink.
+
+   Same contract as the rest of this file: the RESTING rule is the FINISHED
+   state — corrected clause, black, margin note present — and the keyframes
+   animate *from* the draft. An engine without scroll-driven animation shows
+   the corrected clause and nothing is trapped invisible.
+   ========================================================================== */
+
+.film {
+  position: relative;
+  /* The runway the beats are spread across. Four screens: enough to land five
+     beats without hurrying, short enough not to hold the page hostage. */
+  height: 400vh;
+}
+
+.film__stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.film__sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .film__sheet {
+    padding-inline: 2rem;
+  }
+}
+
+.film__eyebrow {
+  color: var(--color-indigo);
+}
+
+.film__clause {
+  margin-top: 1.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.1rem + 1.9vw, 2.5rem);
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
+  text-wrap: pretty;
+}
+
+/* Both readings occupy ONE inline slot, so the corrected text resolves in the
+   gap the struck words leave instead of reflowing the paragraph under the
+   reader. The slot takes the width of the longer child and never moves. */
+.film__swap {
+  display: inline-grid;
+}
+
+.film__swap > * {
+  grid-area: 1 / 1;
+  /* Without this a grid item stretches to the cell — the cell being as tall as
+     the LONGER reading — and the tiled strike keeps repeating into the empty
+     space below the draft, printing rules through blank paper. */
+  align-self: start;
+}
+
+.film__before {
+  opacity: 0; /* resting: the draft is gone, the correction stands */
+
+  /* text-decoration, not a drawn bar or a tiled gradient. Three attempts
+     failed on real wrapped text: a positioned pseudo-element crosses one line
+     only; an inline background does not fragment here because the swap's
+     children are grid items; and a tiled gradient strikes every line but runs
+     the full box width, so a short last line gets a rule trailing off into
+     blank paper.
+
+     line-through is laid out by the text engine, so it fits each line exactly
+     at every width. It cannot be drawn left-to-right, so the beat animates the
+     decoration's COLOUR instead — the strike arrives as the pen passes rather
+     than sweeping. The margin rule below still draws, which keeps the gesture
+     in the section. */
+  text-decoration-line: line-through;
+  text-decoration-color: var(--color-seal);
+  text-decoration-thickness: 0.055em;
+  text-decoration-skip-ink: none;
+}
+
+.film__after {
+  opacity: 1; /* resting: final */
+  color: var(--color-ink);
+}
+
+.film__note {
+  margin-top: 2.25rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  opacity: 1; /* resting: final */
+}
+
+.film__note-rule {
+  display: block;
+  width: 2.25rem;
+  height: 1px;
+  flex: none;
+  background-color: var(--color-seal);
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* The photograph sits in the right column and only where there IS a right
+   column. It never goes behind the type. */
+.film__plate {
+  display: none;
+}
+
+/* Gated at 1280, and anchored off the TEXT COLUMN rather than the viewport.
+   Sized as a viewport percentage it overlapped the clause by 59px at 1280 and
+   36px at 1440 — measured, not guessed — and a backdrop must never sit behind
+   the type. `50% + 24rem` clears the sheet's own 46rem cap at every width. */
+@media (min-width: 1280px) {
+  .film__plate {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 24rem);
+    right: -6%;
+    display: block;
+    height: 62%;
+    translate: 0 -50%;
+    opacity: 0.32; /* resting: final */
+    -webkit-mask-image: radial-gradient(
+      56% 56% at 50% 50%,
+      #000 0%,
+      #000 40%,
+      transparent 76%
+    );
+    mask-image: radial-gradient(
+      56% 56% at 50% 50%,
+      #000 0%,
+      #000 40%,
+      transparent 76%
+    );
+  }
+}
+
+/* --- The beats -------------------------------------------------------------
+   Each element carries its own slice of the section's ViewTimeline, so the
+   five beats resolve in order as the stage sits pinned.
+   ------------------------------------------------------------------------ */
+@supports (animation-timeline: view()) {
+  .film {
+    view-timeline-name: --film;
+    view-timeline-axis: block;
+  }
+
+  .film__before {
+    animation:
+      film-strike-draw linear both,
+      film-draft-out linear both;
+    animation-timeline: --film, --film;
+    animation-range: cover 24% cover 38%, cover 40% cover 52%;
+  }
+
+  .film__after {
+    animation:
+      film-correction-in linear both,
+      film-red-drains linear both;
+    animation-timeline: --film, --film;
+    animation-range: cover 42% cover 56%, cover 70% cover 84%;
+  }
+
+  .film__note {
+    animation: film-note-in linear both;
+    animation-timeline: --film;
+    animation-range: cover 58% cover 70%;
+  }
+
+  .film__note-rule {
+    animation: film-strike linear both;
+    animation-timeline: --film;
+    animation-range: cover 58% cover 68%;
+  }
+
+  .film__plate {
+    animation: film-plate-in linear both;
+    animation-timeline: --film;
+    animation-range: cover 62% cover 86%;
+  }
+}
+
+@keyframes film-strike-draw {
+  from {
+    text-decoration-color: transparent;
+  }
+  to {
+    text-decoration-color: var(--color-seal);
+  }
+}
+
+@keyframes film-strike {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes film-draft-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes film-correction-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The red drains out of the correction and it becomes the text. */
+@keyframes film-red-drains {
+  from {
+    color: var(--color-seal);
+  }
+  to {
+    color: var(--color-ink);
+  }
+}
+
+@keyframes film-note-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes film-plate-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.32;
+  }
+}
+
+/* Reduced motion: show the before AND the after, stacked, with the draft
+   struck. The point of the section is the difference between two readings —
+   collapsing to the corrected text alone would leave nothing to compare, so
+   the single slot becomes two rows and both stay on screen. */
+@media (prefers-reduced-motion: reduce) {
+  .film {
+    height: auto;
+  }
+
+  .film__stage {
+    position: static;
+    height: auto;
+    padding-block: 6rem;
+  }
+
+  .film__swap {
+    display: block;
+  }
+
+  .film__before {
+    display: block;
+    margin-bottom: 0.9rem;
+    opacity: 0.55 !important;
+    animation: none !important;
+  }
+
+  .film__before {
+    text-decoration-color: var(--color-seal) !important;
+  }
+}
+
+/* ============================================================================
+   THE MAP'S SPINE — the one authored moment on /map
+   ----------------------------------------------------------------------------
+   The connector between stages draws downward as the reader descends. It is
+   the only motion on the page that is not feedback, and it earns that because
+   the line IS the argument: a matter is a sequence, and the spine is the
+   through-line being ruled down the page as you follow it.
+
+   Scroll-driven because the scroll relationship carries the meaning — the line
+   tracks the reader, it does not play at them. Transform only, so it stays on
+   the compositor.
+
+   Resting state is scaleY(1), the finished line, per the contract the rest of
+   this file keeps: if the timeline never runs, the map is fully ruled.
+   ========================================================================== */
+.stage-spine {
+  transform: scaleY(1);
+  transform-origin: top;
+}
+
+@supports (animation-timeline: view()) {
+  .stage-spine {
+    animation-name: shisho-rule-down;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    /* Draws while the stage crosses the upper half of the viewport, so the
+       line reaches the next number at about the moment that number arrives. */
+    animation-range: entry 30% cover 45%;
+  }
+}
+
+@keyframes shisho-rule-down {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* --- The court answer, at stage 3 ------------------------------------------
+   Re-keyed on each selection so the answer arrives rather than swapping in
+   place. 200ms: long enough to read as a response, short enough not to feel
+   like latency.
+   ------------------------------------------------------------------------ */
+@keyframes shisho-answer-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.answer-in {
+  animation: shisho-answer-in 200ms var(--ease-precise) both;
+}
+
+/* The full logo lockup carries a navy wordmark and a tagline baked into the
+   raster, which nearly vanish on the dark paper. In dark mode it sits on a
+   light plate instead — same two selectors as the theme tokens above, so the
+   OS preference and the explicit toggle agree. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-plate {
+    background: #f4efe6;
+    padding: 0.75rem;
+  }
+}
+:root[data-theme="dark"] .logo-plate {
+  background: #f4efe6;
+  padding: 0.75rem;
+}
+
+/* Print: reference pages (documents, how it works) become a clean one-pager —
+   no site chrome, black on white whatever the theme. */
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  * {
+    color: #000 !important;
+    border-color: #999 !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+  section {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    background: #fff !important;
+  }
+  a {
+    text-decoration: none !important;
+  }
+}
+
+/* ============================================================================
+   THE CHAMBER — the Shisho screen (/draft-bot)
+   ----------------------------------------------------------------------------
+   In dark mode, the one dark working surface on the site. Rather than
+   restyling every component inside it, `.chamber` re-points the palette
+   tokens, so the tabs, buttons, notes, Drive panel and locked states all
+   re-theme themselves. In light mode it keeps the page's paper.
+
+   The rule the screen is built on: what YOU write on is paper (`.sheet` —
+   the composer, your messages, the draft); what Shisho says sits in the
+   chamber in light ink, and its corrections are red marks in the margin.
+
+   Contrast, measured against the slab (#1e2127; #121110 in dark mode):
+     ink #eae8e1        13.1:1   ink-soft #c4c0b7   8.9:1
+     ink-faint #a29e95   6.0:1   seal #f4826d       6.3:1
+     indigo #9fb2d6      7.6:1   button text (raised, ~#2b2e34) on seal 5.4:1
+   ========================================================================== */
+/* Light mode: the chamber stays on the page's own paper. A dark slab between
+   a light nav and a light page read as a pasted-on block, so the darkness is
+   kept for dark mode, where it sits one quiet step below the page. */
+.chamber {
+  --sheet-shadow: 0 1px 2px rgba(30, 33, 39, 0.05), 0 18px 40px -22px rgba(30, 33, 39, 0.3);
+  --slip-shadow: 0 1px 2px rgba(30, 33, 39, 0.04), 0 10px 24px -16px rgba(30, 33, 39, 0.25);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .chamber {
+    --color-paper: var(--color-inverse);
+    --color-paper-raised: color-mix(in oklab, var(--color-inverse), #eae8e1 7%);
+    --color-ink: #eae8e1;
+    --color-ink-soft: #c4c0b7;
+    --color-ink-faint: #a29e95;
+    --color-seal: #f4826d;
+    --color-seal-dark: #f69a88;
+    --color-indigo: #9fb2d6;
+    --color-accent-soft: #5c4038;
+    --sheet-shadow: 0 28px 60px -28px rgb(0 0 0 / 0.7);
+    --slip-shadow: 0 14px 30px -18px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] .chamber {
+  --color-paper: var(--color-inverse);
+  --color-paper-raised: color-mix(in oklab, var(--color-inverse), #eae8e1 7%);
+  --color-ink: #eae8e1;
+  --color-ink-soft: #c4c0b7;
+  --color-ink-faint: #a29e95;
+  --color-seal: #f4826d;
+  --color-seal-dark: #f69a88;
+  --color-indigo: #9fb2d6;
+  --color-accent-soft: #5c4038;
+  --sheet-shadow: 0 28px 60px -28px rgb(0 0 0 / 0.7);
+  --slip-shadow: 0 14px 30px -18px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+/* Paper laid on the chamber. Light paper in light mode; in dark mode the
+   site's own dark paper, still a step up from the darker slab. */
+.chamber .sheet {
+  --color-ink: #1e2127;
+  --color-ink-soft: #3a3f49;
+  --color-ink-faint: #5b5f66;
+  --color-paper: #eae8e1;
+  --color-paper-raised: #f2f1ec;
+  --color-seal: #a32e1f;
+  --color-seal-dark: #85251a;
+  --color-indigo: #2c3a57;
+  --color-accent-soft: #d9a99a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .chamber .sheet {
+    --color-ink: #ece9e2;
+    --color-ink-soft: #b3aea4;
+    --color-ink-faint: #99948b;
+    --color-paper: #1c1a17;
+    --color-paper-raised: #262320;
+    --color-seal: #ec5d42;
+    --color-seal-dark: #cf4a30;
+    --color-indigo: #93a8cf;
+    --color-accent-soft: #5c4038;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] .chamber .sheet {
+  --color-ink: #ece9e2;
+  --color-ink-soft: #b3aea4;
+  --color-ink-faint: #99948b;
+  --color-paper: #1c1a17;
+  --color-paper-raised: #262320;
+  --color-seal: #ec5d42;
+  --color-seal-dark: #cf4a30;
+  --color-indigo: #93a8cf;
+  --color-accent-soft: #5c4038;
+  color-scheme: dark;
+}
+
+/* The ruled margin of court paper: one red line a hand's width in from the
+   left edge, which is where a senior's marks go. */
+.sheet-ruled {
+  background-image: linear-gradient(
+    to right,
+    transparent calc(var(--margin-at, 3.25rem) - 1px),
+    color-mix(in oklab, var(--color-seal), transparent 25%) calc(var(--margin-at, 3.25rem) - 1px),
+    color-mix(in oklab, var(--color-seal), transparent 25%) var(--margin-at, 3.25rem),
+    transparent var(--margin-at, 3.25rem)
+  );
+  background-attachment: local;
+}
+
+/* The one authored moment: when Shisho finishes a draft, the sheet is laid
+   down on the desk — a short rise that settles hard, never bounces. */
+@keyframes chamber-lay-sheet {
+  from {
+    opacity: 0.35;
+    transform: translateY(2.5rem) rotate(-0.6deg);
+    box-shadow: 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.sheet-arrive {
+  animation: chamber-lay-sheet 560ms var(--ease-precise) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-arrive {
+    animation: none;
   }
 }
